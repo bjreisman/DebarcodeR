@@ -41,21 +41,20 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
   methods <- c("earth", "knijnenburg", "lm")
   method_selected <- match.arg1(method, methods)
 
-  if (method != 'knijnenburg' &
-      is.null(uptake)) {
+  if (is.null(uptake)) {
     uptake <- fcbFlowFrame
-    warning("Barcoded sample being used as uptake control,
-            `knijnenburg` method may provide best results'")
+    if (method != 'knijnenburg') {
+      warning("Barcoded sample being used as uptake control, ",
+              "`knijnenburg` method may provide best results")
+    }
   }
 
 
   # fcb sample extracted
   fcb <- janitor::clean_names(as.data.frame(exprs(fcbFlowFrame)))
   # uptake sample extracted
-  if (is.null(uptake)) {
-    uptake = janitor::clean_names(as.data.frame(exprs(fcbFlowFrame@uptake.ff)))
-  } else if (inherits(uptake, "flowFrame")) {
-    uptake = janitor::clean_names(as.data.frame(exprs(uptake)))
+  if (inherits(uptake, "flowFrame")) {
+    uptake <- janitor::clean_names(as.data.frame(exprs(uptake)))
   } else {
     stop("Uptake control must be of class 'flowFrame'")
   }
