@@ -40,3 +40,47 @@ fcbFlowFrame <- function(x, barcodes = list()) {
   }
   as(x, "fcbFlowFrame")
 }
+
+#' Show method for fcbFlowFrame
+#'
+#' Prints a concise summary of the fcbFlowFrame including cell count, channel
+#' count, and the debarcoding state (which pipeline steps have been completed)
+#' for each barcoded channel.
+#'
+#' @param object An fcbFlowFrame object.
+#' @return Invisibly returns \code{object}.
+#' @importFrom methods show
+#' @export
+setMethod("show", "fcbFlowFrame", function(object) {
+  n_cells <- nrow(object)
+  n_channels <- ncol(object)
+  cat(sprintf("fcbFlowFrame with %s cells x %d channels\n",
+              format(n_cells, big.mark = ","), n_channels))
+
+  bc <- object@barcodes
+  if (length(bc) == 0) {
+    cat("Barcodes: none (run deskew_fcbFlowFrame to begin)\n")
+  } else {
+    cat("Barcodes:\n")
+    for (ch in names(bc)) {
+      steps <- names(bc[[ch]])
+      state <- character(0)
+
+      if ("deskewing" %in% steps) {
+        state <- c(state, "deskewed")
+      }
+      if ("clustering" %in% steps) {
+        probs <- bc[[ch]][["clustering"]][["probabilities"]]
+        n_levels <- if (!is.null(probs)) ncol(probs) else "?"
+        state <- c(state, sprintf("clustered (%d levels)", n_levels))
+      }
+      if ("assignment" %in% steps) {
+        state <- c(state, "assigned")
+      }
+
+      pipeline_str <- if (length(state) > 0) paste(state, collapse = " -> ") else "no steps completed"
+      cat(sprintf("  %s: %s\n", ch, pipeline_str))
+    }
+  }
+  invisible(object)
+})

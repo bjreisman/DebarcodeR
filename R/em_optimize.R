@@ -25,7 +25,7 @@ em_optimize <- function(fcbFlowFrame,
                         shrinkage = 0.05) {
 
   assert_fcbFlowFrame(fcbFlowFrame, needs = c("deskewing", "clustering", "assignment"))
-  if (verbose) cat("Initializing...\n")
+  if (verbose) message("Initializing...")
 
   barcodes <- fcbFlowFrame@barcodes[!(names(fcbFlowFrame@barcodes) == "wells")]
 #  bc_initial.df <- as.data.frame(lapply(lapply(barcodes,`[[`, "assignment"), `[[`, "values"))
@@ -108,7 +108,7 @@ em_optimize <- function(fcbFlowFrame,
 #  cl.mat <- mclust::unmap(bc_initial.f_assigned)
 
   for (i in seq(niter)) {
-    if (verbose) cat(paste("EM Round", i, "of", niter, "..."))
+    if (verbose) message("EM Round ", i, " of ", niter, "...", appendLF = FALSE)
     ## EM fitting -------------------------------------------------------------
     msEst <- mclust::mstep(modelName = modelName,
                    data = data.ii,
@@ -116,7 +116,7 @@ em_optimize <- function(fcbFlowFrame,
     esEst <- mclust::estep(modelName = msEst$modelName[1],
                    data = deskewed_cols,
                    parameters = msEst$parameters)
-    if (verbose) cat(paste0(" loglik: ", round(esEst$loglik), "\n"))
+    if (verbose) message(" loglik: ", round(esEst$loglik))
   #  print(esEst$loglik)
     cl.mat <- esEst$z
 
@@ -130,7 +130,7 @@ em_optimize <- function(fcbFlowFrame,
       data.ii <- deskewed_cols
     }
   }
-  if (verbose) cat(paste("Calculating probabilities..."))
+  if (verbose) message("Calculating probabilities...", appendLF = FALSE)
 
   mvgmm.cdens <- esEst$parameters$pro * cdens(data = deskewed_cols, modelName = esEst$modelName[1], parameters = esEst$parameters) # component densities
   mvgmm.tdens <- dens(data = deskewed_cols, modelName = esEst$modelName[1], parameters = esEst$parameters) # total density
@@ -168,7 +168,7 @@ em_optimize <- function(fcbFlowFrame,
   fcbFlowFrame@barcodes[['wells']][['clustering']][['channels']] <- deskewed.dims
   fcbFlowFrame@barcodes[['wells']][['clustering']][['model']] <- esEst
   # fcbFlowFrame@barcodes[['wells']][['assignment']][['dims']] <- colnames(bc_initial.df)
-  if (verbose) cat(paste("Done!"))
+  if (verbose) message("Done!")
 
   return(fcbFlowFrame)
 }
