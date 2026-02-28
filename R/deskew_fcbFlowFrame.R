@@ -33,17 +33,15 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
 
 
   #validation of inputs -------------------------
-  if (inherits(fcbFlowFrame, "cytoframe")) {
-    if (!requireNamespace("flowWorkspace", quietly = TRUE))
-      stop("Package 'flowWorkspace' is required to convert cytoframe objects")
-    fcbFlowFrame <- flowWorkspace::cytoframe_to_flowFrame(fcbFlowFrame)
+  if (inherits(fcbFlowFrame, "cytoframe") || inherits(fcbFlowFrame, "flowFrame")) {
+    fcbFlowFrame <- coerce_to_flowFrame(fcbFlowFrame)
   }
   if (inherits(fcbFlowFrame, "fcbFlowFrame")) {
     # already correct class, proceed
   } else if (inherits(fcbFlowFrame, "flowFrame")) {
     fcbFlowFrame <- fcbFlowFrame(fcbFlowFrame)
   } else {
-    stop("Input must be a flowFrame or fcbFlowFrame")
+    stop("Input must be a flowFrame, cytoframe, or fcbFlowFrame")
   }
 
 
@@ -66,16 +64,8 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
   # fcb sample extracted
   fcb <- as.data.frame(exprs(fcbFlowFrame))
   # uptake sample extracted
-  if (inherits(uptake, "cytoframe")) {
-    if (!requireNamespace("flowWorkspace", quietly = TRUE))
-      stop("Package 'flowWorkspace' is required to convert cytoframe objects")
-    uptake <- flowWorkspace::cytoframe_to_flowFrame(uptake)
-  }
-  if (inherits(uptake, "flowFrame")) {
-    uptake <- as.data.frame(exprs(uptake))
-  } else {
-    stop("Uptake control must be of class 'flowFrame'")
-  }
+  uptake <- coerce_to_flowFrame(uptake, arg_name = "Uptake control")
+  uptake <- as.data.frame(exprs(uptake))
 
   # earth model
   if (method_selected == "earth") {

@@ -72,16 +72,7 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
                        updateProgress = NULL){
 
 
-  # match.arg1 here for options and distributions (normal, skew.normal) - dist and opt
-  if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
-    stop("Input must be an object of class fcbFlowFrame")
-  }
-
-  if (length(fcbFlowFrame@barcodes) == 0) {
-    stop(
-      "Input must have channels in the barcodes slot that have been run through deskew_fcbFlowFrame"
-    )
-  }
+  assert_fcbFlowFrame(fcbFlowFrame, needs = "deskewing")
 
   # Resolve channel name against barcodes slot (which uses original names)
   channel <- resolve_channel(channel, names(fcbFlowFrame@barcodes))

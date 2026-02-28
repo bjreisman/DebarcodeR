@@ -24,9 +24,7 @@ em_optimize <- function(fcbFlowFrame,
                         niter = 1,
                         shrinkage = 0.05) {
 
-  if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
-    stop("Input must be a fcbFlowFrame")
-  }
+  assert_fcbFlowFrame(fcbFlowFrame, needs = c("deskewing", "clustering", "assignment"))
   if (verbose) cat("Initializing...\n")
 
   barcodes <- fcbFlowFrame@barcodes[!(names(fcbFlowFrame@barcodes) == "wells")]

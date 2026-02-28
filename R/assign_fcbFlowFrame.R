@@ -17,24 +17,10 @@ assign_fcbFlowFrame <- function(fcbFlowFrame,
                                 likelihoodcut = 8 ,
                                 ambiguitycut = 0.02) {
 
-  if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
-    stop("Input must be a fcbFlowFrame")
-  }
-
-  if (length(fcbFlowFrame@barcodes) == 0) {
-    stop(
-      "Input must have channels in the barcodes slot that have been run through deskew_fcbFlowFrame"
-    )
-  }
+  assert_fcbFlowFrame(fcbFlowFrame, needs = c("deskewing", "clustering"))
 
   # Resolve channel name against barcodes slot (which uses original names)
   channel <- resolve_channel(channel, names(fcbFlowFrame@barcodes))
-
-  if (!'clustering' %in% names(fcbFlowFrame@barcodes[[channel]])) {
-    stop(
-      "Input must have channels in the barcodes slot that have been run through cluster_fcbFlowFrame"
-    )
-  }
   probs <- get_barcode_data(fcbFlowFrame, channel, "clustering", "probabilities")
   if (channel == "wells") {
     channel <- names(fcbFlowFrame@barcodes[['wells']][['clustering']]$channels)
