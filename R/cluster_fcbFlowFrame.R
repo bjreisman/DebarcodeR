@@ -9,6 +9,7 @@
 #' @param breaks Numeric vector of break points (length levels + 1).
 #' @param levels Integer, number of barcoding levels.
 #' @return A numeric matrix with nrow = length(vec) and ncol = levels.
+#' @importFrom graphics hist
 #' @keywords internal
 compute_histogram_probs <- function(vec, breaks, levels) {
   classif <- unlist(lapply(vec, FUN = function(x) findInterval(x, breaks)))
@@ -54,6 +55,7 @@ compute_histogram_probs <- function(vec, breaks, levels) {
 #' @seealso \code{\link{deskew_fcbFlowFrame}}
 #' @export
 #' @import classInt mixsmsn sn
+#' @importFrom stats quantile median
 
 # aspirational --> v2?
 # find sd and mean of uptake - use for probabilities

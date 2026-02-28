@@ -9,7 +9,7 @@ deskew_fcbFlowSet(
   uptake = NULL,
   channel,
   method = "earth",
-  predictors = c("fsc_a", "ssc_a"),
+  predictors = c("FSC-A", "SSC-A"),
   subsample = 20000,
   ret.model = TRUE,
   verbose = FALSE,

@@ -1,11 +1,18 @@
+# `level` is a ggplot2 computed variable referenced via after_stat()
+utils::globalVariables("level")
+
 #' Plot debarcoding assignments
 #'
-#' @param fcbFlowFrame An fcbFlowFrame with completed assignments.
+#' @param x An fcbFlowFrame with completed assignments.
 #' @param plot Character, plot type: "assignments" (default), "density", "chull", or "data".
 #' @param seed Integer, random seed for color palette generation (default 1).
+#' @param ... Additional arguments (not used).
+#' @method plot fcbflowframe
 #' @export
 #' @import ggplot2 ggnewscale scales ggforce
-plot.fcbflowframe <- function(fcbFlowFrame, plot = "assignments", seed = 1) {
+#' @importFrom grDevices chull
+plot.fcbflowframe <- function(x, ..., plot = "assignments", seed = 1) {
+  fcbFlowFrame <- x
 
   if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
     stop("Input must be a fcbFlowFrame")

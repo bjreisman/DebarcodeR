@@ -4,10 +4,12 @@
 \alias{plot.fcbflowframe}
 \title{Plot debarcoding assignments}
 \usage{
-plot.fcbflowframe(fcbFlowFrame, plot = "assignments", seed = 1)
+\method{plot}{fcbflowframe}(x, ..., plot = "assignments", seed = 1)
 }
 \arguments{
-\item{fcbFlowFrame}{An fcbFlowFrame with completed assignments.}
+\item{x}{An fcbFlowFrame with completed assignments.}
+
+\item{...}{Additional arguments (not used).}
 
 \item{plot}{Character, plot type: "assignments" (default), "density", "chull", or "data".}
 

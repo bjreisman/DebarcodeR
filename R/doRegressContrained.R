@@ -16,6 +16,7 @@
 #' @param cofactor Cofactor for transformation.
 #' @return Morphology-corrected values.
 
+#' @importFrom stats lm optimize
 doRegressConstrained <- function(single_level_bc, fcb_df = NULL,
                                 Loc, weight, trans,
                                 fsc_ssc = c(fsc = 'FSC-A', ssc = 'SSC-A'),
@@ -319,8 +320,8 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
     A[noc+2, ] <- AX[2,]
 
     b <- matrix(0, nrow=noc+2, 1)
-    b(noc+1) <- val3[1]
-    b(noc+2) <- val3[2]
+    b[noc+1, 1] <- val3[1]
+    b[noc+2, 1] <- val3[2]
 
   } else {
     A <- A1-A2

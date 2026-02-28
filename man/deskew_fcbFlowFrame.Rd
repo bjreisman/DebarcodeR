@@ -9,7 +9,7 @@ deskew_fcbFlowFrame(
   uptake = NULL,
   channel,
   method = "earth",
-  predictors = c("fsc_a", "ssc_a"),
+  predictors = c("FSC-A", "SSC-A"),
   subsample = 20000,
   ret.model = TRUE,
   verbose = FALSE,
@@ -23,7 +23,7 @@ deskew_fcbFlowFrame(
 \item{uptake}{A flowFrame or cytoframe to use as the uptake (external standard) control.
 If NULL (default), the barcoded sample itself is used.}
 
-\item{channel}{The name (string) of the channel to be corrected (cleaned column name).}
+\item{channel}{The name (string) of the channel to be corrected (use original column name, e.g. "Pacific Blue-A").}
 
 \item{method}{The morphology correction method: "earth" (default), "lm", or "knijnenburg".}
 

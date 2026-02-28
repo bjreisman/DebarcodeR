@@ -17,6 +17,7 @@
 #' @param ... Additional arguments passed to \code{earth::earth}.
 #' @return A list with corrected values and optionally the fitted model.
 #' @import earth
+#' @importFrom stats as.formula median
 #' @export
 
 morphology_corr.earth <- function(fcb,

@@ -11,6 +11,7 @@
 #' @param updateProgress Callback for Shiny progress updates.
 #' @param ret.model Logical, retain the fitted model (default FALSE).
 #' @return A list with corrected values and optionally the fitted model.
+#' @importFrom stats as.formula lm median
 #' @export
 
 morphology_corr.lm <- function(fcb,

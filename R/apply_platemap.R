@@ -37,7 +37,7 @@ apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
     suppressMessages({suppressWarnings({
       pData.new <- left_join(pData(out.fs), pData(fcbFlowSet))
       pData.new <- left_join(pData.new, platemap_clean)
-      pData.new <- dplyr::mutate(pData.new, well = if_else(is.na(well), "Unassigned", well))
+      pData.new <- dplyr::mutate(pData.new, well = if_else(is.na(.data$well), "Unassigned", .data$well))
     })})
     rownames(pData.new) <- rownames(pData(out.fs))
     pData(out.fs) <- pData.new

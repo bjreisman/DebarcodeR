@@ -10,6 +10,7 @@
 # fsc_ssc[['fsc']]
 #fsc_ssc[['fsc']]
 
+#' @importFrom stats optimize
 selectDenseScatterArea <- function (data,
                                     fsc_ssc = c(fsc = 'FSC-A', ssc = 'SSC-A'),
                                     subsample = 10e3) {
