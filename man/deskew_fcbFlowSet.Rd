@@ -18,7 +18,7 @@ deskew_fcbFlowSet(
 )
 }
 \arguments{
-\item{fcbFlowSet}{An fcbFlowSet or flowSet object.}
+\item{fcbFlowSet}{An fcbFlowSet, flowSet, or cytoset object.}
 
 \item{uptake}{A flowFrame to use as the uptake control (default NULL).}
 

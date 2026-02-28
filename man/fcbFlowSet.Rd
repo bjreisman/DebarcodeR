@@ -7,11 +7,16 @@
 fcbFlowSet(x)
 }
 \arguments{
-\item{x}{A \code{flowSet} object.}
+\item{x}{A \code{flowSet} or \code{cytoset} object.}
 }
 \value{
 An object of class \code{fcbFlowSet}.
 }
 \description{
-Constructor function to create an fcbFlowSet from a flowSet.
+Constructor function to create an fcbFlowSet from a flowSet or cytoset.
+If a \code{cytoset} is provided (from the \code{flowWorkspace} package),
+it is automatically converted to a \code{flowSet} first.
+}
+\seealso{
+\code{\link{as.cytoset}} for converting back to cytoset
 }

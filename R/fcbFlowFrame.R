@@ -19,12 +19,15 @@ fcbFlowFrame <- setClass("fcbFlowFrame",
 
 #' Create an fcbFlowFrame
 #'
-#' Constructor function to create an fcbFlowFrame from a flowFrame.
+#' Constructor function to create an fcbFlowFrame from a flowFrame or
+#' cytoframe. If a \code{cytoframe} is provided (from the \code{flowWorkspace}
+#' package), it is automatically converted to a \code{flowFrame} first.
 #'
 #' @rdname fcbFlowFrame-class
-#' @param x A \code{flowFrame} object.
+#' @param x A \code{flowFrame} or \code{cytoframe} object.
 #' @param barcodes A list of barcode data (default: empty list).
 #' @return An object of class \code{fcbFlowFrame}.
+#' @seealso \code{\link{as.cytoframe}} for converting back to cytoframe
 #' @export
 fcbFlowFrame <- function(x, barcodes = list()) {
   if (inherits(x, "cytoframe")) {

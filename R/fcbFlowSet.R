@@ -13,10 +13,13 @@
 
 #' Create an fcbFlowSet
 #'
-#' Constructor function to create an fcbFlowSet from a flowSet.
+#' Constructor function to create an fcbFlowSet from a flowSet or cytoset.
+#' If a \code{cytoset} is provided (from the \code{flowWorkspace} package),
+#' it is automatically converted to a \code{flowSet} first.
 #'
-#' @param x A \code{flowSet} object.
+#' @param x A \code{flowSet} or \code{cytoset} object.
 #' @return An object of class \code{fcbFlowSet}.
+#' @seealso \code{\link{as.cytoset}} for converting back to cytoset
 #' @export
 fcbFlowSet <- function(x) {
   if (inherits(x, "cytoset")) {

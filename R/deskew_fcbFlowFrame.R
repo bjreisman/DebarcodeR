@@ -1,7 +1,7 @@
 #' Corrects morphology based on scatter or uptake control for fcbFlowFrame
 #'
-#' @param fcbFlowFrame An fcbFlowFrame or flowFrame object, post compensation and preprocessing.
-#' @param uptake A flowFrame to use as the uptake (external standard) control.
+#' @param fcbFlowFrame An fcbFlowFrame, flowFrame, or cytoframe object, post compensation and preprocessing.
+#' @param uptake A flowFrame or cytoframe to use as the uptake (external standard) control.
 #'   If NULL (default), the barcoded sample itself is used.
 #' @param channel The name (string) of the channel to be corrected (cleaned column name).
 #' @param method The morphology correction method: "earth" (default), "lm", or "knijnenburg".

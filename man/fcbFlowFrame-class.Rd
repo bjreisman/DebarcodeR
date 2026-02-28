@@ -10,7 +10,7 @@ fcbFlowFrame(x, barcodes = list())
 fcbFlowFrame(x, barcodes = list())
 }
 \arguments{
-\item{x}{A \code{flowFrame} object.}
+\item{x}{A \code{flowFrame} or \code{cytoframe} object.}
 
 \item{barcodes}{A list of barcode data (default: empty list).}
 }
@@ -22,7 +22,9 @@ A container for barcoded flow cytometry data, extending flowCore's
 \code{flowFrame} class with a \code{barcodes} slot that stores
 deskewing, clustering, and assignment results.
 
-Constructor function to create an fcbFlowFrame from a flowFrame.
+Constructor function to create an fcbFlowFrame from a flowFrame or
+cytoframe. If a \code{cytoframe} is provided (from the \code{flowWorkspace}
+package), it is automatically converted to a \code{flowFrame} first.
 }
 \section{Slots}{
 
@@ -32,3 +34,6 @@ Each element is named by channel and contains sublists for
 \code{deskewing}, \code{clustering}, and \code{assignment}.}
 }}
 
+\seealso{
+\code{\link{as.cytoframe}} for converting back to cytoframe
+}

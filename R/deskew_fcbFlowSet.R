@@ -2,7 +2,7 @@
 #'
 #' Applies \code{\link{deskew_fcbFlowFrame}} to each frame in an fcbFlowSet.
 #'
-#' @param fcbFlowSet An fcbFlowSet or flowSet object.
+#' @param fcbFlowSet An fcbFlowSet, flowSet, or cytoset object.
 #' @param uptake A flowFrame to use as the uptake control (default NULL).
 #' @param channel The name (string) of the channel to be corrected.
 #' @param method The morphology correction method: "earth" (default), "lm", or "knijnenburg".

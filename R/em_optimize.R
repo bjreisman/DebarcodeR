@@ -115,7 +115,7 @@ em_optimize <- function(fcbFlowFrame,
     msEst <- mclust::mstep(modelName = modelName,
                    data = data.ii,
                    z = cl.mat)
-    esEst <- mclust::estep(modelName = msEst$modelName,
+    esEst <- mclust::estep(modelName = msEst$modelName[1],
                    data = deskewed_cols,
                    parameters = msEst$parameters)
     if (verbose) cat(paste0(" loglik: ", round(esEst$loglik), "\n"))
@@ -124,7 +124,7 @@ em_optimize <- function(fcbFlowFrame,
 
     ## shrinkage---------------------------------------------------------------
     if (shrinkage > 0) {
-      simdata <- mclust::sim(esEst$modelName, esEst$parameters, n)
+      simdata <- mclust::sim(esEst$modelName[1], esEst$parameters, n)
       colnames(simdata)[-1] <- colnames(deskewed_cols)
       data.ii <- rbind(deskewed_cols, simdata[,-1])
       cl.mat <- rbind(cl.mat, unmap(simdata[,1]))
@@ -134,8 +134,8 @@ em_optimize <- function(fcbFlowFrame,
   }
   if (verbose) cat(paste("Calculating probabilities..."))
 
-  mvgmm.cdens <- esEst$parameters$pro * cdens(esEst$modelName, deskewed_cols, parameters = esEst$parameters) # component densities
-  mvgmm.tdens <- dens(esEst$modelName, deskewed_cols, parameters = esEst$parameters) # total density
+  mvgmm.cdens <- esEst$parameters$pro * cdens(data = deskewed_cols, modelName = esEst$modelName[1], parameters = esEst$parameters) # component densities
+  mvgmm.tdens <- dens(data = deskewed_cols, modelName = esEst$modelName[1], parameters = esEst$parameters) # total density
   probs <- mvgmm.cdens/sum(mvgmm.tdens) # density normalized to 1
   colnames(probs) <- cl.names
   # # Assignment------------------------------------------------------------------

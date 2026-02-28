@@ -1,9 +1,4 @@
 test_that("em_optimize runs on two-channel debarcoded data", {
-  # Known issue: em_optimize has a compatibility bug with newer mclust versions
-
-  # where esEst$modelName returns a vector instead of a scalar, causing cdens()
-  # to fail. Skipping until fixed in Phase 4.
-  skip("em_optimize has known mclust compatibility bug - to be fixed in Phase 4")
 
   set.seed(5814)
   em_idx <- sample(nrow(jurkatFCB), 20000)

@@ -18,9 +18,9 @@ deskew_fcbFlowFrame(
 )
 }
 \arguments{
-\item{fcbFlowFrame}{An fcbFlowFrame or flowFrame object, post compensation and preprocessing.}
+\item{fcbFlowFrame}{An fcbFlowFrame, flowFrame, or cytoframe object, post compensation and preprocessing.}
 
-\item{uptake}{A flowFrame to use as the uptake (external standard) control.
+\item{uptake}{A flowFrame or cytoframe to use as the uptake (external standard) control.
 If NULL (default), the barcoded sample itself is used.}
 
 \item{channel}{The name (string) of the channel to be corrected (cleaned column name).}
