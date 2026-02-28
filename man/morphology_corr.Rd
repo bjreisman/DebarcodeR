@@ -13,6 +13,7 @@ morphology_corr(
   subsample = 20000,
   ret.model = TRUE,
   verbose = FALSE,
+  updateProgress = NULL,
   ...
 )
 }
@@ -21,6 +22,8 @@ morphology_corr(
 
 \item{subsample}{Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.}
 
+\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI}
+
 \item{fcb_df}{the barcoded dataframe, post compensation and preprocessing}
 
 \item{bc_single_level}{Optional: a dataframe consisting of all cells barcoded with a single level of the barcoding dye}
@@ -28,8 +31,6 @@ morphology_corr(
 \item{opt}{String, Morphology correction apporach, either "regression" (default) or "control dye"}
 
 \item{trans}{String, transformation to apply to the barcoding channels, defaults to arcsinh, also log10}
-
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI}
 
 \item{cofactor_bc1}{Numeirc, Cofactor used for the arcsinh transformation on the barcoding channels}
 

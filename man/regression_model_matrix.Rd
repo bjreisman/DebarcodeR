@@ -17,10 +17,6 @@ numeric vector of length nrow(fcb_df) representing the morphology corrected chan
 \description{
 Used to build the regression model, not to be called directly by the used
 }
-\examples{
-
-
-}
 \seealso{
 \code{\link{selectDenseScatterArea}} \code{\link{doRegressConstrained}}
 }

@@ -1,2 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README\.rmd$
+^README\.html$
+^README_files$
+^DebarcodeR.*\.tar\.gz$
+^DebarcodeR\.Rcheck$
+^\.positai$

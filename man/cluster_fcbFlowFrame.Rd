@@ -13,6 +13,7 @@ cluster_fcbFlowFrame(
   subsample = 3000,
   trim = 0,
   ret.model = TRUE,
+  manbreaks = NULL,
   updateProgress = NULL
 )
 }
@@ -23,7 +24,7 @@ cluster_fcbFlowFrame(
 
 \item{levels}{integer, the number of barcoding intensities present in the vector}
 
-\item{opt}{string, either "mixture" (default) for gaussian mixture modeling, or "fisher" for fisher-jenks natural breaks optimization}
+\item{opt}{string, either "mixture" (default) for gaussian mixture modeling, or "fisher" for fisher-jenks natural breaks optimization, or "manual.breaks" for manual specification of breakpoints}
 
 \item{dist}{string in c("Normal, Skew.normal, Tdist"), passed to mixsmsn}
 
@@ -32,6 +33,8 @@ cluster_fcbFlowFrame(
 \item{trim}{numberic between 0, 1; used to trim the upper and lower extremes to exlcude outliers (eg. trim = 0.01 exludes most extreme 1\% of data)}
 
 \item{ret.model}{Option to retain the model for deskewing}
+
+\item{manbreaks}{Vector, length levels + 1, used to specifiy manual breakpoints for levels}
 
 \item{updateProgress}{used in reactive context (shiny) to return progress information to GUI}
 }

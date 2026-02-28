@@ -46,26 +46,12 @@ plot.fcbflowframe <- function(fcbFlowFrame, plot = "assignments", seed = 1) {
         x = colnames(deskewed)[2]
       )
     ) +
-      stat_pointdensity(geom = ggrastr:::GeomPointRast,
-                        adjust = 0.1,
-                        shape = ".",
-                        n = 256,
-                        method = "kde2d",
-                        raster.width = 4, raster.height = 4,
-      )  +
-      scale_color_viridis_c(option = "A", guide = FALSE) +
-      ggnewscale::new_scale_color() +
+      geom_point(shape = ".", color = "grey30") +
       stat_density_2d(aes(fill = assignment, alpha = after_stat(level)),
                       data = mydata.assigned,
                       geom = "polygon", color = NA, bins = 8) +
       scale_fill_manual(values = mypal[-1])
 
-
-      myplot +
-        theme_bw() +
-        theme(panel.grid = element_blank(),
-              legend.position = "none")
-      ggsave('density-cl.png', width = 4, height = 4, units = 'in', dpi = 300)
   } else if (plot == 'chull') {
     mydata.chull <- as_tibble(mydata.assigned) %>%
       group_by(assignment) %>%
@@ -78,33 +64,11 @@ plot.fcbflowframe <- function(fcbFlowFrame, plot = "assignments", seed = 1) {
         x = colnames(deskewed)[2]
       )
     ) +
-    stat_pointdensity(geom = ggrastr:::GeomPointRast,
-                      adjust = 0.1,
-                      shape = ".",
-                      n = 256,
-                      method = "kde2d",
-                      raster.width = 4, raster.height = 4,
-    )  +
-    scale_color_viridis_c(option = "A", guide = FALSE) +
-    ggnewscale::new_scale_color() +
-    # geom_shape(data = mydata.chull, aes(color = assignment),
-    #      expand = unit(0.25, "mm"),
-    #      radius = unit(1, 'mm'), fill = NA) +
+    geom_point(shape = ".", color = "grey30") +
       geom_shape(data = mydata.chull, aes(fill = assignment),
                  expand = unit(0.25, "mm"),
                  radius = unit(1, 'mm'), alpha = 0.25) +
-      # geom_mark_hull(aes(fill = assignment), data = mydata.assigned, alpha = 0.3,
-      #                concavity = 0,
-      #                expand  = unit(1, "mm"), radius = unit(2, "mm")) +
-      #geom_voronoi_tile(aes(fill = assignment), data = mydata.assigned) +
       scale_fill_manual(values = mypal[-1])
-
-    # myplot.polished  <- myplot +
-    #   theme_bw() +
-    #   theme(panel.grid = element_blank(),
-    #         legend.position = "none")
-
-    #ggsave('density-rounded-chull-filled.png', myplot.polished, width = 4, height = 4, units = 'in', dpi = 300)
   }
 
   return(myplot)

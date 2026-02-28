@@ -8,7 +8,7 @@
 #' a vector of integers from 0:ncol(probs), cells assigned a classification of 0 remained unassigned,
 #' otherwise number corresponds to the barcoding level assignment of that cell
 #' @export
-#' @import mclust matrixStats
+#' @importFrom mclust unmap mstep estep sim cdens dens
 #' @importFrom data.table tstrsplit
 em_optimize <- function(fcbFlowFrame,
                         modelName = "VEE",
