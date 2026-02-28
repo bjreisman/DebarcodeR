@@ -9,7 +9,7 @@
 #'
 #' @docType data
 #' @usage data(jurkatFCB)
-#' @format An object of class \code{"flowFrame"} with 191,233 cells and 16
+#' @format An object of class \code{"flowFrame"} with 24,000 cells and 16
 #'   channels; see \code{\link[flowCore]{flowFrame-class}}.
 #' @keywords datasets
 #' @seealso \code{\link{jurkatFCB_std}} for the companion external standard
@@ -29,7 +29,7 @@
 #'
 #' @docType data
 #' @usage data(jurkatFCB_std)
-#' @format An object of class \code{"flowFrame"} with 2,000 cells and 16
+#' @format An object of class \code{"flowFrame"} with 500 cells and 16
 #'   channels; see \code{\link[flowCore]{flowFrame-class}}.
 #' @keywords datasets
 #' @seealso \code{\link{jurkatFCB}} for the full pooled dataset,

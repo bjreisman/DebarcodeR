@@ -2,7 +2,8 @@ Package: DebarcodeR
 Title: Automated Demultiplexing for Fluorescent Cell Barcoding
 Version: 1.1.0
 Authors@R: c(
-              person("Benjamin", "Reisman", email = "benjamin.reisman@vanderbilt.edu", role = c("aut", "cre")),
+              person("Benjamin", "Reisman", email = "benjamin.reisman@vanderbilt.edu", role = c("aut", "cre"), 
+              comment = c(ORCID = "0000-0001-7847-2612")),
               person("Sierra", "Barone", email = "sierra.barone@Vanderbilt.edu", role = c("aut")),
               person("David", "Earl", email = "davidcearl@gmail.com", role = c("aut"))
             )

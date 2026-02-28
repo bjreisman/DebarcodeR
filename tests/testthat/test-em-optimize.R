@@ -1,10 +1,8 @@
 test_that("em_optimize runs on two-channel debarcoded data", {
 
   set.seed(5814)
-  em_idx <- sample(nrow(jurkatFCB), 20000)
-  em_ff <- jurkatFCB[em_idx, ]
 
-  fcb <- fcbFlowFrame(em_ff)
+  fcb <- fcbFlowFrame(jurkatFCB)
 
   fcb <- deskew_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
                              predictors = c("FSC-A", "SSC-A"),
@@ -15,10 +13,10 @@ test_that("em_optimize runs on two-channel debarcoded data", {
 
   fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
                               levels = 8, opt = "mixture",
-                              subsample = 5000)
+                              subsample = 10000)
   fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A",
                               levels = 6, opt = "mixture",
-                              subsample = 5000)
+                              subsample = 10000)
 
   fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
   fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
@@ -29,6 +27,6 @@ test_that("em_optimize runs on two-channel debarcoded data", {
   expect_true("clustering" %in% names(fcb@barcodes[["wells"]]))
 
   probs <- fcb@barcodes[["wells"]][["clustering"]][["probabilities"]]
-  expect_equal(nrow(probs), 20000)
+  expect_equal(nrow(probs), nrow(jurkatFCB))
   expect_equal(ncol(probs), 48)
 })

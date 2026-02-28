@@ -5,7 +5,7 @@
 \alias{jurkatFCB_std}
 \title{External Standard for the jurkatFCB Dataset}
 \format{
-An object of class \code{"flowFrame"} with 2,000 cells and 16
+An object of class \code{"flowFrame"} with 500 cells and 16
   channels; see \code{\link[flowCore]{flowFrame-class}}.
 }
 \usage{

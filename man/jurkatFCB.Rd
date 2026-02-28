@@ -5,7 +5,7 @@
 \alias{jurkatFCB}
 \title{48 Jurkat Samples Barcoded using Fluorescent Cell Barcoding}
 \format{
-An object of class \code{"flowFrame"} with 191,233 cells and 16
+An object of class \code{"flowFrame"} with 24,000 cells and 16
   channels; see \code{\link[flowCore]{flowFrame-class}}.
 }
 \usage{
