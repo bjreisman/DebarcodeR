@@ -17,7 +17,7 @@ assign_fcbFlowSet <- function(fcbFlowSet,
                                 likelihoodcut = 8 ,
                                 ambiguitycut = 0.02){
 
-  if (class(fcbFlowSet) != "fcbFlowSet") {
+  if (!inherits(fcbFlowSet, "fcbFlowSet")) {
     stop("Input must be a fcbFlowSet")
   }
 

@@ -41,7 +41,7 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
 
 
   # match.arg1 here for options and distributions (normal, skew.normal) - dist and opt
-  if (!any(class(fcbFlowFrame) == "fcbFlowFrame")) {
+  if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
     stop("Input must be an object of class fcbFlowFrame")
   }
 

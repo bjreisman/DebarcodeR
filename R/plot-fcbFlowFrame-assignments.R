@@ -9,7 +9,7 @@
 #' @import ggplot2 ggnewscale scales ggforce
 plot.fcbflowframe <- function(fcbFlowFrame, plot = "assignments", seed = 1) {
 
-  if (class(fcbFlowFrame) != "fcbFlowFrame") {
+  if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
     stop("Input must be a fcbFlowFrame")
   }
   barcodes <- fcbFlowFrame@barcodes[!(names(fcbFlowFrame@barcodes) == "wells")]

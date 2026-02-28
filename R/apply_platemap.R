@@ -9,11 +9,11 @@
 #' @importFrom dplyr %>% left_join tibble mutate mutate_all
 #' @export
 apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
-  if (class(fcbFlowSet) != "fcbFlowSet") {
+  if (!inherits(fcbFlowSet, "fcbFlowSet")) {
     stop("Input must be a fcbFlowSet")
   }
 
-  if (!any(class(platemap) == "data.frame")) {
+  if (!inherits(platemap, "data.frame")) {
     stop("Input must be a data.frame")
   }
   pData.orig <- pData(fcbFlowSet)

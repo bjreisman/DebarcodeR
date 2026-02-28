@@ -17,7 +17,7 @@ em_optimize <- function(fcbFlowFrame,
                         niter = 1,
                         shrinkage = 0.05) {
 
-  if (class(fcbFlowFrame) != "fcbFlowFrame") {
+  if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
     stop("Input must be a fcbFlowFrame")
   }
   if (verbose) cat("Initializing...\n")

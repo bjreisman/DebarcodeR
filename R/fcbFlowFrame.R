@@ -24,7 +24,7 @@ fcbFlowFrame <- setClass("fcbFlowFrame",
 #' @export
 #' @importClassesFrom flowCore flowFrame
 fcbFlowFrame <- function(x,  barcodes = list()) {
-  if (!any(class(x) == "flowFrame")) {
+  if (!inherits(x, "flowFrame")) {
     stop("x must be an object of class FlowFrame")
     #should maybe leave the possibility of attempting to coerce to flowFrame
   }

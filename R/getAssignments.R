@@ -11,9 +11,9 @@ getAssignments <- function(x, platemap = NULL, simplify = FALSE) {
     assignments <- lapply(assignments, `[[`, "values")
     assignments <- lapply(assignments, as.factor)
   }
-  if (class(x) == "fcbFlowFrame") {
+  if (inherits(x, "fcbFlowFrame")) {
     assignments <- getAssignments.ff(x)
-  } else if (class(x) == "fcbFlowSet") {
+  } else if (inherits(x, "fcbFlowSet")) {
     assignments <- fsApply(x, getAssignments.ff)
   }
   if (!is.null(platemap)) {

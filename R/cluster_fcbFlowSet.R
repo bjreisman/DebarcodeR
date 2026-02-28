@@ -41,7 +41,7 @@ cluster_fcbFlowSet <- function(fcbFlowSet, #flowFrame FCB, output of deskwe_fcbF
 
 
   #validation of inputs -------------------------
-  if (class(fcbFlowSet) != "fcbFlowSet") {
+  if (!inherits(fcbFlowSet, "fcbFlowSet")) {
     stop("Input must be a fcbFlowSet")
   }
 

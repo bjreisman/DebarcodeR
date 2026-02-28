@@ -29,9 +29,11 @@ deskew_fcbFlowSet <- function(fcbFlowSet,
 
 
   #validation of inputs -------------------------
-  if (class(fcbFlowSet) == "flowSet") {
+  if (inherits(fcbFlowSet, "fcbFlowSet")) {
+    # already correct class, proceed
+  } else if (inherits(fcbFlowSet, "flowSet")) {
     fcbFlowSet <- fcbFlowSet(fcbFlowSet)
-  } else if (class(fcbFlowSet) != "fcbFlowSet") {
+  } else {
     stop("Input must be a flowSet or fcbFlowSet")
   }
 

@@ -22,7 +22,7 @@
 #' @export
 #' @importClassesFrom flowCore flowFrame
 fcbFlowSet <- function(x) {
-  if (!any(class(x) == "flowSet")) {
+  if (!inherits(x, "flowSet")) {
     stop("x must be an object of class FlowFrame")
     #should maybe leave the possibility of attempting to coerce to flowFrame
   }

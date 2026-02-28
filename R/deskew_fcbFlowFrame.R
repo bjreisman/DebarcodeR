@@ -29,9 +29,11 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
 
 
   #validation of inputs -------------------------
-  if (class(fcbFlowFrame) == "flowFrame") {
+  if (inherits(fcbFlowFrame, "fcbFlowFrame")) {
+    # already correct class, proceed
+  } else if (inherits(fcbFlowFrame, "flowFrame")) {
     fcbFlowFrame <- fcbFlowFrame(fcbFlowFrame)
-  } else if (class(fcbFlowFrame) != "fcbFlowFrame") {
+  } else {
     stop("Input must be a flowFrame or fcbFlowFrame")
   }
 
@@ -52,7 +54,7 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
   # uptake sample extracted
   if (is.null(uptake)) {
     uptake = janitor::clean_names(as.data.frame(fcbFlowFrame@uptake.ff@exprs))
-  } else if (class(uptake) %in% c("flowFrame", "fcbFlowFrame")) {
+  } else if (inherits(uptake, "flowFrame")) {
     uptake = janitor::clean_names(as.data.frame(uptake@exprs))
   } else {
     stop("Uptake control must be of class 'flowFrame'")

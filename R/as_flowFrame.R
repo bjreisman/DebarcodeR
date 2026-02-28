@@ -17,7 +17,7 @@ setGeneric("as.flowFrame", function(x, ...) {
 #' @export
 setMethod("as.flowFrame", "fcbFlowFrame", function(x, ...) {
 
-  if (!any(class(x) == "fcbFlowFrame")) {
+  if (!inherits(x, "fcbFlowFrame")) {
     stop("Input must be an object of class fcbFlowFrame")
   }
   x@barcoded.ff

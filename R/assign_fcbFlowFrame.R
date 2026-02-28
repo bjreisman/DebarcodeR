@@ -17,7 +17,7 @@ assign_fcbFlowFrame <- function(fcbFlowFrame,
                                 likelihoodcut = 8 ,
                                 ambiguitycut = 0.02) {
 
-  if (class(fcbFlowFrame) != "fcbFlowFrame") {
+  if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
     stop("Input must be a fcbFlowFrame")
   }
 
