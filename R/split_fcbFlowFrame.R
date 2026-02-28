@@ -1,3 +1,30 @@
+#' Shared split logic for fcbFlowFrame and flowFrame methods
+#'
+#' Collapses a list of assignment factors into a single factor, splits a
+#' flowFrame by that factor, updates pData with the barcoding level columns,
+#' and wraps the result in an fcbFlowSet.
+#'
+#' @param x A flowFrame object.
+#' @param f A list of assignment factors (from \code{\link{getAssignments}}).
+#' @param flowSet Logical, whether to return a flowSet (default TRUE).
+#' @return An fcbFlowSet with each flowFrame named by assignment level.
+#' @keywords internal
+split_by_assignments <- function(x, f, flowSet) {
+  f.df <- as.data.frame(f)
+  ##FIX ME: add check to make sure none of the factor levels have a "." in them
+  f.collapsed <- as.factor(apply(f.df, 1, paste0, collapse = "."))
+  x.split <- split(x, as.factor(f.collapsed), flowSet = flowSet)
+  if (flowSet) {
+    #update pData with barcoding levels
+    pData.orig <- pData(x.split)
+    pData.new <- as.data.frame(do.call(rbind, strsplit(pData.orig$name, "\\.")))
+    colnames(pData.new) <- colnames(f.df)
+    rownames(pData.new) <- rownames(pData.orig)
+    pData(x.split) <- pData.new
+  }
+  return(fcbFlowSet(x.split))
+}
+
 #' Split an fcbFlowFrame into an fcbFlowSet by assignments
 #'
 #' Splits an fcbFlowFrame into separate flowFrames based on barcode
@@ -23,23 +50,7 @@ setMethod("split",
                                 flowSet = TRUE,
                                 merge.na = TRUE,
                                 ...) {
-
-            # based off of the standard flowCore split method with some fine tuning
-            f.df <- as.data.frame(f)
-            ##FIX ME: add check to make sure none of the factor levels have a "." in them
-            f.collapsed <- as.factor(apply(f.df, 1, paste0, collapse = "."))
-            x <- as(x, "flowFrame")
-            x.split <- split(x, as.factor(f.collapsed), flowSet = flowSet)
-            if (flowSet) {
-              #update pData with barcoding levels
-              pData.orig <- pData(x.split)
-              pData.new <- as.data.frame(do.call(rbind, strsplit(pData.orig$name, "\\.")))
-              colnames(pData.new) <- colnames(f.df)
-              rownames(pData.new) <- rownames(pData.orig)
-              pData(x.split) <- pData.new
-            }
-
-            return(fcbFlowSet(x.split))
+            split_by_assignments(as(x, "flowFrame"), f, flowSet)
           }
 )
 
@@ -117,22 +128,6 @@ setMethod("split",
                                 flowSet = TRUE,
                                 merge.na = TRUE,
                                 ...) {
-
-            # based off of the standard flowCore split method with some fine tuning
-            f.df <- as.data.frame(f)
-            ##FIX ME: add check to make sure none of the factor levels have a "." in them
-            f.collapsed <- as.factor(apply(f.df, 1, paste0, collapse = "."))
-            x <- as(x, "flowFrame")
-            x.split <- split(x, as.factor(f.collapsed), flowSet = flowSet)
-            if (flowSet) {
-              #update pData with barcoding levels
-              pData.orig <- pData(x.split)
-              pData.new <- as.data.frame(do.call(rbind, strsplit(pData.orig$name, "\\.")))
-              colnames(pData.new) <- colnames(f.df)
-              rownames(pData.new) <- rownames(pData.orig)
-              pData(x.split) <- pData.new
-            }
-
-            return(fcbFlowSet(x.split))
+            split_by_assignments(x, f, flowSet)
           }
 )
