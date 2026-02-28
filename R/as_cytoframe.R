@@ -10,6 +10,15 @@
 #' @param x An \code{fcbFlowFrame} object.
 #' @param ... Additional arguments (not used).
 #' @return A \code{cytoframe} object.
+#' @seealso \code{\link{as.cytoset}} to convert an fcbFlowSet,
+#'   \code{\link{as.flowFrame}} for the base flowCore equivalent
+#' @examples
+#' \dontrun{
+#' # Requires flowWorkspace
+#' data(jurkatFCB)
+#' fcb <- fcbFlowFrame(jurkatFCB)
+#' cf  <- as.cytoframe(fcb)
+#' }
 #' @export
 #' @import methods
 setGeneric("as.cytoframe", function(x, ...) {
@@ -36,6 +45,15 @@ setMethod("as.cytoframe", "fcbFlowFrame", function(x, ...) {
 #' @param x An \code{fcbFlowSet} object.
 #' @param ... Additional arguments (not used).
 #' @return A \code{cytoset} object.
+#' @seealso \code{\link{as.cytoframe}} to convert a single fcbFlowFrame
+#' @examples
+#' \dontrun{
+#' # Requires flowWorkspace
+#' data(jurkatFCB)
+#' library(flowCore)
+#' fcbfs <- fcbFlowSet(flowSet(list(sample1 = jurkatFCB)))
+#' cs    <- as.cytoset(fcbfs)
+#' }
 #' @export
 #' @import methods
 setGeneric("as.cytoset", function(x, ...) {

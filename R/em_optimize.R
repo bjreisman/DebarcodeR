@@ -12,8 +12,23 @@
 #' @param niter Integer, number of EM iterations (default 1).
 #' @param shrinkage Numeric, fraction of simulated data for shrinkage regularization
 #'   (default 0.05). Set to 0 to disable.
-#' @return An fcbFlowFrame with a "wells" entry in the barcodes slot containing
-#'   multivariate clustering probabilities.
+#' @return An fcbFlowFrame with a \code{"wells"} entry in the barcodes slot
+#'   containing multivariate clustering probabilities. Pass \code{"wells"} as
+#'   the \code{channel} argument to \code{\link{assign_fcbFlowFrame}} to
+#'   convert these probabilities into discrete well assignments.
+#' @seealso \code{\link{assign_fcbFlowFrame}} for the assignment step (use
+#'   \code{channel = "wells"}), \code{\link{cluster_fcbFlowFrame}} for the
+#'   preceding univariate clustering
+#' @examples
+#' \dontrun{
+#' # Requires all barcoding channels deskewed, clustered, and assigned
+#' # See deskew_fcbFlowFrame(), cluster_fcbFlowFrame(), assign_fcbFlowFrame()
+#' fcb <- em_optimize(fcb, niter = 3)
+#'
+#' # Then assign well labels from the multivariate model
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "wells",
+#'                            likelihoodcut = 12, ambiguitycut = 0.05)
+#' }
 #' @export
 #' @import mclust
 #' @importFrom data.table tstrsplit

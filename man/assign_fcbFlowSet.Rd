@@ -9,17 +9,23 @@ assign_fcbFlowSet(fcbFlowSet, channel, likelihoodcut = 8, ambiguitycut = 0.02)
 \arguments{
 \item{fcbFlowSet}{An fcbFlowSet object with deskewing and clustering completed.}
 
-\item{channel}{The name (string) of the channel that has been corrected and clustered.}
+\item{channel}{The name (string) of the channel to assign.}
 
 \item{likelihoodcut}{Numeric, a likelihood cutoff for discarding unlikely cells.
-Cells less than 1/k as likely as the most likely cell from that population are unassigned.}
+Cells less than \code{1/likelihoodcut} as likely as the most likely cell from
+that population are left unassigned (default 8).}
 
-\item{ambiguitycut}{Numeric from 0 to 1, threshold below which to discard ambiguous cells.
-E.g., 0.02 discards cells with more than 2\% chance of originating from another population.}
+\item{ambiguitycut}{Numeric from 0 to 1, threshold below which to leave cells
+unassigned. E.g., \code{0.02} unassigns cells with more than 2\% chance of
+originating from another population (default 0.02).}
 }
 \value{
 An fcbFlowSet object with assignment slots populated.
 }
 \description{
-Assign cells to barcoding levels for a fcbFlowSet
+Applies \code{\link{assign_fcbFlowFrame}} to each frame in an fcbFlowSet.
+}
+\seealso{
+\code{\link{assign_fcbFlowFrame}} for single-frame processing,
+  \code{\link{cluster_fcbFlowSet}} for the preceding step
 }

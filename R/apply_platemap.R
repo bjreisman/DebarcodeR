@@ -1,10 +1,35 @@
-#' Updates pData and filenames with well assignments from platemap
+#' Apply a plate map to a debarcoded flowSet
 #'
-#' @param fcbFlowSet debarcoded flowframe(s)
-#' @param platemap data.frame, with the well assignments
-#' @param drop0 logical, drop unassigned events, default = FALSE
-#' @param prefix character, file prefix for new FCS files, if not specifed, will pull from FCS file $FIL keyword
-#' @return an fcbFlowSet object with updated names and pData
+#' Joins barcoding level assignments to human-readable well names, updates
+#' \code{pData}, and renames each flowFrame to \code{<prefix>_<well>}.
+#'
+#' @param fcbFlowSet An fcbFlowSet produced by \code{\link[base]{split}}.
+#' @param platemap A data.frame mapping barcoding level combinations to well
+#'   names.  Must contain a \code{well} column plus one column per barcoding
+#'   channel (using cleaned names as produced by \code{janitor::clean_names}).
+#' @param drop0 Logical. If \code{TRUE}, drop unassigned (level 0) cells.
+#'   Default \code{FALSE} concatenates all unassigned cells into a single
+#'   \code{"Unassigned"} flowFrame.
+#' @param prefix Character, prefix for output FCS filenames.  If \code{NA}
+#'   (default), the prefix is taken from the \code{$FILENAME} keyword in
+#'   each FCS file.
+#' @return An fcbFlowSet with updated \code{sampleNames} and \code{pData},
+#'   where each sample is named \code{<prefix>_<well>}.
+#' @seealso \code{\link{getAssignments}} and \code{\link[base]{split}} for
+#'   the preceding steps
+#' @examples
+#' \dontrun{
+#' # Build a platemap: Pacific Blue (8 levels) x Pacific Orange (6 levels)
+#' myplatemap <- data.frame(
+#'   pacific_blue_a   = as.character(rep(1:8, times = 6)),
+#'   pacific_orange_a = as.character(rep(1:6, each  = 8)),
+#'   well             = paste0(rep(LETTERS[1:8], times = 6),
+#'                             formatC(rep(1:6, each = 8), width = 2, flag = "0"))
+#' )
+#'
+#' fcbfs <- apply_platemap(fcbfs, myplatemap, prefix = "Jurkat_FCB")
+#' sampleNames(fcbfs)
+#' }
 #' @import flowCore janitor
 #' @importFrom dplyr left_join mutate across everything if_else
 #' @export

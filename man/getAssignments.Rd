@@ -9,13 +9,35 @@ getAssignments(x, platemap = NULL, simplify = FALSE)
 \arguments{
 \item{x}{An fcbFlowFrame or fcbFlowSet that has been assigned.}
 
-\item{platemap}{Data frame, a lookup table from barcoding levels to well assignments (optional).}
+\item{platemap}{Data frame, a lookup table from barcoding levels to well
+assignments (optional; not yet implemented).}
 
-\item{simplify}{Logical, return factor instead of list (not yet implemented).}
+\item{simplify}{Logical, return a single factor rather than a list
+(not yet implemented; default FALSE).}
 }
 \value{
-A list of factors, one for each barcoding channel that has been assigned.
+A named list of factors, one per barcoding channel that has been
+  assigned.  The \code{"wells"} entry (from \code{\link{em_optimize}}) is
+  excluded — use \code{channel = "wells"} in \code{assign_fcbFlowFrame}
+  to include multivariate well labels.
 }
 \description{
-Extract assignments from an fcbFlowFrame or fcbFlowSet
+Returns the discrete cell-level assignments as a named list of factors,
+one per barcoding channel.  The result is suitable for passing directly
+to \code{\link{split}} to generate one flowFrame per barcode combination.
+}
+\examples{
+\dontrun{
+# After all pipeline steps are complete:
+assignments <- getAssignments(fcb)
+# assignments is a named list of factors, e.g.:
+# $`Pacific Blue-A`   : factor with levels 0..8
+# $`Pacific Orange-A` : factor with levels 0..6
+fcbfs <- split(fcb, assignments)
+}
+}
+\seealso{
+\code{\link{assign_fcbFlowFrame}} to generate assignments,
+  \code{\link[base]{split}} to split data by the returned factors,
+  \code{\link{apply_platemap}} to map level combinations to well names
 }

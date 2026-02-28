@@ -22,9 +22,22 @@
 \item{...}{Additional arguments (not used).}
 }
 \value{
-An fcbFlowSet with each flowFrame named by assignment level.
+An fcbFlowSet with each flowFrame named by assignment level,
+  and pData columns for each barcoding channel.
 }
 \description{
 Splits an fcbFlowFrame into separate flowFrames based on barcode
 assignments, returned as an fcbFlowSet with updated pData.
+}
+\examples{
+\dontrun{
+# After the full pipeline (deskew -> cluster -> assign):
+assignments <- getAssignments(fcb)
+fcbfs <- split(fcb, assignments)
+pData(fcbfs)  # one row per barcode combination
+}
+}
+\seealso{
+\code{\link{getAssignments}} to generate \code{f},
+  \code{\link{apply_platemap}} to rename wells after splitting
 }

@@ -45,3 +45,28 @@ An fcbFlowFrame with barcode slot populated for the specified channel.
 \description{
 Corrects morphology based on scatter or uptake control for fcbFlowFrame
 }
+\examples{
+\dontrun{
+data(jurkatFCB)
+library(flowCore)
+
+# Create an external standard (single-well uptake control)
+std_filter <- expressionFilter(`row` == 1 & `col` == 1, filterId = "std")
+jurkatFCB_std <- Subset(jurkatFCB, std_filter)
+
+# Deskew — APC-H7-A is the internal standard dye channel
+fcb <- fcbFlowFrame(jurkatFCB)
+fcb <- deskew_fcbFlowFrame(
+  fcb,
+  uptake     = jurkatFCB_std,
+  channel    = "Pacific Blue-A",
+  predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+)
+fcb
+}
+}
+\seealso{
+\code{\link{cluster_fcbFlowFrame}} for the next pipeline step,
+  \code{\link{deskew_fcbFlowSet}} to process an entire flowSet,
+  \code{\link{morphology_corr.earth}} for details on the default method
+}

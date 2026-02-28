@@ -31,3 +31,15 @@ Requires the \code{flowWorkspace} package to be installed.
 \item \code{as.cytoset(fcbFlowSet)}: Coerce an fcbFlowSet to a cytoset
 
 }}
+\examples{
+\dontrun{
+# Requires flowWorkspace
+data(jurkatFCB)
+library(flowCore)
+fcbfs <- fcbFlowSet(flowSet(list(sample1 = jurkatFCB)))
+cs    <- as.cytoset(fcbfs)
+}
+}
+\seealso{
+\code{\link{as.cytoframe}} to convert a single fcbFlowFrame
+}

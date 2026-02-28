@@ -2,22 +2,48 @@
 % Please edit documentation in R/apply_platemap.R
 \name{apply_platemap}
 \alias{apply_platemap}
-\title{Updates pData and filenames with well assignments from platemap}
+\title{Apply a plate map to a debarcoded flowSet}
 \usage{
 apply_platemap(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA)
 }
 \arguments{
-\item{fcbFlowSet}{debarcoded flowframe(s)}
+\item{fcbFlowSet}{An fcbFlowSet produced by \code{\link[base]{split}}.}
 
-\item{platemap}{data.frame, with the well assignments}
+\item{platemap}{A data.frame mapping barcoding level combinations to well
+names.  Must contain a \code{well} column plus one column per barcoding
+channel (using cleaned names as produced by \code{janitor::clean_names}).}
 
-\item{drop0}{logical, drop unassigned events, default = FALSE}
+\item{drop0}{Logical. If \code{TRUE}, drop unassigned (level 0) cells.
+Default \code{FALSE} concatenates all unassigned cells into a single
+\code{"Unassigned"} flowFrame.}
 
-\item{prefix}{character, file prefix for new FCS files, if not specifed, will pull from FCS file $FIL keyword}
+\item{prefix}{Character, prefix for output FCS filenames.  If \code{NA}
+(default), the prefix is taken from the \code{$FILENAME} keyword in
+each FCS file.}
 }
 \value{
-an fcbFlowSet object with updated names and pData
+An fcbFlowSet with updated \code{sampleNames} and \code{pData},
+  where each sample is named \code{<prefix>_<well>}.
 }
 \description{
-Updates pData and filenames with well assignments from platemap
+Joins barcoding level assignments to human-readable well names, updates
+\code{pData}, and renames each flowFrame to \code{<prefix>_<well>}.
+}
+\examples{
+\dontrun{
+# Build a platemap: Pacific Blue (8 levels) x Pacific Orange (6 levels)
+myplatemap <- data.frame(
+  pacific_blue_a   = as.character(rep(1:8, times = 6)),
+  pacific_orange_a = as.character(rep(1:6, each  = 8)),
+  well             = paste0(rep(LETTERS[1:8], times = 6),
+                            formatC(rep(1:6, each = 8), width = 2, flag = "0"))
+)
+
+fcbfs <- apply_platemap(fcbfs, myplatemap, prefix = "Jurkat_FCB")
+sampleNames(fcbfs)
+}
+}
+\seealso{
+\code{\link{getAssignments}} and \code{\link[base]{split}} for
+  the preceding steps
 }

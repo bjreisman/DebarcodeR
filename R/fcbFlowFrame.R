@@ -27,7 +27,12 @@ fcbFlowFrame <- setClass("fcbFlowFrame",
 #' @param x A \code{flowFrame} or \code{cytoframe} object.
 #' @param barcodes A list of barcode data (default: empty list).
 #' @return An object of class \code{fcbFlowFrame}.
-#' @seealso \code{\link{as.cytoframe}} for converting back to cytoframe
+#' @seealso \code{\link{deskew_fcbFlowFrame}} to begin the debarcoding pipeline,
+#'   \code{\link{as.flowFrame}} and \code{\link{as.cytoframe}} for coercion
+#' @examples
+#' data(jurkatFCB)
+#' fcb <- fcbFlowFrame(jurkatFCB)
+#' fcb
 #' @export
 fcbFlowFrame <- function(x, barcodes = list()) {
   if (inherits(x, "cytoframe")) {

@@ -19,7 +19,17 @@
 #'
 #' @param x A \code{flowSet} or \code{cytoset} object.
 #' @return An object of class \code{fcbFlowSet}.
-#' @seealso \code{\link{as.cytoset}} for converting back to cytoset
+#' @seealso \code{\link{split}} to produce an fcbFlowSet from an assigned
+#'   fcbFlowFrame, \code{\link{as.cytoset}} for coercion back to cytoset
+#' @examples
+#' \dontrun{
+#' # fcbFlowSet is normally created via split(); direct construction is also
+#' # possible if you already have a flowSet:
+#' data(jurkatFCB)
+#' library(flowCore)
+#' fs <- flowSet(list(sample1 = jurkatFCB))
+#' fcbfs <- fcbFlowSet(fs)
+#' }
 #' @export
 fcbFlowSet <- function(x) {
   if (inherits(x, "cytoset")) {

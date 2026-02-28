@@ -31,3 +31,15 @@ Requires the \code{flowWorkspace} package to be installed.
 \item \code{as.cytoframe(fcbFlowFrame)}: Coerce an fcbFlowFrame to a cytoframe
 
 }}
+\examples{
+\dontrun{
+# Requires flowWorkspace
+data(jurkatFCB)
+fcb <- fcbFlowFrame(jurkatFCB)
+cf  <- as.cytoframe(fcb)
+}
+}
+\seealso{
+\code{\link{as.cytoset}} to convert an fcbFlowSet,
+  \code{\link{as.flowFrame}} for the base flowCore equivalent
+}

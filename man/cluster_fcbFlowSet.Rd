@@ -17,34 +17,38 @@ cluster_fcbFlowSet(
 )
 }
 \arguments{
-\item{fcbFlowSet}{a fcbFlowSet object with barcoded flowframe and uptake flowframe post deskewing (at least one barcodes slot filled)}
+\item{fcbFlowSet}{An fcbFlowSet object post deskewing (at least one channel in the barcodes slot).}
 
-\item{channel}{The name (string) of the channel to be clustered}
+\item{channel}{The name (string) of the channel to be clustered.}
 
-\item{levels}{integer, the number of barcoding intensities present in the vector}
+\item{levels}{Integer, the number of barcoding intensities present in the channel.}
 
-\item{opt}{string, either "mixture" (default) for gaussian mixture modeling, or "fisher" for fisher-jenks natural breaks optimization}
+\item{opt}{String: \code{"mixture"} (default) for Gaussian mixture modeling,
+or \code{"fisher"} for Fisher-Jenks natural breaks.}
 
-\item{dist}{string in c("Normal, Skew.normal, Tdist"), passed to mixsmsn}
+\item{dist}{String, one of \code{c("Normal", "Skew.normal", "Tdist")}, passed
+to \code{mixsmsn::smsn.mix}. Ignored for \code{opt = "fisher"}.}
 
-\item{subsample}{Integer, number of cells to subsample, defaults to 10,000}
+\item{subsample}{Integer, number of cells to subsample for model fitting
+(default 10000).}
 
-\item{trim}{numberic between 0, 1; used to trim the upper and lower extremes to exlcude outliers (eg. trim = 0.01 exludes most extreme 1\% of data)}
+\item{trim}{Numeric between 0 and 1; trims the upper and lower extremes
+to exclude outliers (default 0).}
 
-\item{ret.model}{Option to retain the model for deskewing}
+\item{ret.model}{Logical, whether to retain the fitted model (default TRUE).}
 
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI}
+\item{updateProgress}{Callback function used in a Shiny context to report
+progress (default NULL).}
 }
 \value{
-a fcbFlowFrame with deskewed barcodes slot and clustering slot with a matrix of probabilities, with ncol = levels, and nrow = legnth(vec).
-If gaussian mixture modeling is used the probailities correspond to the probability
-of the cell originaiting that level under the distrubtion specified by the mixture model
-If jenks natural breaks optimization is used, the probability is estimated empirically based on a histogram
+An fcbFlowSet with clustering slots populated for all frames.
 }
 \description{
 This function allows you to calculate the probability of a cell originating from a given population using
 either gaussian mixture modeling or jenks natural breaks classification
 }
 \seealso{
-\code{\link{deskew_fcbFlowFrame}}
+\code{\link{cluster_fcbFlowFrame}} for single-frame processing,
+  \code{\link{deskew_fcbFlowSet}} for the preceding step,
+  \code{\link{assign_fcbFlowSet}} for the next step
 }

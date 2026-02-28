@@ -18,36 +18,57 @@ cluster_fcbFlowFrame(
 )
 }
 \arguments{
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing (at least one barcodes slot filled)}
+\item{fcbFlowFrame}{An fcbFlowFrame object post deskewing (at least one channel in the barcodes slot).}
 
-\item{channel}{The name (string) of the channel to be clustered}
+\item{channel}{The name (string) of the channel to be clustered.}
 
-\item{levels}{integer, the number of barcoding intensities present in the vector}
+\item{levels}{Integer, the number of barcoding intensities present in the channel.}
 
-\item{opt}{string, either "mixture" (default) for gaussian mixture modeling, or "fisher" for fisher-jenks natural breaks optimization, or "manual.breaks" for manual specification of breakpoints}
+\item{opt}{String: \code{"mixture"} (default) for Gaussian mixture modeling,
+\code{"fisher"} for Fisher-Jenks natural breaks, or \code{"manual.breaks"}
+for manually specified breakpoints.}
 
-\item{dist}{string in c("Normal, Skew.normal, Tdist"), passed to mixsmsn}
+\item{dist}{String, one of \code{c("Normal", "Skew.normal", "Tdist")}, passed
+to \code{mixsmsn::smsn.mix}. Ignored for \code{opt = "fisher"} and
+\code{opt = "manual.breaks"}.}
 
-\item{subsample}{Integer, number of cells to subsample, defaults to 10,000}
+\item{subsample}{Integer, number of cells to subsample for model fitting
+(default 3000).}
 
-\item{trim}{numberic between 0, 1; used to trim the upper and lower extremes to exlcude outliers (eg. trim = 0.01 exludes most extreme 1\% of data)}
+\item{trim}{Numeric between 0 and 1; trims the upper and lower extremes
+to exclude outliers. E.g., \code{trim = 0.01} excludes the most extreme
+1\% of cells (default 0).}
 
-\item{ret.model}{Option to retain the model for deskewing}
+\item{ret.model}{Logical, whether to retain the fitted model (default TRUE).}
 
-\item{manbreaks}{Vector, length levels + 1, used to specifiy manual breakpoints for levels}
+\item{manbreaks}{Numeric vector of length \code{levels + 1} specifying manual
+breakpoints; required when \code{opt = "manual.breaks"}.}
 
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI}
+\item{updateProgress}{Callback function used in a Shiny context to report
+progress (default NULL).}
 }
 \value{
-a fcbFlowFrame with deskewed barcodes slot and clustering slot with a matrix of probabilities, with ncol = levels, and nrow = legnth(vec).
-If gaussian mixture modeling is used the probailities correspond to the probability
-of the cell originaiting that level under the distrubtion specified by the mixture model
-If jenks natural breaks optimization is used, the probability is estimated empirically based on a histogram
+An fcbFlowFrame with the clustering slot populated for the specified
+  channel. The slot contains a probability matrix with \code{nrow = ncells}
+  and \code{ncol = levels}. For Gaussian mixture modeling, probabilities
+  reflect each cell's probability of originating from each level under the
+  fitted distribution. For Jenks/manual breaks, probabilities are estimated
+  empirically from per-level histograms.
 }
 \description{
 This function allows you to calculate the probability of a cell originating from a given population using
 either gaussian mixture modeling or jenks natural breaks classification
 }
+\examples{
+\dontrun{
+# Requires a deskewed fcbFlowFrame — see deskew_fcbFlowFrame()
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",   levels = 8)
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+fcb
+}
+}
 \seealso{
-\code{\link{deskew_fcbFlowFrame}}
+\code{\link{deskew_fcbFlowFrame}} for the preceding pipeline step,
+  \code{\link{assign_fcbFlowFrame}} for the next pipeline step,
+  \code{\link{cluster_fcbFlowSet}} to process an entire flowSet
 }

@@ -34,6 +34,12 @@ Each element is named by channel and contains sublists for
 \code{deskewing}, \code{clustering}, and \code{assignment}.}
 }}
 
+\examples{
+data(jurkatFCB)
+fcb <- fcbFlowFrame(jurkatFCB)
+fcb
+}
 \seealso{
-\code{\link{as.cytoframe}} for converting back to cytoframe
+\code{\link{deskew_fcbFlowFrame}} to begin the debarcoding pipeline,
+  \code{\link{as.flowFrame}} and \code{\link{as.cytoframe}} for coercion
 }

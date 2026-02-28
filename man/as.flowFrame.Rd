@@ -19,9 +19,21 @@ A \code{flowFrame} object.
 }
 \description{
 Generic function for coercing flowFrame-like objects to flowFrame.
+The \code{@barcodes} slot is dropped; this is a one-way extraction of
+the expression data.
 }
 \section{Functions}{
 \itemize{
 \item \code{as.flowFrame(fcbFlowFrame)}: Coerce an fcbFlowFrame to a flowFrame
 
 }}
+\examples{
+data(jurkatFCB)
+fcb <- fcbFlowFrame(jurkatFCB)
+ff  <- as.flowFrame(fcb)
+class(ff)
+}
+\seealso{
+\code{\link{fcbFlowFrame}} to create an fcbFlowFrame,
+  \code{\link{as.cytoframe}} for Cytoverse workflows
+}

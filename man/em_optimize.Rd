@@ -29,11 +29,29 @@ and assignment for all barcoding channels.}
 (default 0.05). Set to 0 to disable.}
 }
 \value{
-An fcbFlowFrame with a "wells" entry in the barcodes slot containing
-  multivariate clustering probabilities.
+An fcbFlowFrame with a \code{"wells"} entry in the barcodes slot
+  containing multivariate clustering probabilities. Pass \code{"wells"} as
+  the \code{channel} argument to \code{\link{assign_fcbFlowFrame}} to
+  convert these probabilities into discrete well assignments.
 }
 \description{
 Refines univariate cluster assignments using a multivariate Gaussian
 mixture model that accounts for correlations between barcoding channels.
 Requires that all channels have been deskewed, clustered, and assigned.
+}
+\examples{
+\dontrun{
+# Requires all barcoding channels deskewed, clustered, and assigned
+# See deskew_fcbFlowFrame(), cluster_fcbFlowFrame(), assign_fcbFlowFrame()
+fcb <- em_optimize(fcb, niter = 3)
+
+# Then assign well labels from the multivariate model
+fcb <- assign_fcbFlowFrame(fcb, channel = "wells",
+                           likelihoodcut = 12, ambiguitycut = 0.05)
+}
+}
+\seealso{
+\code{\link{assign_fcbFlowFrame}} for the assignment step (use
+  \code{channel = "wells"}), \code{\link{cluster_fcbFlowFrame}} for the
+  preceding univariate clustering
 }

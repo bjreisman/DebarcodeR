@@ -2,7 +2,7 @@
 % Please edit documentation in R/assign_fcbFlowFrame.R
 \name{assign_fcbFlowFrame}
 \alias{assign_fcbFlowFrame}
-\title{Defines populations on barcoded datasets}
+\title{Assign cells to barcoding levels}
 \usage{
 assign_fcbFlowFrame(
   fcbFlowFrame,
@@ -12,22 +12,45 @@ assign_fcbFlowFrame(
 )
 }
 \arguments{
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-and clustering \(at least one barcodes slot filled\)}
+\item{fcbFlowFrame}{An fcbFlowFrame with completed deskewing and clustering
+for the target channel.}
 
-\item{channel}{The name \(string\) of the channel that has been corrected and clustered}
+\item{channel}{The name (string) of the channel to assign, or \code{"wells"}
+to assign from the multivariate \code{em_optimize} result.}
 
-\item{likelihoodcut}{numeric, a likelihood cutoff for discarding unlikely cells, less than 1/k as likely
-as the most likely cell from that population}
+\item{likelihoodcut}{Numeric. Cells less than \code{1/likelihoodcut} as
+likely as the most likely cell in their population are left unassigned
+(default 8).}
 
-\item{ambiguitycut}{numeric from 0 to 1, threshhold below which to discard ambigious cells, eg: 0.02,
-discards cells with more than 2\% chance of originating from another population}
+\item{ambiguitycut}{Numeric between 0 and 1. Cells whose highest population
+probability is below \code{1 - ambiguitycut} are left unassigned. E.g.,
+\code{0.02} unassigns cells with more than a 2\% chance of belonging to a
+different population (default 0.02).}
 }
 \value{
-a fcbFlowFrame object with a barcode slot filled with deskewing, clustering, cell assignment as
-a vector of integers from 0:ncol\(probs\), cells assigned a classification of 0 remained unassigned,
-otherwise number corresponds to the barcoding level assignment of that cell
+An fcbFlowFrame with the assignment slot populated for the specified
+  channel. Assigned level values are stored as a character vector; 0 indicates
+  unassigned.
 }
 \description{
-Defines populations on barcoded datasets
+Applies likelihood and ambiguity cutoffs to the probability matrix from
+\code{\link{cluster_fcbFlowFrame}} (or \code{\link{em_optimize}}) to
+discretely assign each cell to a barcoding level.  Unassigned cells are
+given a level of 0 rather than being discarded.
+}
+\examples{
+\dontrun{
+# Requires deskewed and clustered fcbFlowFrame — see cluster_fcbFlowFrame()
+fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
+fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
+
+# After em_optimize(), assign combined well labels
+fcb <- assign_fcbFlowFrame(fcb, channel = "wells",
+                           likelihoodcut = 12, ambiguitycut = 0.05)
+}
+}
+\seealso{
+\code{\link{cluster_fcbFlowFrame}} for the preceding step,
+  \code{\link{em_optimize}} for multivariate refinement before assigning
+  \code{"wells"}, \code{\link{getAssignments}} to extract the result
 }

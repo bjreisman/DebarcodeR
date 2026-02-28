@@ -37,7 +37,17 @@ split_by_assignments <- function(x, f, flowSet) {
 #' @param flowSet Logical, whether to return a flowSet (default TRUE).
 #' @param merge.na Not used.
 #' @param ... Additional arguments (not used).
-#' @return An fcbFlowSet with each flowFrame named by assignment level.
+#' @return An fcbFlowSet with each flowFrame named by assignment level,
+#'   and pData columns for each barcoding channel.
+#' @seealso \code{\link{getAssignments}} to generate \code{f},
+#'   \code{\link{apply_platemap}} to rename wells after splitting
+#' @examples
+#' \dontrun{
+#' # After the full pipeline (deskew -> cluster -> assign):
+#' assignments <- getAssignments(fcb)
+#' fcbfs <- split(fcb, assignments)
+#' pData(fcbfs)  # one row per barcode combination
+#' }
 #' @import flowCore
 #' @export
 setMethod("split",
