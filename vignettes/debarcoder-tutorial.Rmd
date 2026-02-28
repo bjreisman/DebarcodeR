@@ -2,7 +2,7 @@
 title: "DebarcodeR Tutorial"
 author: "Benjamin Reisman"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{DebarcodeR Tutorial}
   %\VignetteEngine{knitr::rmarkdown}

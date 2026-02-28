@@ -1,0 +1,13 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "DebarcodeR: an R package for automated demultiplexing of fluorescent cell barcoded flow cytometry data",
+  author   = c(
+    person("Benjamin", "Reisman"),
+    person("Sierra", "Barone"),
+    person("David", "Earl")
+  ),
+  journal  = "Cytometry Part A",
+  year     = "2021",
+  doi      = "10.1002/cyto.a.24349",
+  url      = "https://doi.org/10.1002/cyto.a.24349"
+)

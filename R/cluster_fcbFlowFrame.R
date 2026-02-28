@@ -114,8 +114,7 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
     if (levels > 1) {
       #?classInt::classIntervals
       mod.int <- classInt::classIntervals(vecss, levels, style = "fisher")   #fisher-jenks (breaks in data)
-      classif <- sapply(vecss, function(x) pracma::findintervals(x, mod.int$brks))
-      classif <- unlist(classif)
+      classif <- findInterval(vecss, mod.int$brks)
       classif <- levels + 1 - classif
       mu.i <- as.numeric(unlist(lapply(split(vecss, classif), median))[-1])
     }

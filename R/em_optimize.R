@@ -59,8 +59,8 @@ em_optimize <- function(fcbFlowFrame,
   deskewed.rep.mat <- kronecker(deskewed.dims.vec, t(rep(1, length(deskewed.dims.vec))))
   deskewed.rep.mat.each <- deskewed.rep.mat
   deskewed.rep.mat.times  <- deskewed.rep.mat
-  deskewed.rep.mat.times[upper.tri(deskewed.rep.mat.times, diag = T)] <- 1
-  deskewed.rep.mat.each[lower.tri(deskewed.rep.mat.times, diag = T)] <- 1
+  deskewed.rep.mat.times[upper.tri(deskewed.rep.mat.times, diag = TRUE)] <- 1
+  deskewed.rep.mat.each[lower.tri(deskewed.rep.mat.times, diag = TRUE)] <- 1
   deskewed.reps <- split(cbind(apply(deskewed.rep.mat.each, 2, prod),
                                apply(deskewed.rep.mat.times, 2, prod)),
                          seq(length(deskewed.dims.vec)))

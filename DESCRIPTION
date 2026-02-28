@@ -49,6 +49,7 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
+    BiocStyle,
     flowWorkspace
 VignetteBuilder: knitr
 Config/testthat/edition: 3

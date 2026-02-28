@@ -75,7 +75,7 @@ assign_fcbFlowFrame <- function(fcbFlowFrame,
     classif[which(likely.sum != 1)] <- unclass
   }
   if (length(channel) > 1) {
-    classif.ls <- data.table::tstrsplit(classif, ".", fixed = TRUE, names = channel, type.convert = T)
+    classif.ls <- data.table::tstrsplit(classif, ".", fixed = TRUE, names = channel, type.convert = TRUE)
     fcbFlowFrame@barcodes[channel] <- mapply(function(bc, assignments) {
       bc[['assignment']][['values']] <- assignments
       bc[['assignment']][['ambiguity']] <- ambiguitycut
