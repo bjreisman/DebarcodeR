@@ -1,0 +1,221 @@
+---
+title: "DebarcodeR Tutorial"
+author: "Benjamin Reisman"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{DebarcodeR Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  eval     = FALSE   # pipeline steps are slow; run interactively
+)
+```
+
+## Overview
+
+DebarcodeR automates the demultiplexing of fluorescent cell barcoded (FCB)
+flow cytometry data.  In FCB, samples are labeled with combinations of
+amine-reactive dyes at varying concentrations before pooling.  After
+acquisition, cells must be "debarcoded" back to their original sample
+of origin.
+
+The DebarcodeR pipeline has four steps:
+
+1. **Deskew** — correct for cell-size-dependent dye uptake using
+   morphology channels (FSC, SSC) and optionally an internal standard
+2. **Cluster** — estimate per-cell probabilities of belonging to each
+   barcoding level using a Gaussian mixture model or natural breaks
+3. **Assign** — discretely assign cells to levels using likelihood and
+   ambiguity cutoffs
+4. **EM optimize** *(optional)* — refine assignments with a multivariate
+   GMM that accounts for correlations between barcoding channels
+
+The output is an `fcbFlowSet` (a subclass of `flowSet`) with one
+`flowFrame` per debarcoded sample, compatible with the full
+flowCore/Cytoverse ecosystem.
+
+```{r libs, eval = TRUE, message = FALSE}
+library(DebarcodeR)
+library(flowCore)
+library(dplyr)
+```
+
+---
+
+## Dataset
+
+The `jurkatFCB` dataset contains 191,233 Jurkat T cells barcoded with:
+
+- **Pacific Blue-A**: 8 levels  
+- **Pacific Orange-A**: 6 levels  
+- **APC-H7-A** (Alexa Fluor 750): 1 level (internal standard)
+
+for a total of 48 samples.  The cells were run in separate FCS files
+and concatenated, with `row` and `col` columns recording each cell's
+original sample of origin.
+
+```{r load-data, eval = TRUE}
+data("jurkatFCB")
+jurkatFCB
+```
+
+We recommend filtering on the internal standard channel (`APC-H7-A`)
+to remove unresponsive cells before debarcoding:
+
+```{r filter-is}
+filter_is  <- expressionFilter(`APC-H7-A` > 2.5, filterId = "ISfilter")
+jurkatFCB  <- Subset(jurkatFCB, filter_is)
+```
+
+---
+
+## External standard
+
+DebarcodeR corrects for dye uptake heterogeneity using an **external
+standard**: a control population stained with a single level of each
+barcoding dye.  Because the tutorial data was acquired sample-by-sample,
+we can extract a single well to serve as the external standard.
+
+```{r ext-std}
+filter_std    <- expressionFilter(`row` == 1 & `col` == 1, filterId = "std")
+jurkatFCB_std <- Subset(jurkatFCB, filter_std)
+```
+
+---
+
+## Step 1: Deskew
+
+`deskew_fcbFlowFrame` fits a regression model (default: MARS via the
+`earth` package) to predict dye uptake from scatter and the internal
+standard channel, then subtracts the predicted component from each cell.
+
+Channel names must be original FCS parameter names (e.g.
+`"Pacific Blue-A"`, not `"pacific_blue_a"`).  Including the internal
+standard (`APC-H7-A`) as a predictor substantially improves correction.
+
+```{r deskew}
+fcb <- fcbFlowFrame(jurkatFCB)
+
+predictors <- c("FSC-A", "SSC-A", "FSC-H", "SSC-H", "FSC-W", "SSC-W", "APC-H7-A")
+
+fcb <- deskew_fcbFlowFrame(fcb,
+                           uptake     = jurkatFCB_std,
+                           channel    = "Pacific Blue-A",
+                           predictors = predictors)
+
+fcb <- deskew_fcbFlowFrame(fcb,
+                           uptake     = jurkatFCB_std,
+                           channel    = "Pacific Orange-A",
+                           predictors = predictors)
+fcb
+```
+
+---
+
+## Step 2: Cluster
+
+`cluster_fcbFlowFrame` fits a Gaussian mixture model (via `mixsmsn`)
+to the deskewed values for each channel to estimate the probability of
+each cell originating from each barcoding level.
+
+```{r cluster}
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",   levels = 8)
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+fcb
+```
+
+---
+
+## Step 3: Multivariate EM optimization *(optional)*
+
+`em_optimize` refines the univariate clustering by fitting a
+multivariate Gaussian mixture model across all barcoding channels.
+This accounts for sample-to-sample correlated uptake variation
+and typically improves well-level separation.
+
+```{r em}
+fcb <- em_optimize(fcb, niter = 5)
+```
+
+---
+
+## Step 4: Assign
+
+`assign_fcbFlowFrame` converts the probability matrix to discrete
+assignments.  Two cutoffs control how conservatively cells are assigned:
+
+- **`likelihoodcut`** (default 8): a cell must be at least
+  1/*k* as probable as the most likely cell in its population.
+- **`ambiguitycut`** (default 0.02): a cell must have a less than 2%
+  chance of originating from any other population.
+
+Unassigned cells receive level 0 rather than being discarded.
+
+```{r assign}
+fcb <- assign_fcbFlowFrame(fcb,
+                           channel       = "wells",
+                           likelihoodcut = 12,
+                           ambiguitycut  = 0.05)
+```
+
+---
+
+## Step 5: Split and apply plate map
+
+`getAssignments` extracts the discrete assignments as a list of factors,
+and `split` divides the flowFrame into one flowFrame per barcode
+combination.
+
+```{r split}
+assignments  <- getAssignments(fcb)
+debarcoded_fs <- split(jurkatFCB, assignments)
+debarcoded_fs
+```
+
+`apply_platemap` renames each sample to a human-readable well label
+using a lookup table mapping level combinations to well identifiers.
+The column names in the platemap must use cleaned names (lowercase with
+underscores, as produced by `janitor::clean_names()`).
+
+```{r platemap}
+myplatemap <- data.frame(
+  pacific_blue_a   = as.character(rep(1:8, times = 6)),
+  pacific_orange_a = as.character(rep(1:6, each  = 8)),
+  well             = paste0(rep(LETTERS[1:8], times = 6),
+                            formatC(rep(1:6, each = 8), width = 2, flag = "0"))
+)
+
+debarcoded_fs <- apply_platemap(debarcoded_fs,
+                                myplatemap,
+                                prefix = "Jurkat_FCB_001")
+sampleNames(debarcoded_fs)
+```
+
+---
+
+## Writing FCS files
+
+The debarcoded `fcbFlowSet` is a standard `flowSet` and can be written
+to disk with `flowCore::write.flowSet`:
+
+```{r write}
+dir.create("debarcoded_output", showWarnings = FALSE)
+write.flowSet(debarcoded_fs, outdir = "debarcoded_output")
+```
+
+---
+
+## Further reading
+
+- Reisman et al. (2021) *DebarcodeR: Automated demultiplexing for
+  fluorescent cell barcoding.* Cytometry A.
+  [doi:10.1002/cyto.a.24363](https://doi.org/10.1002/cyto.a.24363)
+- Krutzik et al. (2006) *Fluorescent cell barcoding in flow cytometry
+  allows high-throughput drug screening and signaling profiling.*
+  Nature Methods.

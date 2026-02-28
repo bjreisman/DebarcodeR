@@ -47,6 +47,7 @@ Suggests:
     knitr,
     rmarkdown,
     flowWorkspace
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 RoxygenNote: 7.3.3
 Collate: 
@@ -72,3 +73,5 @@ Collate:
     'plot-fcbFlowFrame-assignments.R'
     'selectDenseScatterArea.R'
     'split_fcbFlowFrame.R'
+    'utils-barcode-slots.R'
+    'utils-validation.R'
