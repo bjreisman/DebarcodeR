@@ -54,11 +54,8 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
   # Resolve channel name against barcodes slot (which uses original names)
   channel <- resolve_channel(channel, names(fcbFlowFrame@barcodes))
 
-  options <- c("mixture","fisher", "manual.breaks")
-  opt_selected <- match.arg1(opt, options)
-
-  distributions <- c("Normal","Skew.normal","Tdist")
-  dist_selected <- match.arg1(dist, distributions)
+  opt_selected <- match.arg(opt, c("mixture", "fisher", "manual.breaks"))
+  dist_selected <- match.arg(dist, c("Normal", "Skew.normal", "Tdist"))
 
 
   vec <-  fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]][["deskewing"]][["values"]]

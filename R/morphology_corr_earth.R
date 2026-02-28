@@ -30,8 +30,7 @@ morphology_corr.earth <- function(fcb,
                                   subsample = 30e3,
                                   updateProgress = NULL,
                                   ...) {
-  what.options <- c("x", "x + se")
-  what <- match.arg1(what, what.options)
+  what <- match.arg(what, c("x", "x + se"))
 
   if (is.function(updateProgress)) {
     updateProgress(detail = "Training adaptive splines...")}

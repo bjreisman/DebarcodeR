@@ -32,8 +32,7 @@ morphology_corr <- function(fcb, #takes a flowframe_fcb
 
 
   #validation of inputs -------------------------
-  methods <- c("earth", "knijnenburg", "lm")
-  method_selected <- match.arg1(method, methods)
+  method_selected <- match.arg(method, c("earth", "knijnenburg", "lm"))
 
   if (is.null(uptake)) {
     warning("No uptake control provided, using barcoded data to train model,
@@ -209,29 +208,4 @@ morphology_corr <- function(fcb, #takes a flowframe_fcb
 #' Option selector.
 #'
 #' @param arg a choice or a vector of choices
-#' @param choices a character vector of choices
-#'
-#' @return returns the first choice is no choice is made, otherwise returns
-#'  a the choice, or an error if the choice was invaldi
-match.arg1 <- function (arg, choices)
-{
-  if (missing(choices)) {
-    formal.arg <-
-      formals(sys.function(sys.parent()))[[deparse(substitute(arg))]]
-    if (length(formal.arg)==3 && formal.arg[[1]]=="[" &&
-        formal.arg[[3]]==1)
-      formal.arg <- formal.arg[[2]]
-    choices <- eval(formal.arg)
-  }
-  if (all(arg == choices))
-    return(choices[1])
-  i <- pmatch(arg, choices)
-  if (is.na(i))
-    stop(paste("Method should be one of", paste(choices, collapse = ", "),
-               sep = " "))
-  if (length(i) > 1)
-    stop("there is more than one match in match.arg")
-  choices[i]
-}
-
 

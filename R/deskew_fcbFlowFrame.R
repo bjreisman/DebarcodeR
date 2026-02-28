@@ -47,8 +47,7 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
   }
 
 
-  methods <- c("earth", "knijnenburg", "lm")
-  method_selected <- match.arg1(method, methods)
+  method_selected <- match.arg(method, c("earth", "knijnenburg", "lm"))
 
   # Resolve channel and predictor names against actual flowFrame columns
   valid_names <- colnames(fcbFlowFrame)
@@ -144,31 +143,4 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
 return(fcbFlowFrame)
 }
 
-#' Option selector.
-#'
-#' @param arg a choice or a vector of choices
-#' @param choices a character vector of choices
-#'
-#' @return returns the first choice is no choice is made, otherwise returns
-#'  a the choice, or an error if the choice was invaldi
 
-match.arg1 <- function(arg, choices)
-{
-  if (missing(choices)) {
-    formal.arg <-
-      formals(sys.function(sys.parent()))[[deparse(substitute(arg))]]
-    if (length(formal.arg) == 3 && formal.arg[[1]] == "[" &&
-        formal.arg[[3]] == 1)
-      formal.arg <- formal.arg[[2]]
-    choices <- eval(formal.arg)
-  }
-  if (all(arg == choices))
-    return(choices[1])
-  i <- pmatch(arg, choices)
-  if (is.na(i))
-    stop(paste("Choice should be one of", paste(choices, collapse = ", "),
-               sep = " "))
-  if (length(i) > 1)
-    stop("there is more than one match in match.arg")
-  choices[i]
-}
