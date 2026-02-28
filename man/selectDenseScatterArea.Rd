@@ -2,7 +2,7 @@
 % Please edit documentation in R/selectDenseScatterArea.R
 \name{selectDenseScatterArea}
 \alias{selectDenseScatterArea}
-\title{find the area which contains 95\% of the data}
+\title{Select dense scatter area}
 \usage{
 selectDenseScatterArea(
   data,
@@ -11,23 +11,13 @@ selectDenseScatterArea(
 )
 }
 \arguments{
-\item{data}{text}
+\item{data}{Data frame or matrix of flow cytometry data.}
 
-\item{subsample}{text}
+\item{fsc_ssc}{Named character vector with FSC and SSC channel names.}
 
-\item{fsc}{text}
-
-\item{ssc}{text}
-}
-\value{
-some text
+\item{subsample}{Integer, number of cells to subsample for density estimation.}
 }
 \description{
-find the area which contains 95\% of the data
-}
-\examples{
-text
-}
-\seealso{
-text
+Finds the area containing 95\% of cells based on FSC/SSC density,
+used for the Knijnenburg morphology correction method.
 }

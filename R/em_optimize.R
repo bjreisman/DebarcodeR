@@ -1,12 +1,19 @@
-#' Defines populations on barcoded datasets
+#' Multivariate EM optimization of well assignments
 #'
-#' @param fcbFlowFrame a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing, clustering, and assignment
-#' @param ambiguitycut numeric from 0 to 1, threshhold below which to discard ambigious cells, eg: 0.02,
-#'  discards cells with more than 2\% chance of originating from another population
-#' @param subsample number, number of cells to subsample during m step
-#' @return a fcbFlowFrame object with a barcode slot filled with deskewing, clustering, cell assignment as
-#' a vector of integers from 0:ncol(probs), cells assigned a classification of 0 remained unassigned,
-#' otherwise number corresponds to the barcoding level assignment of that cell
+#' Refines univariate cluster assignments using a multivariate Gaussian
+#' mixture model that accounts for correlations between barcoding channels.
+#' Requires that all channels have been deskewed, clustered, and assigned.
+#'
+#' @param fcbFlowFrame An fcbFlowFrame with completed deskewing, clustering,
+#'   and assignment for all barcoding channels.
+#' @param modelName Character, mclust model name (default "VEE").
+#' @param subsample Numeric, number of cells to subsample during M step (default 50000).
+#' @param verbose Logical, print progress messages (default TRUE).
+#' @param niter Integer, number of EM iterations (default 1).
+#' @param shrinkage Numeric, fraction of simulated data for shrinkage regularization
+#'   (default 0.05). Set to 0 to disable.
+#' @return An fcbFlowFrame with a "wells" entry in the barcodes slot containing
+#'   multivariate clustering probabilities.
 #' @export
 #' @import mclust
 #' @importFrom data.table tstrsplit

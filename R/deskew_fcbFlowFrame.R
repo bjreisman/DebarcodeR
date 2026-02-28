@@ -1,14 +1,18 @@
 #' Corrects morphology based on scatter or uptake control for fcbFlowFrame
 #'
-#' @param fcbFlowFrame a fcbFlowFrame object with barcoded flowframe and uptake flowframe, post compensation and preprocessing
-#' @param channel The name (string) of the channel to be corrected, ie. the column name in fcbFlowFrame barcoded.ff exprs
-#' @param method The name of the morphology correction model to use. Choose between earth, lm (linear model), or knijnenburg
-#' @param predictors The vector of channel names to be used to build the regression model
-#' @param subsample Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.
-#' @param ret.model Option to retain the model for deskewing
-#' @param updateProgress used in reactive context (shiny) to return progress information to GUI
+#' @param fcbFlowFrame An fcbFlowFrame or flowFrame object, post compensation and preprocessing.
+#' @param uptake A flowFrame to use as the uptake (external standard) control.
+#'   If NULL (default), the barcoded sample itself is used.
+#' @param channel The name (string) of the channel to be corrected (cleaned column name).
+#' @param method The morphology correction method: "earth" (default), "lm", or "knijnenburg".
+#' @param predictors Character vector of channel names for the regression model.
+#' @param subsample Integer, number of cells to subsample for model fitting (default 20000).
+#' @param ret.model Logical, whether to retain the fitted model (default TRUE).
+#' @param verbose Logical, whether to print progress messages (default FALSE).
+#' @param updateProgress Callback function for Shiny progress updates (default NULL).
+#' @param ... Additional arguments passed to the morphology correction method.
 #'
-#' @return a fcbFlowFrame with barcode slots added for selected channel corrected for predictors chosen
+#' @return An fcbFlowFrame with barcode slot populated for the specified channel.
 #' @import earth janitor
 #' @export
 

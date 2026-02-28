@@ -2,7 +2,7 @@
 % Please edit documentation in R/em_optimize.R
 \name{em_optimize}
 \alias{em_optimize}
-\title{Defines populations on barcoded datasets}
+\title{Multivariate EM optimization of well assignments}
 \usage{
 em_optimize(
   fcbFlowFrame,
@@ -14,18 +14,26 @@ em_optimize(
 )
 }
 \arguments{
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing, clustering, and assignment}
+\item{fcbFlowFrame}{An fcbFlowFrame with completed deskewing, clustering,
+and assignment for all barcoding channels.}
 
-\item{subsample}{number, number of cells to subsample during m step}
+\item{modelName}{Character, mclust model name (default "VEE").}
 
-\item{ambiguitycut}{numeric from 0 to 1, threshhold below which to discard ambigious cells, eg: 0.02,
-discards cells with more than 2\% chance of originating from another population}
+\item{subsample}{Numeric, number of cells to subsample during M step (default 50000).}
+
+\item{verbose}{Logical, print progress messages (default TRUE).}
+
+\item{niter}{Integer, number of EM iterations (default 1).}
+
+\item{shrinkage}{Numeric, fraction of simulated data for shrinkage regularization
+(default 0.05). Set to 0 to disable.}
 }
 \value{
-a fcbFlowFrame object with a barcode slot filled with deskewing, clustering, cell assignment as
-a vector of integers from 0:ncol(probs), cells assigned a classification of 0 remained unassigned,
-otherwise number corresponds to the barcoding level assignment of that cell
+An fcbFlowFrame with a "wells" entry in the barcodes slot containing
+  multivariate clustering probabilities.
 }
 \description{
-Defines populations on barcoded datasets
+Refines univariate cluster assignments using a multivariate Gaussian
+mixture model that accounts for correlations between barcoding channels.
+Requires that all channels have been deskewed, clustered, and assigned.
 }

@@ -2,15 +2,26 @@
 % Please edit documentation in R/as_flowFrame.R
 \name{as.flowFrame}
 \alias{as.flowFrame}
-\title{Generic function for coercing flowFrame like objects to flowFrame}
+\alias{as.flowFrame,fcbFlowFrame-method}
+\title{Coerce to flowFrame}
 \usage{
 as.flowFrame(x, ...)
+
+\S4method{as.flowFrame}{fcbFlowFrame}(x, ...)
 }
 \arguments{
-\item{x}{flowFrame like object}
+\item{x}{An \code{fcbFlowFrame} object.}
 
-\item{...}{other parameters passed to specific methods}
+\item{...}{Not used.}
+}
+\value{
+A \code{flowFrame} object.
 }
 \description{
-Generic function for coercing flowFrame like objects to flowFrame
+Generic function for coercing flowFrame-like objects to flowFrame.
 }
+\section{Functions}{
+\itemize{
+\item \code{as.flowFrame(fcbFlowFrame)}: Coerce an fcbFlowFrame to a flowFrame
+
+}}

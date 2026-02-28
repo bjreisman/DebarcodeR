@@ -18,22 +18,29 @@ deskew_fcbFlowFrame(
 )
 }
 \arguments{
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe, post compensation and preprocessing}
+\item{fcbFlowFrame}{An fcbFlowFrame or flowFrame object, post compensation and preprocessing.}
 
-\item{channel}{The name (string) of the channel to be corrected, ie. the column name in fcbFlowFrame barcoded.ff exprs}
+\item{uptake}{A flowFrame to use as the uptake (external standard) control.
+If NULL (default), the barcoded sample itself is used.}
 
-\item{method}{The name of the morphology correction model to use. Choose between earth, lm (linear model), or knijnenburg}
+\item{channel}{The name (string) of the channel to be corrected (cleaned column name).}
 
-\item{predictors}{The vector of channel names to be used to build the regression model}
+\item{method}{The morphology correction method: "earth" (default), "lm", or "knijnenburg".}
 
-\item{subsample}{Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.}
+\item{predictors}{Character vector of channel names for the regression model.}
 
-\item{ret.model}{Option to retain the model for deskewing}
+\item{subsample}{Integer, number of cells to subsample for model fitting (default 20000).}
 
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI}
+\item{ret.model}{Logical, whether to retain the fitted model (default TRUE).}
+
+\item{verbose}{Logical, whether to print progress messages (default FALSE).}
+
+\item{updateProgress}{Callback function for Shiny progress updates (default NULL).}
+
+\item{...}{Additional arguments passed to the morphology correction method.}
 }
 \value{
-a fcbFlowFrame with barcode slots added for selected channel corrected for predictors chosen
+An fcbFlowFrame with barcode slot populated for the specified channel.
 }
 \description{
 Corrects morphology based on scatter or uptake control for fcbFlowFrame

@@ -2,7 +2,7 @@
 % Please edit documentation in R/doRegressContrained.R
 \name{doRegressConstrained}
 \alias{doRegressConstrained}
-\title{obtain residulas afer monitonically constrained regression}
+\title{Obtain residuals after monotonically constrained regression}
 \usage{
 doRegressConstrained(
   single_level_bc,
@@ -19,35 +19,32 @@ doRegressConstrained(
 )
 }
 \arguments{
-\item{single_level_bc}{text}
+\item{single_level_bc}{Single-level barcoded data.}
 
-\item{fcb_df}{text}
+\item{fcb_df}{Data frame of barcoded flow cytometry data.}
 
-\item{Loc}{text}
+\item{Loc}{Location parameter.}
 
-\item{trans}{text}
+\item{weight}{Weight parameter for regression.}
 
-\item{val3}{text}
+\item{trans}{Transformation parameter.}
 
-\item{constrained_flag}{text}
+\item{fsc_ssc}{Named character vector with FSC and SSC channel names.}
 
-\item{columns}{text}
+\item{val3}{Additional parameter (default NULL).}
 
-\item{monodir}{text}
+\item{constrained_flag}{Flag for constrained regression (default 1).}
 
-\item{cofactor}{text}
+\item{columns}{Column indices to use.}
 
-\item{Weight}{text}
+\item{monodir}{Monotonicity direction constraints.}
+
+\item{cofactor}{Cofactor for transformation.}
 }
 \value{
-some text
+Morphology-corrected values.
 }
 \description{
-obtain residulas afer monitonically constrained regression
-}
-\examples{
-text
-}
-\seealso{
-text
+Implements the Knijnenburg et al. constrained regression approach for
+morphology correction of barcoding channels.
 }

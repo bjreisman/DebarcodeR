@@ -1,13 +1,11 @@
-#' find the area which contains 95\% of the data
+#' Select dense scatter area
 #'
-#' @param data text
-#' @param fsc text
-#' @param ssc text
-#' @param subsample text
-#' @return some text
+#' Finds the area containing 95\% of cells based on FSC/SSC density,
+#' used for the Knijnenburg morphology correction method.
 #'
-#' @seealso text
-#' @examples text
+#' @param data Data frame or matrix of flow cytometry data.
+#' @param fsc_ssc Named character vector with FSC and SSC channel names.
+#' @param subsample Integer, number of cells to subsample for density estimation.
 # fsc_ssc <- c(fsc = 'FSC-A', ssc = 'SSC-A')
 # fsc_ssc[['fsc']]
 #fsc_ssc[['fsc']]

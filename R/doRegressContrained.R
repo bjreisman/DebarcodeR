@@ -1,19 +1,20 @@
-#' obtain residulas afer monitonically constrained regression
+#' Obtain residuals after monotonically constrained regression
 #'
-#' @param single_level_bc text
-#' @param fcb_df text
-#' @param Loc text
-#' @param Weight text
-#' @param trans text
-#' @param val3 text
-#' @param constrained_flag text
-#' @param columns text
-#' @param monodir text
-#' @param cofactor text
-#' @return some text
+#' Implements the Knijnenburg et al. constrained regression approach for
+#' morphology correction of barcoding channels.
 #'
-#' @seealso text
-#' @examples text
+#' @param single_level_bc Single-level barcoded data.
+#' @param fcb_df Data frame of barcoded flow cytometry data.
+#' @param Loc Location parameter.
+#' @param weight Weight parameter for regression.
+#' @param trans Transformation parameter.
+#' @param fsc_ssc Named character vector with FSC and SSC channel names.
+#' @param val3 Additional parameter (default NULL).
+#' @param constrained_flag Flag for constrained regression (default 1).
+#' @param columns Column indices to use.
+#' @param monodir Monotonicity direction constraints.
+#' @param cofactor Cofactor for transformation.
+#' @return Morphology-corrected values.
 
 doRegressConstrained <- function(single_level_bc, fcb_df = NULL,
                                 Loc, weight, trans,
@@ -134,10 +135,18 @@ doRegressConstrained <- function(single_level_bc, fcb_df = NULL,
 #'
 #' @return numeric vector of length nrow(fcb_df) representing the morphology corrected channel
 #'
+#' Build a regression model matrix
+#'
+#' Constructs a matrix defining variable/power combinations for
+#' the constrained regression. Not intended to be called directly.
+#'
+#' @param nrow Integer, number of rows (default 2).
+#' @param ncol Integer, number of columns (default 8).
+#' @param vars Integer vector defining which variable each column uses.
+#' @param powers Numeric vector of power transformations per column.
+#' @return A regression model matrix.
+#'
 #' @seealso \code{\link{selectDenseScatterArea}} \code{\link{doRegressConstrained}}
-#' @examples
-#'
-#'
 regression_model_matrix <- function(nrow = 2, ncol = 8,
                                     vars = c(1, 1, 1, 2, 2, 2, 3, 3),
                                     powers = c(1, 0.5, 2, 1, 0.5, 2, 1, 0.5)){
@@ -151,14 +160,16 @@ regression_model_matrix <- function(nrow = 2, ncol = 8,
 
 
 
-#' Used to build the regression model, not to be called directly by the used
+#' Generate regressors for constrained regression
 #'
+#' Internal function to generate the regressor matrix from data and a
+#' regression model matrix. Not intended to be called directly.
 #'
-#' @return numeric vector of length nrow(fcb_df) representing the morphology corrected channel
+#' @param D Data matrix with scatter and channel values.
+#' @param rm Regression model matrix defining variable/power combinations.
+#' @return A list with components X (design matrix), Y (response), and Bx (basis).
 #'
-#' @seealso  \code{\link{doRegressConstrained}}
-#'
-#'
+#' @seealso \code{\link{doRegressConstrained}} \code{\link{regression_model_matrix}}
 generate_regressors <- function(D, rm){
 
   Y <- D[,3]
@@ -173,14 +184,24 @@ generate_regressors <- function(D, rm){
 }
 
 
-#' Used to build the regression model, not to be called directly by the used
+#' Constrained regression for morphology correction
 #'
+#' Internal function used to build the regression model with monotonicity
+#' constraints. Not intended to be called directly by the user.
 #'
-#' @return numeric vector of length nrow(fcb_df) representing the morphology corrected channel
+#' @param X Design matrix for regression.
+#' @param Y Response vector.
+#' @param fsc_limits Forward scatter limits.
+#' @param ssc_limits Side scatter limits.
+#' @param val3 Additional parameter for regression.
+#' @param D Data matrix for density estimation.
+#' @param OFFSET Offset parameter.
+#' @param Bx Basis expansion matrix.
+#' @param rm Regression model matrix.
+#' @param monodir Monotonicity direction constraints.
+#' @return Constrained regression result.
 #'
-#' @seealso  \code{\link{doRegressConstrained}}
-#'
-#'
+#' @seealso \code{\link{doRegressConstrained}}
 constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
                                    OFFSET, Bx, rm, monodir){
   S = 5

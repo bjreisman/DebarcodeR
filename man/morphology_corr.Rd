@@ -2,7 +2,7 @@
 % Please edit documentation in R/morphology_corr_master.R
 \name{morphology_corr}
 \alias{morphology_corr}
-\title{Corrects morphology based on scatter or uptake control.}
+\title{Corrects morphology based on scatter or uptake control}
 \usage{
 morphology_corr(
   fcb,
@@ -18,31 +18,30 @@ morphology_corr(
 )
 }
 \arguments{
-\item{channel}{The name (string) of the channel to be corrected, ie. the column name in 'fcb_df'}
+\item{fcb}{The barcoded data frame, post compensation and preprocessing.}
 
-\item{subsample}{Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.}
+\item{uptake}{Optional: a data frame of cells barcoded with a single level.}
 
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI}
+\item{channel}{The name (string) of the channel to be corrected.}
 
-\item{fcb_df}{the barcoded dataframe, post compensation and preprocessing}
+\item{method}{The morphology correction method: "earth", "knijnenburg", or "lm".}
 
-\item{bc_single_level}{Optional: a dataframe consisting of all cells barcoded with a single level of the barcoding dye}
+\item{predictors}{Character vector of predictor channel names.}
 
-\item{opt}{String, Morphology correction apporach, either "regression" (default) or "control dye"}
+\item{subsample}{Integer, number of cells to subsample (default 20000).}
 
-\item{trans}{String, transformation to apply to the barcoding channels, defaults to arcsinh, also log10}
+\item{ret.model}{Logical, whether to retain the fitted model.}
 
-\item{cofactor_bc1}{Numeirc, Cofactor used for the arcsinh transformation on the barcoding channels}
+\item{verbose}{Logical, whether to print progress messages.}
 
-\item{cofactor_update}{Numeric, Cofactor used for the arcsinh transformation of the uptake channel}
+\item{updateProgress}{Callback for Shiny progress updates.}
 
-\item{uptake_channel}{String, uptake channel if "control dye" option is used as morphology correction method}
-
-\item{output}{what to return}
+\item{...}{Additional arguments passed to the correction method.}
 }
 \value{
-numeric vector of length nrow(fcb_df) representing the morphology corrected channel or a list containing the vector and the model used to correct it.
+A list with corrected values and optionally the fitted model.
 }
 \description{
-Corrects morphology based on scatter or uptake control.
+Master function that dispatches to the appropriate morphology correction
+method (earth, knijnenburg, or lm).
 }

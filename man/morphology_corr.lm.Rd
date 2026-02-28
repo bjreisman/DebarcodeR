@@ -2,7 +2,7 @@
 % Please edit documentation in R/morphology_corr_lm.R
 \name{morphology_corr.lm}
 \alias{morphology_corr.lm}
-\title{Corrects morphology based on scatter or uptake control.}
+\title{Morphology correction using linear model}
 \usage{
 morphology_corr.lm(
   fcb,
@@ -16,21 +16,25 @@ morphology_corr.lm(
 )
 }
 \arguments{
-\item{fcb}{the barcoded dataframe, post compensation and preprocessing}
+\item{fcb}{The barcoded data frame.}
 
-\item{uptake}{Optional: a dataframe consisting of all cells barcoded with a single level of the barcoding dye}
+\item{uptake}{Data frame of uptake control cells.}
 
-\item{channel}{The name (string) of the channel to be corrected, ie. the column name in 'fcb_df'}
+\item{channel}{The channel name to correct.}
 
-\item{predictors}{A single predictor}
+\item{predictors}{A single predictor channel name.}
 
-\item{subsample}{Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.}
+\item{subsample}{Integer, cells to subsample (default 10000).}
 
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI#'}
+\item{slope}{Numeric, fixed slope for regression (default 1).}
+
+\item{updateProgress}{Callback for Shiny progress updates.}
+
+\item{ret.model}{Logical, retain the fitted model (default FALSE).}
 }
 \value{
-a tibble/data.frame with the selected channel corrected for fsc and ssc
+A list with corrected values and optionally the fitted model.
 }
 \description{
-Corrects morphology based on scatter or uptake control.
+Simple linear regression approach for morphology correction.
 }

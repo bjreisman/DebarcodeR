@@ -1,10 +1,8 @@
-#' Plots assignemnts
+#' Plot debarcoding assignments
 #'
-#' @param fcbFlowFrame a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing, clustering, and assignment
-#' @param plot character, which plot to generate so far, only assignemnts have been implemented
-#' @return a fcbFlowFrame object with a barcode slot filled with deskewing, clustering, cell assignment as
-#' a vector of integers from 0:ncol(probs), cells assigned a classification of 0 remained unassigned,
-#' otherwise number corresponds to the barcoding level assignment of that cell
+#' @param fcbFlowFrame An fcbFlowFrame with completed assignments.
+#' @param plot Character, plot type: "assignments" (default), "density", "chull", or "data".
+#' @param seed Integer, random seed for color palette generation (default 1).
 #' @export
 #' @import ggplot2 ggnewscale scales ggforce
 plot.fcbflowframe <- function(fcbFlowFrame, plot = "assignments", seed = 1) {

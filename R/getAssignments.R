@@ -1,9 +1,9 @@
-#' Extracts assignments from fcbFlowFrame object
+#' Extract assignments from an fcbFlowFrame or fcbFlowSet
 #'
-#' @param fcbFlowFrame a fcbFlowFrame object that has been assigned using assign_fcbFlowFrame
-#' @param platemap data.frame, a lookup table from barcoding levels to well assignments, (optional)
-#' @param simplify logical, return factor instead of list
-#' @return a list of factors, one for each barcoding channel that has been assigned
+#' @param x An fcbFlowFrame or fcbFlowSet that has been assigned.
+#' @param platemap Data frame, a lookup table from barcoding levels to well assignments (optional).
+#' @param simplify Logical, return factor instead of list (not yet implemented).
+#' @return A list of factors, one for each barcoding channel that has been assigned.
 #' @export
 getAssignments <- function(x, platemap = NULL, simplify = FALSE) {
   getAssignments.ff <- function(x) {

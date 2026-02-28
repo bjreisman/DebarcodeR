@@ -2,7 +2,7 @@
 % Please edit documentation in R/deskew_fcbFlowSet.R
 \name{deskew_fcbFlowSet}
 \alias{deskew_fcbFlowSet}
-\title{Corrects morphology based on scatter or uptake control for fcbFlowFrame}
+\title{Corrects morphology based on scatter or uptake control for fcbFlowSet}
 \usage{
 deskew_fcbFlowSet(
   fcbFlowSet,
@@ -18,23 +18,29 @@ deskew_fcbFlowSet(
 )
 }
 \arguments{
-\item{channel}{The name (string) of the channel to be corrected, ie. the column name in fcbFlowFrame barcoded.ff exprs}
+\item{fcbFlowSet}{An fcbFlowSet or flowSet object.}
 
-\item{method}{The name of the morphology correction model to use. Choose between earth, lm (linear model), or knijnenburg}
+\item{uptake}{A flowFrame to use as the uptake control (default NULL).}
 
-\item{predictors}{The vector of channel names to be used to build the regression model}
+\item{channel}{The name (string) of the channel to be corrected.}
 
-\item{subsample}{Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.}
+\item{method}{The morphology correction method: "earth" (default), "lm", or "knijnenburg".}
 
-\item{ret.model}{Option to retain the model for deskewing}
+\item{predictors}{Character vector of channel names for the regression model.}
 
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI}
+\item{subsample}{Integer, number of cells to subsample (default 20000).}
 
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe, post compensation and preprocessing}
+\item{ret.model}{Logical, whether to retain fitted models (default TRUE).}
+
+\item{verbose}{Logical, whether to print progress messages (default FALSE).}
+
+\item{updateProgress}{Callback function for Shiny progress updates (default NULL).}
+
+\item{...}{Additional arguments passed to the morphology correction method.}
 }
 \value{
-a fcbFlowFrame with barcode slots added for selected channel corrected for predictors chosen
+An fcbFlowSet with barcode slots populated for the specified channel.
 }
 \description{
-Corrects morphology based on scatter or uptake control for fcbFlowFrame
+Applies \code{\link{deskew_fcbFlowFrame}} to each frame in an fcbFlowSet.
 }

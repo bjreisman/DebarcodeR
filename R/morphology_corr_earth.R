@@ -1,13 +1,21 @@
-#' Corrects morphology using multivariate adaptive regression splines as implemented in the earth pacakge
+#' Morphology correction using MARS (earth)
 #'
-#' @param fcb the barcoded dataframe, post compensation and preprocessing
-#' @param uptake Optional: a dataframe consisting of all cells barcoded with a single level of the barcoding dye
-#' @param channel The name (string) of the channel to be corrected, ie. the column name in 'fcb_df'
-#' @param predictors The vector of channel names to be used to build the regression model
-#' @param subsample Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.
-#' @param updateProgress used in reactive context (shiny) to return progress information to GUI#'
+#' Corrects morphology using multivariate adaptive regression splines
+#' as implemented in the earth package.
 #'
-#' @return a tibble/data.frame with the selected channel corrected for fsc and ssc
+#' @param fcb The barcoded data frame.
+#' @param uptake Data frame of uptake control cells.
+#' @param ret.model Logical, retain the fitted model (default FALSE).
+#' @param what Character, what to return: "x" for corrected values only,
+#'   "x + se" to also include standard errors.
+#' @param nfold Integer, number of cross-validation folds (default 1).
+#' @param ncross Integer, number of cross-validation repeats (default 0).
+#' @param channel The channel name to correct.
+#' @param predictors Character vector of predictor channel names.
+#' @param subsample Integer, number of cells to subsample (default 30000).
+#' @param updateProgress Callback for Shiny progress updates.
+#' @param ... Additional arguments passed to \code{earth::earth}.
+#' @return A list with corrected values and optionally the fitted model.
 #' @import earth
 #' @export
 

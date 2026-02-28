@@ -1,32 +1,26 @@
-#' fcbFlowSet
-#' -----------------------------------------------------------------------------
-#' A containiner for barcoded flow cytometry data, with slots for the barcoded
-#' flowFrame, a single level 'uptake control', and a slot to contain the results
-#' of the debarcoding functions contained within debarcoder.
+#' fcbFlowSet class
+#'
+#' A container for debarcoded flow cytometry data, extending flowCore's
+#' \code{flowSet} class. Contains a collection of flowFrames, one per
+#' debarcoded sample.
 #'
 #' @name fcbFlowSet-class
-#' @slot barcoded.ff {Object of class\code{flowFrame} containing the barcoded
-#' data, approriately compensated, transformed, and gated}
-#' @slot uptake.ff {object of class \code{flowFrame} containing cells which
-#' have been barcoded with a single level of each barcoding channel as well
-#' as stained with the approriate barcoding controls}
-#' @slot barcodes {a list of barcodes, each one named for the channel from which
-#' it was derived}
-#' @slot platemap {a platemap for conditions per barcode level}
 #' @importClassesFrom flowCore flowFrame
-#' @export
+#' @exportClass fcbFlowSet
 .fcbFlowSet <- setClass("fcbFlowSet",
                           contains = "flowSet"
 )
 
+#' Create an fcbFlowSet
+#'
+#' Constructor function to create an fcbFlowSet from a flowSet.
+#'
+#' @param x A \code{flowSet} object.
+#' @return An object of class \code{fcbFlowSet}.
 #' @export
-#' @importClassesFrom flowCore flowFrame
 fcbFlowSet <- function(x) {
   if (!inherits(x, "flowSet")) {
-    stop("x must be an object of class FlowFrame")
-    #should maybe leave the possibility of attempting to coerce to flowFrame
+    stop("x must be an object of class flowSet")
   }
-  #  print(31)
   as(x, "fcbFlowSet")
 }
-

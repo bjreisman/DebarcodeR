@@ -2,7 +2,7 @@
 % Please edit documentation in R/morphology_corr_earth.R
 \name{morphology_corr.earth}
 \alias{morphology_corr.earth}
-\title{Corrects morphology using multivariate adaptive regression splines as implemented in the earth pacakge}
+\title{Morphology correction using MARS (earth)}
 \usage{
 morphology_corr.earth(
   fcb,
@@ -19,21 +19,33 @@ morphology_corr.earth(
 )
 }
 \arguments{
-\item{fcb}{the barcoded dataframe, post compensation and preprocessing}
+\item{fcb}{The barcoded data frame.}
 
-\item{uptake}{Optional: a dataframe consisting of all cells barcoded with a single level of the barcoding dye}
+\item{uptake}{Data frame of uptake control cells.}
 
-\item{channel}{The name (string) of the channel to be corrected, ie. the column name in 'fcb_df'}
+\item{ret.model}{Logical, retain the fitted model (default FALSE).}
 
-\item{predictors}{The vector of channel names to be used to build the regression model}
+\item{what}{Character, what to return: "x" for corrected values only,
+"x + se" to also include standard errors.}
 
-\item{subsample}{Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.}
+\item{nfold}{Integer, number of cross-validation folds (default 1).}
 
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI#'}
+\item{ncross}{Integer, number of cross-validation repeats (default 0).}
+
+\item{channel}{The channel name to correct.}
+
+\item{predictors}{Character vector of predictor channel names.}
+
+\item{subsample}{Integer, number of cells to subsample (default 30000).}
+
+\item{updateProgress}{Callback for Shiny progress updates.}
+
+\item{...}{Additional arguments passed to \code{earth::earth}.}
 }
 \value{
-a tibble/data.frame with the selected channel corrected for fsc and ssc
+A list with corrected values and optionally the fitted model.
 }
 \description{
-Corrects morphology using multivariate adaptive regression splines as implemented in the earth pacakge
+Corrects morphology using multivariate adaptive regression splines
+as implemented in the earth package.
 }

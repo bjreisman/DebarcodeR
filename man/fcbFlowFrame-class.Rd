@@ -3,34 +3,32 @@
 \name{fcbFlowFrame-class}
 \alias{fcbFlowFrame-class}
 \alias{fcbFlowFrame}
-\title{fcbFlowFrame
------------------------------------------------------------------------------
-A containiner for barcoded flow cytometry data, with slots for the barcoded
-flowFrame, a single level 'uptake control', and a slot to contain the results
-of the debarcoding functions contained within debarcoder.}
+\title{fcbFlowFrame class}
 \usage{
 fcbFlowFrame(x, barcodes = list())
+
+fcbFlowFrame(x, barcodes = list())
+}
+\arguments{
+\item{x}{A \code{flowFrame} object.}
+
+\item{barcodes}{A list of barcode data (default: empty list).}
+}
+\value{
+An object of class \code{fcbFlowFrame}.
 }
 \description{
-fcbFlowFrame
------------------------------------------------------------------------------
-A containiner for barcoded flow cytometry data, with slots for the barcoded
-flowFrame, a single level 'uptake control', and a slot to contain the results
-of the debarcoding functions contained within debarcoder.
+A container for barcoded flow cytometry data, extending flowCore's
+\code{flowFrame} class with a \code{barcodes} slot that stores
+deskewing, clustering, and assignment results.
+
+Constructor function to create an fcbFlowFrame from a flowFrame.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{barcoded.ff}}{{Object of class\code{flowFrame} containing the barcoded
-data, approriately compensated, transformed, and gated}}
-
-\item{\code{uptake.ff}}{{object of class \code{flowFrame} containing cells which
-have been barcoded with a single level of each barcoding channel as well
-as stained with the approriate barcoding controls}}
-
-\item{\code{barcodes}}{{a list of barcodes, each one named for the channel from which
-it was derived}}
-
-\item{\code{platemap}}{{a platemap for conditions per barcode level}}
+\item{\code{barcodes}}{A named list storing debarcoding results per channel.
+Each element is named by channel and contains sublists for
+\code{deskewing}, \code{clustering}, and \code{assignment}.}
 }}
 

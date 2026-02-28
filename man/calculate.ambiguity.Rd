@@ -2,17 +2,17 @@
 % Please edit documentation in R/assign_fcbFlowFrame.R
 \name{calculate.ambiguity}
 \alias{calculate.ambiguity}
-\title{Ambiguity cutoff}
+\title{Calculate ambiguity (row-normalize probability matrix)}
 \usage{
 calculate.ambiguity(probs)
 }
 \arguments{
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-and clustering (at least one barcodes slot filled)}
+\item{probs}{A numeric matrix of probabilities (cells x populations).}
 }
 \value{
-the prbability matrix normalized by row
+The probability matrix normalized by row.
 }
 \description{
-Ambiguity cutoff
+Row-normalizes the probability matrix so each cell's probabilities sum to 1.
+Used to identify cells that are ambiguously assigned between populations.
 }

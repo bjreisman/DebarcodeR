@@ -1,17 +1,19 @@
-#' Corrects morphology based on scatter or uptake control.
+#' Corrects morphology based on scatter or uptake control
 #'
-#' @param fcb_df the barcoded dataframe, post compensation and preprocessing
-#' @param bc_single_level Optional: a dataframe consisting of all cells barcoded with a single level of the barcoding dye
-#' @param channel The name (string) of the channel to be corrected, ie. the column name in 'fcb_df'
-#' @param opt String, Morphology correction apporach, either "regression" (default) or "control dye"
-#' @param subsample Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.
-#' @param trans String, transformation to apply to the barcoding channels, defaults to arcsinh, also log10
-#' @param updateProgress used in reactive context (shiny) to return progress information to GUI
-#' @param cofactor_bc1 Numeirc, Cofactor used for the arcsinh transformation on the barcoding channels
-#' @param cofactor_update Numeric, Cofactor used for the arcsinh transformation of the uptake channel
-#' @param uptake_channel String, uptake channel if "control dye" option is used as morphology correction method
-#' @param output what to return
-#' @return numeric vector of length nrow(fcb_df) representing the morphology corrected channel or a list containing the vector and the model used to correct it.
+#' Master function that dispatches to the appropriate morphology correction
+#' method (earth, knijnenburg, or lm).
+#'
+#' @param fcb The barcoded data frame, post compensation and preprocessing.
+#' @param uptake Optional: a data frame of cells barcoded with a single level.
+#' @param channel The name (string) of the channel to be corrected.
+#' @param method The morphology correction method: "earth", "knijnenburg", or "lm".
+#' @param predictors Character vector of predictor channel names.
+#' @param subsample Integer, number of cells to subsample (default 20000).
+#' @param ret.model Logical, whether to retain the fitted model.
+#' @param verbose Logical, whether to print progress messages.
+#' @param updateProgress Callback for Shiny progress updates.
+#' @param ... Additional arguments passed to the correction method.
+#' @return A list with corrected values and optionally the fitted model.
 #'
 #' @export
 

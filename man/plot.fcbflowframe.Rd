@@ -2,20 +2,17 @@
 % Please edit documentation in R/plot-fcbFlowFrame-assignments.R
 \name{plot.fcbflowframe}
 \alias{plot.fcbflowframe}
-\title{Plots assignemnts}
+\title{Plot debarcoding assignments}
 \usage{
 plot.fcbflowframe(fcbFlowFrame, plot = "assignments", seed = 1)
 }
 \arguments{
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing, clustering, and assignment}
+\item{fcbFlowFrame}{An fcbFlowFrame with completed assignments.}
 
-\item{plot}{character, which plot to generate so far, only assignemnts have been implemented}
-}
-\value{
-a fcbFlowFrame object with a barcode slot filled with deskewing, clustering, cell assignment as
-a vector of integers from 0:ncol(probs), cells assigned a classification of 0 remained unassigned,
-otherwise number corresponds to the barcoding level assignment of that cell
+\item{plot}{Character, plot type: "assignments" (default), "density", "chull", or "data".}
+
+\item{seed}{Integer, random seed for color palette generation (default 1).}
 }
 \description{
-Plots assignemnts
+Plot debarcoding assignments
 }

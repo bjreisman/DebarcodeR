@@ -1,34 +1,34 @@
-#' fcbFlowFrame
-#' -----------------------------------------------------------------------------
-#' A containiner for barcoded flow cytometry data, with slots for the barcoded
-#' flowFrame, a single level 'uptake control', and a slot to contain the results
-#' of the debarcoding functions contained within debarcoder.
+#' fcbFlowFrame class
+#'
+#' A container for barcoded flow cytometry data, extending flowCore's
+#' \code{flowFrame} class with a \code{barcodes} slot that stores
+#' deskewing, clustering, and assignment results.
 #'
 #' @name fcbFlowFrame-class
-#' @slot barcoded.ff {Object of class\code{flowFrame} containing the barcoded
-#' data, approriately compensated, transformed, and gated}
-#' @slot uptake.ff {object of class \code{flowFrame} containing cells which
-#' have been barcoded with a single level of each barcoding channel as well
-#' as stained with the approriate barcoding controls}
-#' @slot barcodes {a list of barcodes, each one named for the channel from which
-#' it was derived}
-#' @slot platemap {a platemap for conditions per barcode level}
+#' @rdname fcbFlowFrame-class
+#' @slot barcodes A named list storing debarcoding results per channel.
+#'   Each element is named by channel and contains sublists for
+#'   \code{deskewing}, \code{clustering}, and \code{assignment}.
 #' @import methods
 #' @importClassesFrom flowCore flowFrame
-#' @export
+#' @exportClass fcbFlowFrame
 fcbFlowFrame <- setClass("fcbFlowFrame",
           contains = "flowFrame",
           slots = c(barcodes = "list")
          )
 
+#' Create an fcbFlowFrame
+#'
+#' Constructor function to create an fcbFlowFrame from a flowFrame.
+#'
+#' @rdname fcbFlowFrame-class
+#' @param x A \code{flowFrame} object.
+#' @param barcodes A list of barcode data (default: empty list).
+#' @return An object of class \code{fcbFlowFrame}.
 #' @export
-#' @importClassesFrom flowCore flowFrame
-fcbFlowFrame <- function(x,  barcodes = list()) {
+fcbFlowFrame <- function(x, barcodes = list()) {
   if (!inherits(x, "flowFrame")) {
-    stop("x must be an object of class FlowFrame")
-    #should maybe leave the possibility of attempting to coerce to flowFrame
+    stop("x must be an object of class flowFrame")
   }
-#  print(31)
   as(x, "fcbFlowFrame")
 }
-

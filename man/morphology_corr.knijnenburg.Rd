@@ -2,7 +2,7 @@
 % Please edit documentation in R/morphology_corr_knignenburg.R
 \name{morphology_corr.knijnenburg}
 \alias{morphology_corr.knijnenburg}
-\title{Corrects morphology based on scatter or uptake control.}
+\title{Morphology correction using Knijnenburg constrained regression}
 \usage{
 morphology_corr.knijnenburg(
   fcb,
@@ -15,21 +15,25 @@ morphology_corr.knijnenburg(
 )
 }
 \arguments{
-\item{fcb}{the barcoded dataframe, post compensation and preprocessing}
+\item{fcb}{The barcoded data frame.}
 
-\item{uptake}{Optional: a dataframe consisting of all cells barcoded with a single level of the barcoding dye}
+\item{uptake}{Data frame of uptake control cells.}
 
-\item{channel}{The name (string) of the channel to be corrected, ie. the column name in 'fcb_df'}
+\item{channel}{The channel name to correct.}
 
-\item{subsample}{Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.}
+\item{fsc_ssc}{Named character vector with FSC and SSC channel names.}
 
-\item{updateProgress}{used in reactive context (shiny) to return progress information to GUI#'}
+\item{subsample}{Integer, cells to subsample (default 10000).}
+
+\item{updateProgress}{Callback for Shiny progress updates.}
+
+\item{ret.model}{Logical, retain the fitted model (default FALSE).}
 }
 \value{
-a tibble/data.frame with the selected channel corrected for fsc and ssc
+A list with corrected values and optionally the fitted model.
 }
 \description{
-Corrects morphology based on scatter or uptake control.
+Implements the constrained regression approach from Knijnenburg et al. (2011).
 }
 \seealso{
 \code{\link{selectDenseScatterArea}} \code{\link{doRegressConstrained}}

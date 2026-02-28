@@ -2,20 +2,20 @@
 % Please edit documentation in R/getAssignments.R
 \name{getAssignments}
 \alias{getAssignments}
-\title{Extracts assignments from fcbFlowFrame object}
+\title{Extract assignments from an fcbFlowFrame or fcbFlowSet}
 \usage{
 getAssignments(x, platemap = NULL, simplify = FALSE)
 }
 \arguments{
-\item{platemap}{data.frame, a lookup table from barcoding levels to well assignments, (optional)}
+\item{x}{An fcbFlowFrame or fcbFlowSet that has been assigned.}
 
-\item{simplify}{logical, return factor instead of list}
+\item{platemap}{Data frame, a lookup table from barcoding levels to well assignments (optional).}
 
-\item{fcbFlowFrame}{a fcbFlowFrame object that has been assigned using assign_fcbFlowFrame}
+\item{simplify}{Logical, return factor instead of list (not yet implemented).}
 }
 \value{
-a list of factors, one for each barcoding channel that has been assigned
+A list of factors, one for each barcoding channel that has been assigned.
 }
 \description{
-Extracts assignments from fcbFlowFrame object
+Extract assignments from an fcbFlowFrame or fcbFlowSet
 }

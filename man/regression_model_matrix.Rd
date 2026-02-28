@@ -11,8 +11,24 @@ regression_model_matrix(
   powers = c(1, 0.5, 2, 1, 0.5, 2, 1, 0.5)
 )
 }
+\arguments{
+\item{nrow}{Integer, number of rows (default 2).}
+
+\item{ncol}{Integer, number of columns (default 8).}
+
+\item{vars}{Integer vector defining which variable each column uses.}
+
+\item{powers}{Numeric vector of power transformations per column.}
+}
 \value{
 numeric vector of length nrow(fcb_df) representing the morphology corrected channel
+
+Build a regression model matrix
+
+Constructs a matrix defining variable/power combinations for
+the constrained regression. Not intended to be called directly.
+
+A regression model matrix.
 }
 \description{
 Used to build the regression model, not to be called directly by the used

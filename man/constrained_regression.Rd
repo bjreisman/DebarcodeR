@@ -2,7 +2,7 @@
 % Please edit documentation in R/doRegressContrained.R
 \name{constrained_regression}
 \alias{constrained_regression}
-\title{Used to build the regression model, not to be called directly by the used}
+\title{Constrained regression for morphology correction}
 \usage{
 constrained_regression(
   X,
@@ -17,11 +17,33 @@ constrained_regression(
   monodir
 )
 }
+\arguments{
+\item{X}{Design matrix for regression.}
+
+\item{Y}{Response vector.}
+
+\item{fsc_limits}{Forward scatter limits.}
+
+\item{ssc_limits}{Side scatter limits.}
+
+\item{val3}{Additional parameter for regression.}
+
+\item{D}{Data matrix for density estimation.}
+
+\item{OFFSET}{Offset parameter.}
+
+\item{Bx}{Basis expansion matrix.}
+
+\item{rm}{Regression model matrix.}
+
+\item{monodir}{Monotonicity direction constraints.}
+}
 \value{
-numeric vector of length nrow(fcb_df) representing the morphology corrected channel
+Constrained regression result.
 }
 \description{
-Used to build the regression model, not to be called directly by the used
+Internal function used to build the regression model with monotonicity
+constraints. Not intended to be called directly by the user.
 }
 \seealso{
 \code{\link{doRegressConstrained}}

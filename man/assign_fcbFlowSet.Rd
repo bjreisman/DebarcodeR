@@ -2,27 +2,24 @@
 % Please edit documentation in R/assign_fcbFlowSet.R
 \name{assign_fcbFlowSet}
 \alias{assign_fcbFlowSet}
-\title{Defines populations on barcoded datasets}
+\title{Assign cells to barcoding levels for a fcbFlowSet}
 \usage{
 assign_fcbFlowSet(fcbFlowSet, channel, likelihoodcut = 8, ambiguitycut = 0.02)
 }
 \arguments{
-\item{channel}{The name (string) of the channel that has been corrected and clustered}
+\item{fcbFlowSet}{An fcbFlowSet object with deskewing and clustering completed.}
 
-\item{likelihoodcut}{numeric, a likelihood cutoff for discarding unlikely cells, less than 1/k as likely
-as the most likely cell from that population}
+\item{channel}{The name (string) of the channel that has been corrected and clustered.}
 
-\item{ambiguitycut}{numeric from 0 to 1, threshhold below which to discard ambigious cells, eg: 0.02,
-discards cells with more than 2\% chance of originating from another population}
+\item{likelihoodcut}{Numeric, a likelihood cutoff for discarding unlikely cells.
+Cells less than 1/k as likely as the most likely cell from that population are unassigned.}
 
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-and clustering (at least one barcodes slot filled)}
+\item{ambiguitycut}{Numeric from 0 to 1, threshold below which to discard ambiguous cells.
+E.g., 0.02 discards cells with more than 2\% chance of originating from another population.}
 }
 \value{
-a fcbFlowFrame object with a barcode slot filled with deskewing, clustering, cell assignment as
-a vector of integers from 0:ncol(probs), cells assigned a classification of 0 remained unassigned,
-otherwise number corresponds to the barcoding level assignment of that cell
+An fcbFlowSet object with assignment slots populated.
 }
 \description{
-Defines populations on barcoded datasets
+Assign cells to barcoding levels for a fcbFlowSet
 }

@@ -2,17 +2,17 @@
 % Please edit documentation in R/assign_fcbFlowFrame.R
 \name{calculate.likelihood}
 \alias{calculate.likelihood}
-\title{Likelihood cutoff}
+\title{Calculate likelihood (column-normalize probability matrix)}
 \usage{
 calculate.likelihood(probs)
 }
 \arguments{
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-and clustering (at least one barcodes slot filled)}
+\item{probs}{A numeric matrix of probabilities (cells x populations).}
 }
 \value{
-the prbability matrix normalized by column
+The probability matrix normalized by column (max = 1 per column).
 }
 \description{
-Likelihood cutoff
+Column-normalizes the probability matrix by dividing each column by its maximum.
+Used to identify cells in low-density tails of each population.
 }

@@ -1,9 +1,16 @@
-#' Splits a fcbFlowFrame into a fcbFlowSet with updated pData
+#' Split an fcbFlowFrame into an fcbFlowSet by assignments
 #'
-#' @param fcbFlowFrame a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-#' and clustering (at least one barcodes slot filled)
-
-#' @return a fcbFlowSet with each flowFrame named by the assignments defined in the platemap
+#' Splits an fcbFlowFrame into separate flowFrames based on barcode
+#' assignments, returned as an fcbFlowSet with updated pData.
+#'
+#' @param x An fcbFlowFrame object with completed assignments.
+#' @param f A list of assignment factors (from \code{\link{getAssignments}}).
+#' @param drop Not used.
+#' @param prefix Not used.
+#' @param flowSet Logical, whether to return a flowSet (default TRUE).
+#' @param merge.na Not used.
+#' @param ... Additional arguments (not used).
+#' @return An fcbFlowSet with each flowFrame named by assignment level.
 #' @import flowCore
 #' @export
 setMethod("split",
@@ -36,12 +43,17 @@ setMethod("split",
           }
 )
 
-#' Splits a fcbFlowSet into a flowSet with updated pData
+#' Split an fcbFlowSet by assignments
 #'
-#' @param fcbFlowFrame a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-#' and clustering (at least one barcodes slot filled)
-
-#' @return a fcbFlowSet with each flowFrame named by the assignments defined in the platemap
+#' @param x An fcbFlowSet object.
+#' @param f A list of assignment factors per sample.
+#' @param assign0 Logical, whether to assign level 0 cells (default FALSE).
+#' @param drop Not used.
+#' @param prefix Not used.
+#' @param flowSet Logical, whether to return a flowSet (default TRUE).
+#' @param merge.na Not used.
+#' @param ... Additional arguments (not used).
+#' @return An fcbFlowSet with each flowFrame named by the assignments.
 #' @import flowCore
 #' @importFrom dplyr left_join
 #' @export
@@ -65,7 +77,6 @@ setMethod("split",
             split(x.list[[3]], f[[3]])
             x.split <- mapply(split, x.list, f, flowSet = TRUE, SIMPLIFY = FALSE) #split by assignments
             x.split <- lapply(x.split, flowSet_to_list)
-            #x.bc1 <- apply(x.split, 2, function(x) x) #list of list of flowframes, L1 = original frames, L2 = newly split frames
             x.split <- unlist(x.split) #flatten into a single list
             new.cols <- lapply(f, names)[[1]] #factor names from the newly split levels
             if (flowSet) {
@@ -84,6 +95,18 @@ setMethod("split",
 )
 
 
+#' Split a flowFrame by a list of factors
+#'
+#' @param x A flowFrame object.
+#' @param f A list of factors for splitting.
+#' @param drop Not used.
+#' @param prefix Not used.
+#' @param flowSet Logical, whether to return a flowSet (default TRUE).
+#' @param merge.na Not used.
+#' @param ... Additional arguments (not used).
+#' @return An fcbFlowSet with each flowFrame named by the combined factor levels.
+#' @import flowCore
+#' @export
 setMethod("split",
           signature = c(x = "flowFrame",
                         f = "list"),
@@ -113,13 +136,3 @@ setMethod("split",
             return(fcbFlowSet(x.split))
           }
 )
-
-#' Splits a fcbFlowSet into a flowSet with updated pData
-#'
-#' @param fcbFlowFrame a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-#' and clustering (at least one barcodes slot filled)
-
-#' @return a fcbFlowSet with each flowFrame named by the assignments defined in the platemap
-#' @import flowCore
-#' @importFrom dplyr left_join
-#' @export

@@ -2,16 +2,22 @@
 % Please edit documentation in R/doRegressContrained.R
 \name{generate_regressors}
 \alias{generate_regressors}
-\title{Used to build the regression model, not to be called directly by the used}
+\title{Generate regressors for constrained regression}
 \usage{
 generate_regressors(D, rm)
 }
+\arguments{
+\item{D}{Data matrix with scatter and channel values.}
+
+\item{rm}{Regression model matrix defining variable/power combinations.}
+}
 \value{
-numeric vector of length nrow(fcb_df) representing the morphology corrected channel
+A list with components X (design matrix), Y (response), and Bx (basis).
 }
 \description{
-Used to build the regression model, not to be called directly by the used
+Internal function to generate the regressor matrix from data and a
+regression model matrix. Not intended to be called directly.
 }
 \seealso{
-\code{\link{doRegressConstrained}}
+\code{\link{doRegressConstrained}} \code{\link{regression_model_matrix}}
 }

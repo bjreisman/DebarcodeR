@@ -2,7 +2,7 @@
 % Please edit documentation in R/split_fcbFlowFrame.R
 \name{split,fcbFlowSet,list-method}
 \alias{split,fcbFlowSet,list-method}
-\title{Splits a fcbFlowSet into a flowSet with updated pData}
+\title{Split an fcbFlowSet by assignments}
 \usage{
 \S4method{split}{fcbFlowSet,list}(
   x,
@@ -16,12 +16,25 @@
 )
 }
 \arguments{
-\item{fcbFlowFrame}{a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-and clustering (at least one barcodes slot filled)}
+\item{x}{An fcbFlowSet object.}
+
+\item{f}{A list of assignment factors per sample.}
+
+\item{assign0}{Logical, whether to assign level 0 cells (default FALSE).}
+
+\item{drop}{Not used.}
+
+\item{prefix}{Not used.}
+
+\item{flowSet}{Logical, whether to return a flowSet (default TRUE).}
+
+\item{merge.na}{Not used.}
+
+\item{...}{Additional arguments (not used).}
 }
 \value{
-a fcbFlowSet with each flowFrame named by the assignments defined in the platemap
+An fcbFlowSet with each flowFrame named by the assignments.
 }
 \description{
-Splits a fcbFlowSet into a flowSet with updated pData
+Split an fcbFlowSet by assignments
 }

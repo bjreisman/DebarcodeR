@@ -82,27 +82,32 @@ assign_fcbFlowFrame <- function(fcbFlowFrame,
   return(fcbFlowFrame)
 }
 
-#' Ambiguity cutoff
-#' @param fcbFlowFrame a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-#' and clustering (at least one barcodes slot filled)
-#' @return the prbability matrix normalized by row
+#' Calculate ambiguity (row-normalize probability matrix)
+#'
+#' Row-normalizes the probability matrix so each cell's probabilities sum to 1.
+#' Used to identify cells that are ambiguously assigned between populations.
+#'
+#' @param probs A numeric matrix of probabilities (cells x populations).
+#' @return The probability matrix normalized by row.
 #' @export
-
 calculate.ambiguity <- function(probs) {
-  row.sum <-  rowSums(probs)
-  probs.norm.row <- probs/row.sum
-return(probs.norm.row)}
+  row.sum <- rowSums(probs)
+  probs.norm.row <- probs / row.sum
+  return(probs.norm.row)
+}
 
-#' Likelihood cutoff
-#' @param fcbFlowFrame a fcbFlowFrame object with barcoded flowframe and uptake flowframe post deskewing
-#' and clustering (at least one barcodes slot filled)
-#' @return the prbability matrix normalized by column
+#' Calculate likelihood (column-normalize probability matrix)
+#'
+#' Column-normalizes the probability matrix by dividing each column by its maximum.
+#' Used to identify cells in low-density tails of each population.
+#'
+#' @param probs A numeric matrix of probabilities (cells x populations).
+#' @return The probability matrix normalized by column (max = 1 per column).
 #' @export
 #' @importFrom matrixStats colMaxs
-
-calculate.likelihood <- function(probs){
-  col.max <-  matrixStats::colMaxs(probs)
-  probs.norm.col <- t(t(probs)/col.max)
+calculate.likelihood <- function(probs) {
+  col.max <- matrixStats::colMaxs(probs)
+  probs.norm.col <- t(t(probs) / col.max)
   return(probs.norm.col)
 }
 

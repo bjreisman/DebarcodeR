@@ -4,31 +4,9 @@
 \name{fcbFlowSet-class}
 \alias{fcbFlowSet-class}
 \alias{.fcbFlowSet}
-\title{fcbFlowSet
------------------------------------------------------------------------------
-A containiner for barcoded flow cytometry data, with slots for the barcoded
-flowFrame, a single level 'uptake control', and a slot to contain the results
-of the debarcoding functions contained within debarcoder.}
+\title{fcbFlowSet class}
 \description{
-fcbFlowSet
------------------------------------------------------------------------------
-A containiner for barcoded flow cytometry data, with slots for the barcoded
-flowFrame, a single level 'uptake control', and a slot to contain the results
-of the debarcoding functions contained within debarcoder.
+A container for debarcoded flow cytometry data, extending flowCore's
+\code{flowSet} class. Contains a collection of flowFrames, one per
+debarcoded sample.
 }
-\section{Slots}{
-
-\describe{
-\item{\code{barcoded.ff}}{{Object of class\code{flowFrame} containing the barcoded
-data, approriately compensated, transformed, and gated}}
-
-\item{\code{uptake.ff}}{{object of class \code{flowFrame} containing cells which
-have been barcoded with a single level of each barcoding channel as well
-as stained with the approriate barcoding controls}}
-
-\item{\code{barcodes}}{{a list of barcodes, each one named for the channel from which
-it was derived}}
-
-\item{\code{platemap}}{{a platemap for conditions per barcode level}}
-}}
-

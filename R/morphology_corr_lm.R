@@ -1,13 +1,16 @@
-#' Corrects morphology based on scatter or uptake control.
+#' Morphology correction using linear model
 #'
-#' @param fcb the barcoded dataframe, post compensation and preprocessing
-#' @param uptake Optional: a dataframe consisting of all cells barcoded with a single level of the barcoding dye
-#' @param channel The name (string) of the channel to be corrected, ie. the column name in 'fcb_df'
-#' @param predictors A single predictor
-#' @param subsample Integer, number of cells to sample (with replacement) for the morphology correction, defaults to 10,000.
-#' @param updateProgress used in reactive context (shiny) to return progress information to GUI#'
+#' Simple linear regression approach for morphology correction.
 #'
-#' @return a tibble/data.frame with the selected channel corrected for fsc and ssc
+#' @param fcb The barcoded data frame.
+#' @param uptake Data frame of uptake control cells.
+#' @param channel The channel name to correct.
+#' @param predictors A single predictor channel name.
+#' @param subsample Integer, cells to subsample (default 10000).
+#' @param slope Numeric, fixed slope for regression (default 1).
+#' @param updateProgress Callback for Shiny progress updates.
+#' @param ret.model Logical, retain the fitted model (default FALSE).
+#' @return A list with corrected values and optionally the fitted model.
 #' @export
 
 morphology_corr.lm <- function(fcb,
