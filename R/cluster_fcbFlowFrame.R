@@ -58,7 +58,7 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
   dist_selected <- match.arg(dist, c("Normal", "Skew.normal", "Tdist"))
 
 
-  vec <-  fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]][["deskewing"]][["values"]]
+  vec <- get_barcode_data(fcbFlowFrame, channel, "deskewing", "values")
 
   quantiles <- quantile(vec, c(trim/2, 1 - trim/2))
   vec.trim <- vec[quantiles[1] < vec & quantiles[2] > vec]
@@ -156,19 +156,11 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
     probs.scaled <- probs
   }
 
-  if (ret.model == TRUE & opt == "mixture") {
-    fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]][[2]] <- list(probabilities = probs.scaled, model = Snorm.analysis)
-    names(fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]])[2] <-
-      "clustering"
-  } else if (ret.model == TRUE & opt == "fisher") {
-    fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]][[2]] <- list(probabilities = probs.scaled, model = mod.int)
-    names(fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]])[2] <-
-      "clustering"
-  } else{
-    fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]][[2]] <- list(probabilities = probs.scaled)
-    names(fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]])[2] <-
-      "clustering"
-  }
+  clustering_data <- list(probabilities = probs.scaled)
+  if (ret.model && opt == "mixture") clustering_data$model <- Snorm.analysis
+  else if (ret.model && opt == "fisher") clustering_data$model <- mod.int
+
+  fcbFlowFrame <- set_barcode_data(fcbFlowFrame, channel, "clustering", clustering_data)
   return(fcbFlowFrame)
 }
 

@@ -35,7 +35,7 @@ assign_fcbFlowFrame <- function(fcbFlowFrame,
       "Input must have channels in the barcodes slot that have been run through cluster_fcbFlowFrame"
     )
   }
-  probs <-  fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]][["clustering"]][["probabilities"]]
+  probs <- get_barcode_data(fcbFlowFrame, channel, "clustering", "probabilities")
   if (channel == "wells") {
     channel <- names(fcbFlowFrame@barcodes[['wells']][['clustering']]$channels)
   }
@@ -78,9 +78,10 @@ assign_fcbFlowFrame <- function(fcbFlowFrame,
     classif.ls,
     SIMPLIFY = FALSE)
   } else {
-    fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]][["assignment"]] <- list(values = classif,
-                                                                                                    ambiguity = ambiguitycut,
-                                                                                                    likelihood = likelihoodcut)
+    fcbFlowFrame <- set_barcode_data(fcbFlowFrame, channel, "assignment",
+                                     list(values = classif,
+                                          ambiguity = ambiguitycut,
+                                          likelihood = likelihoodcut))
   }
   return(fcbFlowFrame)
 }

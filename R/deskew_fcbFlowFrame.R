@@ -115,32 +115,9 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
     )
   }
 
-  # create barcode slots per channel fcbFlowFrame with deskewed and model data
-  if (length(fcbFlowFrame@barcodes) == 0) {
-    slot(fcbFlowFrame, "barcodes") <- list(list(list()))
-    fcbFlowFrame@barcodes[[1]][[1]] <- fcb2
-    names(fcbFlowFrame@barcodes)[[1]] <- channel
-    names(fcbFlowFrame@barcodes[[1]]) <- "deskewing"
-  }else{
-    if (length(which(names(fcbFlowFrame@barcodes) == channel)) == 1) {
-      fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]][[1]] <- fcb2
-      names(fcbFlowFrame@barcodes)[[which(names(fcbFlowFrame@barcodes) == channel)]] <-
-        channel
-      names(fcbFlowFrame@barcodes[[which(names(fcbFlowFrame@barcodes) == channel)]]) <-
-        "deskewing"
-    }
-    else {
-      fcbFlowFrame@barcodes[[(length(fcbFlowFrame@barcodes) + 1)]] <-
-        list(fcb2)
-      names(fcbFlowFrame@barcodes)[[length(fcbFlowFrame@barcodes)]] <-
-        channel
-      names(fcbFlowFrame@barcodes[[length(fcbFlowFrame@barcodes)]]) <-
-        "deskewing"
+  fcbFlowFrame <- set_barcode_data(fcbFlowFrame, channel, "deskewing", fcb2)
 
-    }
-  }
-
-return(fcbFlowFrame)
+  return(fcbFlowFrame)
 }
 
 
