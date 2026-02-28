@@ -18,7 +18,7 @@ selectDenseScatterArea <- function (data,
   fsc <- fsc_ssc[1]
   ssc <- fsc_ssc[2]
   if(!is.null(subsample) & (nrow(data) > subsample)){
-    data <- data[sample(1:nrow(data), subsample),]
+    data <- data[sample(nrow(data), subsample), ]
   }
 
   fsc_limits <- c(min(data[,fsc]), max(data[,fsc]))

@@ -104,7 +104,7 @@ doRegressConstrained <- function(single_level_bc, fcb_df = NULL,
     XO[,3] <- Loc[,1]*Loc[,2]
     XO[,4] <- NOFFSET
 
-    for (i in 1:ncol(rm)){
+    for (i in seq_len(ncol(rm))){
       XO[,4] <- XO[,4] + NB[i]*XO[,rm[1,i]]^rm[2,i]
     }
 
@@ -177,7 +177,7 @@ generate_regressors <- function(D, rm){
   D[,3] <- D[,1]*D[,2]
   X <- matrix(0, nrow = length(Y), ncol = ncol(rm))
 
-  for (m in 1:ncol(rm)){
+  for (m in seq_len(ncol(rm))){
     X[,m] = D[,rm[1,m]]^rm[2,m]
   }
 
@@ -224,7 +224,7 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
   ZZ[,3] <- ZZ[,1]*ZZ[,2]
   ZZ[,4] <- OFFSET
 
-  for (i in 1:ncol(rm)){
+  for (i in seq_len(ncol(rm))){
     ZZ[,4] <- ZZ[,4] + Bx[i]*ZZ[,rm[1,i]]^rm[2,i]
   }
 
@@ -274,7 +274,7 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
   XX1[,2] <- as.numeric(Q[,2])
   XX1[,3] <- XX1[,1]*XX1[,2]
   A1 <- matrix(nrow=noc, ncol = ncol(rm))
-  for (m in 1:ncol(rm)) {
+  for (m in seq_len(ncol(rm))) {
     A1[,m] <- XX1[,rm[1,m]]^rm[2,m]
   }
   XX2 <- matrix(nrow = noc, ncol = 3)
@@ -282,7 +282,7 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
   XX2[,2] <- as.numeric(Q[,4])
   XX2[,3] <- XX2[,1]*XX2[,2]
   A2 <- matrix(nrow=noc, ncol = ncol(rm))
-  for (m in 1:ncol(rm)) {
+  for (m in seq_len(ncol(rm))) {
     A2[,m] <- XX2[,rm[1,m]]^rm[2,m]
   }
 
@@ -312,7 +312,7 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
 
     XBP[,3] <- XBP[,1]*XBP[,2]
     AX <- matrix(nrow = 2, ncol= ncol(rm))
-    for (m in 1:ncol(rm)){
+    for (m in seq_len(ncol(rm))){
       AX[,m] <- XBP[,rm[1,m]]^rm[2,m]
     }
 

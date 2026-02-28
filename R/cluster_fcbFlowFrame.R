@@ -133,7 +133,7 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
     Snorm.df <- data.frame(loc, scale, shape)
     probs.x <- data.frame(x = vec)
     probs.y <- apply(Snorm.df, 1, function(i) sn::dsn(vec, dp = as.numeric(i)))
-    colnames(probs.y) <- as.character(1:nrow(Snorm.df))
+    colnames(probs.y) <- as.character(seq_len(nrow(Snorm.df)))
     probs <- cbind(probs.x, probs.y)
 
     if (levels > 1) {
