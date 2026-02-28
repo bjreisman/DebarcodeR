@@ -48,7 +48,7 @@ library(scales)
 library(dplyr)
 ```
 
----
+***
 
 ## Dataset
 
@@ -89,7 +89,7 @@ ggplot(plot_raw, aes(x = `Pacific Blue-A`, y = `Pacific Orange-A`)) +
   theme_classic()
 ```
 
----
+***
 
 ## External standard
 
@@ -112,7 +112,7 @@ full dataset produces equivalent results.*
 load("data/vignette_plot_data.rda")
 ```
 
----
+***
 
 ## Step 1: Deskew
 
@@ -159,7 +159,7 @@ ggplot(deskew_long, aes(x = value)) +
   theme_classic()
 ```
 
----
+***
 
 ## Step 2: Cluster
 
@@ -190,7 +190,7 @@ ggplot(cl_df, aes(x = deskewed, fill = level)) +
   theme_classic()
 ```
 
----
+***
 
 ## Step 3: Multivariate EM optimization *(optional)*
 
@@ -203,7 +203,7 @@ and typically improves well-level separation.
 fcb <- em_optimize(fcb, niter = 5)
 ```
 
----
+***
 
 ## Step 4: Assign
 
@@ -239,7 +239,7 @@ ggplot(asgn, aes(x = pb, y = po, color = well)) +
   theme_classic()
 ```
 
----
+***
 
 ## Step 5: Split and apply plate map
 
@@ -272,7 +272,7 @@ debarcoded_fs <- apply_platemap(debarcoded_fs,
 sampleNames(debarcoded_fs)
 ```
 
----
+***
 
 ## Writing FCS files
 
@@ -284,7 +284,7 @@ dir.create("debarcoded_output", showWarnings = FALSE)
 write.flowSet(debarcoded_fs, outdir = "debarcoded_output")
 ```
 
----
+***
 
 ## Further reading
 

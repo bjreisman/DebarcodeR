@@ -19,14 +19,14 @@ Description: DebarcodeR is an R package for demultiplexing fluorescent cell
     reproducibility and enables high throughput data processing.
     For more information about DebarcodeR, see our manuscript
     and for more information about FCB, see Krutzik et al. 2006.
-biocViews: FlowCytometry, Preprocessing, SingleCell, CellBasedAssays, Clustering
+biocViews: FlowCytometry, Preprocessing, SingleCell, CellBasedAssays, Clustering,
+    OneChannel
 URL: https://github.com/cytolab/DebarcodeR
 BugReports: https://github.com/cytolab/DebarcodeR/issues
-Depends: R (>= 4.1.0)
+Depends: R (>= 4.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
-LazyDataCompression: xz
+LazyData: false
 Imports:
     flowCore,
     pracma,
