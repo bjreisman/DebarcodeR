@@ -1,3 +1,35 @@
+#' Compute histogram-based probability matrix from break points
+#'
+#' Shared helper for the "fisher" and "manual.breaks" clustering methods.
+#' Given a vector of values and pre-computed break points, classifies each
+#' cell into a level, fits a per-level histogram, and returns a probability
+#' matrix (cells x levels).
+#'
+#' @param vec Numeric vector of deskewed values for all cells.
+#' @param breaks Numeric vector of break points (length levels + 1).
+#' @param levels Integer, number of barcoding levels.
+#' @return A numeric matrix with nrow = length(vec) and ncol = levels.
+#' @keywords internal
+compute_histogram_probs <- function(vec, breaks, levels) {
+  classif <- unlist(lapply(vec, FUN = function(x) findInterval(x, breaks)))
+  classif <- levels + 1 - classif
+  classif[classif > levels] <- 0
+
+  vec.split <- split(vec, classif)
+
+  hist.probs <- list()
+  for (i in as.character(1:max(as.numeric(names(vec.split))))) {
+    myhist <- hist(vec.split[[i]], 100, plot = FALSE)
+    binprobs <- myhist$counts / sum(myhist$counts)
+    hist.probs.i <- rep(0, times = length(vec))
+    bin.assingments <- findInterval(vec, myhist$breaks)
+    hist.probs.i[which(bin.assingments != 0)] <- binprobs[bin.assingments]
+    hist.probs.i[which(is.na(hist.probs.i))] <- 0
+    hist.probs[[i]] <- hist.probs.i
+  }
+  do.call(cbind, hist.probs)
+}
+
 #' Defines populations on barcoded datasets
 #'
 #'This function allows you to calculate the probability of a cell originating from a given population using
@@ -91,9 +123,6 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
     probs.y <- apply(Snorm.df, 1, function(i) sn::dsn(vec, dp = as.numeric(i)))
     colnames(probs.y) <- as.character(1:nrow(Snorm.df))
     probs <- cbind(probs.x, probs.y)
-    #for (i in (1:nrow(Snorm.df))) {
-     # probs[,as.character(i)] <- sn::dsn(vec, dp = as.numeric(Snorm.df[i,]))
-    #}
 
     if (levels > 1) {
       probs.scaled <- t(t(as.matrix(probs[,-1])) * Snorm.analysis$pii)
@@ -105,55 +134,12 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
 
   } else if (opt_selected == "fisher") {
     mod.int <- classInt::classIntervals(vecss, levels, style = "fisher")
-
-    classif <- lapply(vec, FUN = function(x) {findInterval(x, mod.int$brks)}) ##
-
-    classif <- unlist(classif)
-
-    classif <- levels + 1 - classif
-    classif[classif > levels] <- 0
-
-    vec.split <- split(vec, classif)
-
-    hist.probs <- list()
-    for (i in as.character(1:max(as.numeric(names(vec.split))))) {
-      myhist <- hist(vec.split[[i]],100, plot = FALSE)
-      binprobs <- myhist$counts/sum(myhist$counts)
-      hist.probs.i <- rep(0, times = length(vec))
-      bin.assingments <- findInterval(vec, myhist$breaks)
-      hist.probs.i[which(bin.assingments != 0)] <- binprobs[bin.assingments]
-      hist.probs.i[which(is.na(hist.probs.i))] <- 0
-      hist.probs[[i]] <- hist.probs.i
-    }
-    probs <- do.call(cbind, hist.probs)
-    probs.scaled <- probs
-  #  probs.scaled.df <- as.data.frame(hist.probs.m)
+    probs.scaled <- compute_histogram_probs(vec, mod.int$brks, levels)
 
   } else if (opt_selected == "manual.breaks") {
-
-    if(is.null(manbreaks)) {stop("Please specifiy manual breakpoints")}
-    if(length(manbreaks) != (levels + 1)) {stop("Please ensure breakpoints n+1 breakpoints are provided as a vector")}
-
-    classif <- lapply(vec, FUN = function(x) {findInterval(x, manbreaks)}) ##
-    classif <- unlist(classif)
-
-    classif <- levels + 1 - classif
-    classif[classif > levels] <- 0
-
-    vec.split <- split(vec, classif)
-
-    hist.probs <- list()
-    for (i in as.character(1:max(as.numeric(names(vec.split))))) {
-      myhist <- hist(vec.split[[i]],100, plot = FALSE)
-      binprobs <- myhist$counts/sum(myhist$counts)
-      hist.probs.i <- rep(0, times = length(vec))
-      bin.assingments <- findInterval(vec, myhist$breaks)
-      hist.probs.i[which(bin.assingments != 0)] <- binprobs[bin.assingments]
-      hist.probs.i[which(is.na(hist.probs.i))] <- 0
-      hist.probs[[i]] <- hist.probs.i
-    }
-    probs <- do.call(cbind, hist.probs)
-    probs.scaled <- probs
+    if (is.null(manbreaks)) stop("Please specifiy manual breakpoints")
+    if (length(manbreaks) != (levels + 1)) stop("Please ensure breakpoints n+1 breakpoints are provided as a vector")
+    probs.scaled <- compute_histogram_probs(vec, manbreaks, levels)
   }
 
   clustering_data <- list(probabilities = probs.scaled)
