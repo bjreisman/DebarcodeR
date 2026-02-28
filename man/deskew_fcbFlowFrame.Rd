@@ -48,11 +48,7 @@ Corrects morphology based on scatter or uptake control for fcbFlowFrame
 \examples{
 \dontrun{
 data(jurkatFCB)
-library(flowCore)
-
-# Create an external standard (single-well uptake control)
-std_filter <- expressionFilter(`row` == 1 & `col` == 1, filterId = "std")
-jurkatFCB_std <- Subset(jurkatFCB, std_filter)
+data(jurkatFCB_std)  # pre-extracted single-well uptake control
 
 # Deskew — APC-H7-A is the internal standard dye channel
 fcb <- fcbFlowFrame(jurkatFCB)

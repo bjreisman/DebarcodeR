@@ -5,25 +5,28 @@
 \alias{jurkatFCB}
 \title{48 Jurkat Samples Barcoded using Fluorescent Cell Barcoding}
 \format{
-An object of class \code{"flowFrame"}; see \code{\link[flowCore]{flowFrame-class}}.
-}
-\source{
-Flow Repository link
+An object of class \code{"flowFrame"} with 191,233 cells and 16
+  channels; see \code{\link[flowCore]{flowFrame-class}}.
 }
 \usage{
 data(jurkatFCB)
 }
 \description{
-Dataset consisting of 48 jurkat samples stained with combinations of
+Dataset consisting of 48 Jurkat samples stained with combinations of
 Pacific Orange (6 levels), Pacific Blue (8 levels), and Alexa Fluor 750
-(1 level). Acquired as seperate FCS files and concatated together into a
-single file, adding on row and col channels indicating the original row
-and column for the data.
+(1 level, on channel APC-H7-A) for a total of 48 wells. Samples were
+acquired as separate FCS files and concatenated into a single file, with
+\code{row} and \code{col} channels added to record each cell's original
+sample of origin.
 }
 \examples{
 data(jurkatFCB)
+jurkatFCB
 }
 \references{
-Reisman et al. (2020)
+Reisman et al. (2021) \doi{10.1002/cyto.a.24363}
+}
+\seealso{
+\code{\link{jurkatFCB_std}} for the companion external standard
 }
 \keyword{datasets}

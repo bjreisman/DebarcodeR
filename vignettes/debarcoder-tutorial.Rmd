@@ -79,12 +79,13 @@ jurkatFCB  <- Subset(jurkatFCB, filter_is)
 
 DebarcodeR corrects for dye uptake heterogeneity using an **external
 standard**: a control population stained with a single level of each
-barcoding dye.  Because the tutorial data was acquired sample-by-sample,
-we can extract a single well to serve as the external standard.
+barcoding dye.  `jurkatFCB_std` is a pre-extracted single-well subset of
+`jurkatFCB` (row 1, column 1) that serves as the external standard for
+this tutorial.
 
-```{r ext-std}
-filter_std    <- expressionFilter(`row` == 1 & `col` == 1, filterId = "std")
-jurkatFCB_std <- Subset(jurkatFCB, filter_std)
+```{r ext-std, eval = TRUE}
+data("jurkatFCB_std")
+jurkatFCB_std
 ```
 
 ---
