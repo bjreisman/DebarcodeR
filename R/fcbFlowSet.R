@@ -19,6 +19,11 @@
 #' @return An object of class \code{fcbFlowSet}.
 #' @export
 fcbFlowSet <- function(x) {
+  if (inherits(x, "cytoset")) {
+    if (!requireNamespace("flowWorkspace", quietly = TRUE))
+      stop("Package 'flowWorkspace' is required to convert cytoset objects")
+    x <- flowWorkspace::cytoset_to_flowSet(x)
+  }
   if (!inherits(x, "flowSet")) {
     stop("x must be an object of class flowSet")
   }
