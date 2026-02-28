@@ -24,16 +24,19 @@ plot.fcbflowframe <- function(fcbFlowFrame, plot = "assignments", seed = 1) {
   mydata <- cbind(deskewed, assignment = assignment)
   mydata.assigned <- mydata[mydata$assignment != "0.0",]
 
+  y_var <- colnames(deskewed)[1]
+  x_var <- colnames(deskewed)[2]
+
   if (plot == 'data') {
     myplot <- mydata.assigned
   }
   if (plot == "assignments") {
 
     myplot <- ggplot(mydata,
-      aes_string(
-        y = colnames(deskewed)[1],
-        x = colnames(deskewed)[2],
-        col  = 'assignment'
+      aes(
+        y = .data[[y_var]],
+        x = .data[[x_var]],
+        col  = .data[["assignment"]]
       )
     ) +
       geom_point(shape = ".") +
@@ -41,31 +44,31 @@ plot.fcbflowframe <- function(fcbFlowFrame, plot = "assignments", seed = 1) {
   } else if (plot == 'density') {
     myplot <- ggplot(
       mydata,
-      aes_string(
-        y = colnames(deskewed)[1],
-        x = colnames(deskewed)[2]
+      aes(
+        y = .data[[y_var]],
+        x = .data[[x_var]]
       )
     ) +
       geom_point(shape = ".", color = "grey30") +
-      stat_density_2d(aes(fill = assignment, alpha = after_stat(level)),
+      stat_density_2d(aes(fill = .data[["assignment"]], alpha = after_stat(level)),
                       data = mydata.assigned,
                       geom = "polygon", color = NA, bins = 8) +
       scale_fill_manual(values = mypal[-1])
 
   } else if (plot == 'chull') {
-    mydata.chull <- as_tibble(mydata.assigned) %>%
-      group_by(assignment) %>%
-      slice(chull(pacific_orange_a, pacific_blue_a))
+    mydata.chull <- mydata.assigned |>
+      dplyr::group_by(.data[["assignment"]]) |>
+      dplyr::slice(chull(.data[[y_var]], .data[[x_var]]))
 
     myplot <- ggplot(
       mydata,
-      aes_string(
-        y = colnames(deskewed)[1],
-        x = colnames(deskewed)[2]
+      aes(
+        y = .data[[y_var]],
+        x = .data[[x_var]]
       )
     ) +
     geom_point(shape = ".", color = "grey30") +
-      geom_shape(data = mydata.chull, aes(fill = assignment),
+      geom_shape(data = mydata.chull, aes(fill = .data[["assignment"]]),
                  expand = unit(0.25, "mm"),
                  radius = unit(1, 'mm'), alpha = 0.25) +
       scale_fill_manual(values = mypal[-1])

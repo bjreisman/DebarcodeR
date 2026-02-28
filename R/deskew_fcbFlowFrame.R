@@ -50,12 +50,12 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
 
 
   # fcb sample extracted
-  fcb <- janitor::clean_names(as.data.frame(fcbFlowFrame@exprs))
+  fcb <- janitor::clean_names(as.data.frame(exprs(fcbFlowFrame)))
   # uptake sample extracted
   if (is.null(uptake)) {
-    uptake = janitor::clean_names(as.data.frame(fcbFlowFrame@uptake.ff@exprs))
+    uptake = janitor::clean_names(as.data.frame(exprs(fcbFlowFrame@uptake.ff)))
   } else if (inherits(uptake, "flowFrame")) {
-    uptake = janitor::clean_names(as.data.frame(uptake@exprs))
+    uptake = janitor::clean_names(as.data.frame(exprs(uptake)))
   } else {
     stop("Uptake control must be of class 'flowFrame'")
   }

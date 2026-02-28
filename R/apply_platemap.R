@@ -6,7 +6,7 @@
 #' @param prefix character, file prefix for new FCS files, if not specifed, will pull from FCS file $FIL keyword
 #' @return an fcbFlowSet object with updated names and pData
 #' @import flowCore janitor
-#' @importFrom dplyr %>% left_join tibble mutate mutate_all
+#' @importFrom dplyr left_join mutate across everything if_else
 #' @export
 apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
   if (!inherits(fcbFlowSet, "fcbFlowSet")) {
@@ -16,14 +16,14 @@ apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
   if (!inherits(platemap, "data.frame")) {
     stop("Input must be a data.frame")
   }
+
+  platemap_clean <- janitor::clean_names(platemap)
+  platemap_clean <- dplyr::mutate(platemap_clean, across(everything(), as.character))
+
   pData.orig <- pData(fcbFlowSet)
   suppressMessages({
-    pData.new <- pData.orig %>%
-      left_join(platemap %>%
-                  janitor::clean_names() %>%
-                  dplyr::mutate_all(as.character))
+    pData.new <- left_join(pData.orig, platemap_clean)
   })
-  #rownames(pData.new) <- row.names(pData.orig)
   assigned.fs <- fcbFlowSet[!is.na(pData.new$well)]
   if (drop0 == FALSE) {
     unassigned.fs <- fcbFlowSet[is.na(pData.new$well)]
@@ -35,11 +35,9 @@ apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
     out.list <- c(out.list, "Unassigned" = unassigned.ff)
     out.fs <- flowSet(out.list)
     suppressMessages({suppressWarnings({
-      pData.new <- left_join(pData(out.fs), pData(fcbFlowSet)) %>%
-        left_join(platemap %>%
-                    janitor::clean_names() %>%
-                    mutate_all(as.character)) %>%
-        mutate(well = if_else(is.na(well), "Unassigned", well))
+      pData.new <- left_join(pData(out.fs), pData(fcbFlowSet))
+      pData.new <- left_join(pData.new, platemap_clean)
+      pData.new <- dplyr::mutate(pData.new, well = if_else(is.na(well), "Unassigned", well))
     })})
     rownames(pData.new) <- rownames(pData(out.fs))
     pData(out.fs) <- pData.new
@@ -47,11 +45,11 @@ apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
     out.fs <- assigned.fs
   }
   if (is.na(prefix)) {
-    pData(out.fs)$Prefix <- tools::file_path_sans_ext(unlist(fsApply(out.fs ,keyword, "FILENAME")))
-  } else ({
+    pData(out.fs)$Prefix <- tools::file_path_sans_ext(unlist(fsApply(out.fs, keyword, "FILENAME")))
+  } else {
     pData(out.fs)$Prefix <- prefix
-  })
-    pData(out.fs)$Filename <- apply(pData(out.fs)[, c("Prefix", "well")], 1, paste0, collapse = "_")
-    sampleNames(out.fs) <- pData(out.fs)$Filename
-    return(out.fs)
+  }
+  pData(out.fs)$Filename <- apply(pData(out.fs)[, c("Prefix", "well")], 1, paste0, collapse = "_")
+  sampleNames(out.fs) <- pData(out.fs)$Filename
+  return(out.fs)
 }
