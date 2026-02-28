@@ -33,6 +33,11 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
 
 
   #validation of inputs -------------------------
+  if (inherits(fcbFlowFrame, "cytoframe")) {
+    if (!requireNamespace("flowWorkspace", quietly = TRUE))
+      stop("Package 'flowWorkspace' is required to convert cytoframe objects")
+    fcbFlowFrame <- flowWorkspace::cytoframe_to_flowFrame(fcbFlowFrame)
+  }
   if (inherits(fcbFlowFrame, "fcbFlowFrame")) {
     # already correct class, proceed
   } else if (inherits(fcbFlowFrame, "flowFrame")) {
@@ -57,6 +62,11 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
   # fcb sample extracted
   fcb <- janitor::clean_names(as.data.frame(exprs(fcbFlowFrame)))
   # uptake sample extracted
+  if (inherits(uptake, "cytoframe")) {
+    if (!requireNamespace("flowWorkspace", quietly = TRUE))
+      stop("Package 'flowWorkspace' is required to convert cytoframe objects")
+    uptake <- flowWorkspace::cytoframe_to_flowFrame(uptake)
+  }
   if (inherits(uptake, "flowFrame")) {
     uptake <- janitor::clean_names(as.data.frame(exprs(uptake)))
   } else {

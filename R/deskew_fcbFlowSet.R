@@ -34,6 +34,11 @@ deskew_fcbFlowSet <- function(fcbFlowSet,
 
 
   #validation of inputs -------------------------
+  if (inherits(fcbFlowSet, "cytoset")) {
+    if (!requireNamespace("flowWorkspace", quietly = TRUE))
+      stop("Package 'flowWorkspace' is required to convert cytoset objects")
+    fcbFlowSet <- flowWorkspace::cytoset_to_flowSet(fcbFlowSet)
+  }
   if (inherits(fcbFlowSet, "fcbFlowSet")) {
     # already correct class, proceed
   } else if (inherits(fcbFlowSet, "flowSet")) {
