@@ -12,8 +12,7 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment  = "#>",
-  eval     = FALSE   # pipeline steps are slow; run interactively
+  comment  = "#>"
 )
 ```
 
@@ -40,29 +39,27 @@ The output is an `fcbFlowSet` (a subclass of `flowSet`) with one
 `flowFrame` per debarcoded sample, compatible with the full
 flowCore/Cytoverse ecosystem.
 
-```{r libs, eval = TRUE, message = FALSE}
+```{r libs, message = FALSE}
 library(DebarcodeR)
 library(flowCore)
 library(ggplot2)
 library(scales)
-library(dplyr)
 ```
-
-***
 
 ## Dataset
 
-The `jurkatFCB` dataset contains 191,233 Jurkat T cells barcoded with:
+The `jurkatFCB` dataset contains 24,000 Jurkat T cells (a representative
+subsample of the full experiment) barcoded with:
 
-- **Pacific Blue-A**: 8 levels  
-- **Pacific Orange-A**: 6 levels  
+- **Pacific Blue-A**: 8 levels
+- **Pacific Orange-A**: 6 levels
 - **APC-H7-A** (Alexa Fluor 750): 1 level (internal standard)
 
 for a total of 48 samples.  The cells were run in separate FCS files
 and concatenated, with `row` and `col` columns recording each cell's
 original sample of origin.
 
-```{r load-data, eval = TRUE}
+```{r load-data}
 data("jurkatFCB")
 jurkatFCB
 ```
@@ -75,11 +72,11 @@ filter_is  <- expressionFilter(`APC-H7-A` > 2.5, filterId = "ISfilter")
 jurkatFCB  <- Subset(jurkatFCB, filter_is)
 ```
 
-The two barcoding channels form an 8×6 grid — one cluster per sample:
+The two barcoding channels form an 8x6 grid — one cluster per sample:
 
-```{r plot-raw, eval = TRUE, fig.width = 5, fig.height = 5, message = FALSE, warning = FALSE}
+```{r plot-raw, fig.width = 5, fig.height = 5, message = FALSE, warning = FALSE}
 set.seed(6183)
-plot_raw <- as.data.frame(exprs(jurkatFCB))[sample(nrow(jurkatFCB), 30000), ]
+plot_raw <- as.data.frame(exprs(jurkatFCB))
 ggplot(plot_raw, aes(x = `Pacific Blue-A`, y = `Pacific Orange-A`)) +
   geom_bin2d(bins = 150) +
   scale_fill_viridis_c(option = "A", trans = "sqrt", name = "Count") +
@@ -89,8 +86,6 @@ ggplot(plot_raw, aes(x = `Pacific Blue-A`, y = `Pacific Orange-A`)) +
   theme_classic()
 ```
 
-***
-
 ## External standard
 
 DebarcodeR corrects for dye uptake heterogeneity using an **external
@@ -99,20 +94,10 @@ barcoding dye.  `jurkatFCB_std` is a pre-extracted single-well subset of
 `jurkatFCB` (row 1, column 1) that serves as the external standard for
 this tutorial.
 
-```{r ext-std, eval = TRUE}
+```{r ext-std}
 data("jurkatFCB_std")
 jurkatFCB_std
 ```
-
-*The plots in steps 1–4 below are pre-computed on a representative
-20,000-cell subsample for illustration.  Running the pipeline code on the
-full dataset produces equivalent results.*
-
-```{r load-plot-data, eval = TRUE, include = FALSE}
-load("data/vignette_plot_data.rda")
-```
-
-***
 
 ## Step 1: Deskew
 
@@ -124,7 +109,7 @@ Channel names must be original FCS parameter names (e.g.
 `"Pacific Blue-A"`, not `"pacific_blue_a"`).  Including the internal
 standard (`APC-H7-A`) as a predictor substantially improves correction.
 
-```{r deskew}
+```{r deskew, message = FALSE}
 fcb <- fcbFlowFrame(jurkatFCB)
 
 predictors <- c("FSC-A", "SSC-A", "FSC-H", "SSC-H", "FSC-W", "SSC-W", "APC-H7-A")
@@ -144,10 +129,13 @@ fcb
 Deskewing removes the correlation between cell size and fluorescence
 intensity, sharpening the separation between adjacent levels:
 
-```{r plot-deskew, eval = TRUE, fig.width = 7, fig.height = 3.5, message = FALSE, warning = FALSE}
+```{r plot-deskew, fig.width = 7, fig.height = 3.5, message = FALSE, warning = FALSE}
+raw_pb      <- exprs(jurkatFCB)[, "Pacific Blue-A"]
+deskewed_pb <- fcb@barcodes[["Pacific Blue-A"]][["deskewing"]][["values"]]
+
 deskew_long <- rbind(
-  data.frame(step = "Before deskewing", value = vignette_plot_data$deskew$raw),
-  data.frame(step = "After deskewing",  value = vignette_plot_data$deskew$deskewed)
+  data.frame(step = "Before deskewing", value = raw_pb),
+  data.frame(step = "After deskewing",  value = deskewed_pb)
 )
 deskew_long$step <- factor(deskew_long$step,
                             levels = c("Before deskewing", "After deskewing"))
@@ -159,28 +147,29 @@ ggplot(deskew_long, aes(x = value)) +
   theme_classic()
 ```
 
-***
-
 ## Step 2: Cluster
 
 `cluster_fcbFlowFrame` fits a Gaussian mixture model (via `mixsmsn`)
 to the deskewed values for each channel to estimate the probability of
 each cell originating from each barcoding level.
 
-```{r cluster}
-fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",   levels = 8)
-fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+```{r cluster, message = FALSE, warning = FALSE}
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
+                            levels = 8, subsample = 10000)
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A",
+                            levels = 6, subsample = 10000)
 fcb
 ```
 
 The Gaussian mixture model identifies each level as a distinct component.
 Cells are colored by their most probable level assignment:
 
-```{r plot-cluster, eval = TRUE, fig.width = 6.5, fig.height = 4, message = FALSE, warning = FALSE}
-cl_df    <- vignette_plot_data$cluster_pb
-prob_mat <- as.matrix(cl_df[, -1])
-cl_df$level <- factor(colnames(prob_mat)[max.col(prob_mat)],
-                      levels = colnames(prob_mat))
+```{r plot-cluster, fig.width = 6.5, fig.height = 4, message = FALSE, warning = FALSE}
+prob_mat <- fcb@barcodes[["Pacific Blue-A"]][["clustering"]][["probabilities"]]
+level <- factor(colnames(prob_mat)[max.col(prob_mat)],
+                levels = colnames(prob_mat))
+
+cl_df <- data.frame(deskewed = deskewed_pb, level = level)
 ggplot(cl_df, aes(x = deskewed, fill = level)) +
   geom_histogram(bins = 150, position = "stack", color = NA) +
   scale_fill_brewer(palette = "RdYlBu", name = "Level",
@@ -190,8 +179,6 @@ ggplot(cl_df, aes(x = deskewed, fill = level)) +
   theme_classic()
 ```
 
-***
-
 ## Step 3: Multivariate EM optimization *(optional)*
 
 `em_optimize` refines the univariate clustering by fitting a
@@ -199,11 +186,11 @@ multivariate Gaussian mixture model across all barcoding channels.
 This accounts for sample-to-sample correlated uptake variation
 and typically improves well-level separation.
 
-```{r em}
-fcb <- em_optimize(fcb, niter = 5)
+```{r em, message = FALSE}
+fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
+fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
+fcb <- em_optimize(fcb, niter = 3)
 ```
-
-***
 
 ## Step 4: Assign
 
@@ -224,13 +211,23 @@ fcb <- assign_fcbFlowFrame(fcb,
                            ambiguitycut  = 0.05)
 ```
 
-After assignment, the 8×6 grid of samples is cleanly resolved in the
+After assignment, the 8x6 grid of samples is cleanly resolved in the
 deskewed channel space (cells not meeting the cutoffs are excluded):
 
-```{r plot-assign, eval = TRUE, fig.width = 5.5, fig.height = 5.5, message = FALSE, warning = FALSE}
-asgn    <- vignette_plot_data$assignments
-n_wells <- length(unique(asgn$well))
-ggplot(asgn, aes(x = pb, y = po, color = well)) +
+```{r plot-assign, fig.width = 5.5, fig.height = 5.5, message = FALSE, warning = FALSE}
+asgn <- getAssignments(fcb)
+deskewed_po <- fcb@barcodes[["Pacific Orange-A"]][["deskewing"]][["values"]]
+assigned <- asgn[["Pacific Blue-A"]] != "0" & asgn[["Pacific Orange-A"]] != "0"
+well_id <- paste(asgn[["Pacific Blue-A"]], asgn[["Pacific Orange-A"]], sep = ".")
+
+asgn_df <- data.frame(
+  pb   = deskewed_pb[assigned],
+  po   = deskewed_po[assigned],
+  well = well_id[assigned]
+)
+n_wells <- length(unique(asgn_df$well))
+
+ggplot(asgn_df, aes(x = pb, y = po, color = well)) +
   geom_point(size = 0.15, alpha = 0.4) +
   scale_color_manual(values = hue_pal()(n_wells), guide = "none") +
   labs(x = "Pacific Blue-A (deskewed)", y = "Pacific Orange-A (deskewed)",
@@ -239,8 +236,6 @@ ggplot(asgn, aes(x = pb, y = po, color = well)) +
   theme_classic()
 ```
 
-***
-
 ## Step 5: Split and apply plate map
 
 `getAssignments` extracts the discrete assignments as a list of factors,
@@ -248,8 +243,7 @@ and `split` divides the flowFrame into one flowFrame per barcode
 combination.
 
 ```{r split}
-assignments  <- getAssignments(fcb)
-debarcoded_fs <- split(jurkatFCB, assignments)
+debarcoded_fs <- split(jurkatFCB, asgn)
 debarcoded_fs
 ```
 
@@ -260,10 +254,10 @@ underscores, as produced by `janitor::clean_names()`).
 
 ```{r platemap}
 myplatemap <- data.frame(
-  pacific_blue_a   = as.character(rep(1:8, times = 6)),
-  pacific_orange_a = as.character(rep(1:6, each  = 8)),
-  well             = paste0(rep(LETTERS[1:8], times = 6),
-                            formatC(rep(1:6, each = 8), width = 2, flag = "0"))
+  pacific_blue_a   = as.character(rep(seq_len(8), times = 6)),
+  pacific_orange_a = as.character(rep(seq_len(6), each  = 8)),
+  well             = paste0(rep(LETTERS[seq_len(8)], times = 6),
+                            formatC(rep(seq_len(6), each = 8), width = 2, flag = "0"))
 )
 
 debarcoded_fs <- apply_platemap(debarcoded_fs,
@@ -272,19 +266,15 @@ debarcoded_fs <- apply_platemap(debarcoded_fs,
 sampleNames(debarcoded_fs)
 ```
 
-***
-
 ## Writing FCS files
 
 The debarcoded `fcbFlowSet` is a standard `flowSet` and can be written
 to disk with `flowCore::write.flowSet`:
 
-```{r write}
+```{r write, eval = FALSE}
 dir.create("debarcoded_output", showWarnings = FALSE)
 write.flowSet(debarcoded_fs, outdir = "debarcoded_output")
 ```
-
-***
 
 ## Further reading
 
@@ -295,8 +285,6 @@ write.flowSet(debarcoded_fs, outdir = "debarcoded_output")
   allows high-throughput drug screening and signaling profiling.*
   Nature Methods.
 
-***
-
-```{r session-info, eval = TRUE}
+```{r session-info}
 sessionInfo()
 ```

@@ -46,6 +46,8 @@ apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
   platemap_clean <- dplyr::mutate(platemap_clean, across(everything(), as.character))
 
   pData.orig <- pData(fcbFlowSet)
+  # Clean pData column names to match cleaned platemap names
+  names(pData.orig) <- janitor::make_clean_names(names(pData.orig))
   suppressMessages({
     pData.new <- left_join(pData.orig, platemap_clean)
   })
@@ -60,7 +62,10 @@ apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
     out.list <- c(out.list, "Unassigned" = unassigned.ff)
     out.fs <- flowSet(out.list)
     suppressMessages({suppressWarnings({
-      pData.new <- left_join(pData(out.fs), pData(fcbFlowSet))
+      pData_out <- pData(out.fs)
+      names(pData_out) <- janitor::make_clean_names(names(pData_out))
+      pData_orig_clean <- pData.orig  # already cleaned above
+      pData.new <- left_join(pData_out, pData_orig_clean)
       pData.new <- left_join(pData.new, platemap_clean)
       pData.new <- dplyr::mutate(pData.new, well = if_else(is.na(.data$well), "Unassigned", .data$well))
     })})
