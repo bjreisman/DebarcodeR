@@ -43,6 +43,8 @@ flowCore/Cytoverse ecosystem.
 ```{r libs, eval = TRUE, message = FALSE}
 library(DebarcodeR)
 library(flowCore)
+library(ggplot2)
+library(scales)
 library(dplyr)
 ```
 
@@ -73,6 +75,20 @@ filter_is  <- expressionFilter(`APC-H7-A` > 2.5, filterId = "ISfilter")
 jurkatFCB  <- Subset(jurkatFCB, filter_is)
 ```
 
+The two barcoding channels form an 8×6 grid — one cluster per sample:
+
+```{r plot-raw, eval = TRUE, fig.width = 5, fig.height = 5, message = FALSE, warning = FALSE}
+set.seed(6183)
+plot_raw <- as.data.frame(exprs(jurkatFCB))[sample(nrow(jurkatFCB), 30000), ]
+ggplot(plot_raw, aes(x = `Pacific Blue-A`, y = `Pacific Orange-A`)) +
+  geom_bin2d(bins = 150) +
+  scale_fill_viridis_c(option = "A", trans = "sqrt", name = "Count") +
+  labs(x = "Pacific Blue-A", y = "Pacific Orange-A",
+       title = "Raw barcoding channels: 8 \u00d7 6 sample grid") +
+  coord_fixed() +
+  theme_classic()
+```
+
 ---
 
 ## External standard
@@ -86,6 +102,14 @@ this tutorial.
 ```{r ext-std, eval = TRUE}
 data("jurkatFCB_std")
 jurkatFCB_std
+```
+
+*The plots in steps 1–4 below are pre-computed on a representative
+20,000-cell subsample for illustration.  Running the pipeline code on the
+full dataset produces equivalent results.*
+
+```{r load-plot-data, eval = TRUE, include = FALSE}
+load("data/vignette_plot_data.rda")
 ```
 
 ---
@@ -117,6 +141,24 @@ fcb <- deskew_fcbFlowFrame(fcb,
 fcb
 ```
 
+Deskewing removes the correlation between cell size and fluorescence
+intensity, sharpening the separation between adjacent levels:
+
+```{r plot-deskew, eval = TRUE, fig.width = 7, fig.height = 3.5, message = FALSE, warning = FALSE}
+deskew_long <- rbind(
+  data.frame(step = "Before deskewing", value = vignette_plot_data$deskew$raw),
+  data.frame(step = "After deskewing",  value = vignette_plot_data$deskew$deskewed)
+)
+deskew_long$step <- factor(deskew_long$step,
+                            levels = c("Before deskewing", "After deskewing"))
+ggplot(deskew_long, aes(x = value)) +
+  geom_histogram(bins = 150, fill = "steelblue4", color = NA) +
+  facet_wrap(~step, nrow = 1) +
+  labs(x = "Pacific Blue-A", y = "Cell count",
+       title = "Deskewing sharpens level separation") +
+  theme_classic()
+```
+
 ---
 
 ## Step 2: Cluster
@@ -129,6 +171,23 @@ each cell originating from each barcoding level.
 fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",   levels = 8)
 fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
 fcb
+```
+
+The Gaussian mixture model identifies each level as a distinct component.
+Cells are colored by their most probable level assignment:
+
+```{r plot-cluster, eval = TRUE, fig.width = 6.5, fig.height = 4, message = FALSE, warning = FALSE}
+cl_df    <- vignette_plot_data$cluster_pb
+prob_mat <- as.matrix(cl_df[, -1])
+cl_df$level <- factor(colnames(prob_mat)[max.col(prob_mat)],
+                      levels = colnames(prob_mat))
+ggplot(cl_df, aes(x = deskewed, fill = level)) +
+  geom_histogram(bins = 150, position = "stack", color = NA) +
+  scale_fill_brewer(palette = "RdYlBu", name = "Level",
+                    guide = guide_legend(reverse = TRUE)) +
+  labs(x = "Pacific Blue-A (deskewed)", y = "Cell count",
+       title = "Clustering: 8 levels identified (Pacific Blue-A)") +
+  theme_classic()
 ```
 
 ---
@@ -163,6 +222,21 @@ fcb <- assign_fcbFlowFrame(fcb,
                            channel       = "wells",
                            likelihoodcut = 12,
                            ambiguitycut  = 0.05)
+```
+
+After assignment, the 8×6 grid of samples is cleanly resolved in the
+deskewed channel space (cells not meeting the cutoffs are excluded):
+
+```{r plot-assign, eval = TRUE, fig.width = 5.5, fig.height = 5.5, message = FALSE, warning = FALSE}
+asgn    <- vignette_plot_data$assignments
+n_wells <- length(unique(asgn$well))
+ggplot(asgn, aes(x = pb, y = po, color = well)) +
+  geom_point(size = 0.15, alpha = 0.4) +
+  scale_color_manual(values = hue_pal()(n_wells), guide = "none") +
+  labs(x = "Pacific Blue-A (deskewed)", y = "Pacific Orange-A (deskewed)",
+       title = "Final assignments: 48 samples resolved") +
+  coord_fixed() +
+  theme_classic()
 ```
 
 ---
