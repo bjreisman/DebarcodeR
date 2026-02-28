@@ -39,7 +39,7 @@ discretely assign each cell to a barcoding level.  Unassigned cells are
 given a level of 0 rather than being discarded.
 }
 \examples{
-\dontrun{
+\donttest{
 # Requires deskewed and clustered fcbFlowFrame — see cluster_fcbFlowFrame()
 fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
 fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")

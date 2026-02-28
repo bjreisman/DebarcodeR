@@ -45,7 +45,7 @@ An fcbFlowSet with barcode slots populated for the specified channel.
 Applies \code{\link{deskew_fcbFlowFrame}} to each frame in an fcbFlowSet.
 }
 \examples{
-\dontrun{
+\donttest{
 data(jurkatFCB)
 library(flowCore)
 

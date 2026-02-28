@@ -42,7 +42,7 @@ split_by_assignments <- function(x, f, flowSet) {
 #' @seealso \code{\link{getAssignments}} to generate \code{f},
 #'   \code{\link{apply_platemap}} to rename wells after splitting
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # After the full pipeline (deskew -> cluster -> assign):
 #' assignments <- getAssignments(fcb)
 #' fcbfs <- split(fcb, assignments)

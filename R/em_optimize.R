@@ -20,7 +20,7 @@
 #'   \code{channel = "wells"}), \code{\link{cluster_fcbFlowFrame}} for the
 #'   preceding univariate clustering
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Requires all barcoding channels deskewed, clustered, and assigned
 #' # See deskew_fcbFlowFrame(), cluster_fcbFlowFrame(), assign_fcbFlowFrame()
 #' fcb <- em_optimize(fcb, niter = 3)

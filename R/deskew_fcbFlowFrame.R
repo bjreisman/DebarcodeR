@@ -17,7 +17,7 @@
 #'   \code{\link{deskew_fcbFlowSet}} to process an entire flowSet,
 #'   \code{\link{morphology_corr.earth}} for details on the default method
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(jurkatFCB)
 #' data(jurkatFCB_std)  # pre-extracted single-well uptake control
 #'

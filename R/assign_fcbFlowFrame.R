@@ -24,7 +24,7 @@
 #'   \code{\link{em_optimize}} for multivariate refinement before assigning
 #'   \code{"wells"}, \code{\link{getAssignments}} to extract the result
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Requires deskewed and clustered fcbFlowFrame — see cluster_fcbFlowFrame()
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")

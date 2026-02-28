@@ -27,7 +27,7 @@ one per barcoding channel.  The result is suitable for passing directly
 to \code{\link{split}} to generate one flowFrame per barcode combination.
 }
 \examples{
-\dontrun{
+\donttest{
 # After all pipeline steps are complete:
 assignments <- getAssignments(fcb)
 # assignments is a named list of factors, e.g.:

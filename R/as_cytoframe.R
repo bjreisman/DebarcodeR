@@ -13,7 +13,7 @@
 #' @seealso \code{\link{as.cytoset}} to convert an fcbFlowSet,
 #'   \code{\link{as.flowFrame}} for the base flowCore equivalent
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Requires flowWorkspace
 #' data(jurkatFCB)
 #' fcb <- fcbFlowFrame(jurkatFCB)
@@ -47,7 +47,7 @@ setMethod("as.cytoframe", "fcbFlowFrame", function(x, ...) {
 #' @return A \code{cytoset} object.
 #' @seealso \code{\link{as.cytoframe}} to convert a single fcbFlowFrame
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Requires flowWorkspace
 #' data(jurkatFCB)
 #' library(flowCore)

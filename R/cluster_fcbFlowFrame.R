@@ -19,7 +19,7 @@ compute_histogram_probs <- function(vec, breaks, levels) {
   vec.split <- split(vec, classif)
 
   hist.probs <- list()
-  for (i in as.character(1:max(as.numeric(names(vec.split))))) {
+  for (i in as.character(seq_len(max(as.numeric(names(vec.split)))))) {
     myhist <- hist(vec.split[[i]], 100, plot = FALSE)
     binprobs <- myhist$counts / sum(myhist$counts)
     hist.probs.i <- rep(0, times = length(vec))
@@ -67,7 +67,7 @@ compute_histogram_probs <- function(vec, breaks, levels) {
 #'   \code{\link{assign_fcbFlowFrame}} for the next pipeline step,
 #'   \code{\link{cluster_fcbFlowSet}} to process an entire flowSet
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Requires a deskewed fcbFlowFrame — see deskew_fcbFlowFrame()
 #' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",   levels = 8)
 #' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)

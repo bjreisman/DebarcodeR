@@ -17,7 +17,7 @@
 #'   \code{\link[base]{split}} to split data by the returned factors,
 #'   \code{\link{apply_platemap}} to map level combinations to well names
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # After all pipeline steps are complete:
 #' assignments <- getAssignments(fcb)
 #' # assignments is a named list of factors, e.g.:

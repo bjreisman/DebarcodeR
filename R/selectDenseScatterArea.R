@@ -6,6 +6,9 @@
 #' @param data Data frame or matrix of flow cytometry data.
 #' @param fsc_ssc Named character vector with FSC and SSC channel names.
 #' @param subsample Integer, number of cells to subsample for density estimation.
+#' @return A named list with two components: \code{loc}, a matrix of (FSC, SSC)
+#'   coordinates for cells inside the 95\% density contour, and \code{c}, a
+#'   numeric vector of cumulative density weights for those cells.
 # fsc_ssc <- c(fsc = 'FSC-A', ssc = 'SSC-A')
 # fsc_ssc[['fsc']]
 #fsc_ssc[['fsc']]

@@ -13,7 +13,10 @@
 
 \item{plot}{Character, plot type: "assignments" (default), "density", "chull", or "data".}
 
-\item{seed}{Integer, random seed for color palette generation (default 1).}
+\item{seed}{Deprecated; no longer used.}
+}
+\value{
+A ggplot2 object.
 }
 \description{
 Plot debarcoding assignments

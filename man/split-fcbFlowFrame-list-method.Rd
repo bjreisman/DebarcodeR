@@ -30,7 +30,7 @@ Splits an fcbFlowFrame into separate flowFrames based on barcode
 assignments, returned as an fcbFlowSet with updated pData.
 }
 \examples{
-\dontrun{
+\donttest{
 # After the full pipeline (deskew -> cluster -> assign):
 assignments <- getAssignments(fcb)
 fcbfs <- split(fcb, assignments)

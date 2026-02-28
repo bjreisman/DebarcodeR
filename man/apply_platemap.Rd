@@ -30,7 +30,7 @@ Joins barcoding level assignments to human-readable well names, updates
 \code{pData}, and renames each flowFrame to \code{<prefix>_<well>}.
 }
 \examples{
-\dontrun{
+\donttest{
 # Build a platemap: Pacific Blue (8 levels) x Pacific Orange (6 levels)
 myplatemap <- data.frame(
   pacific_blue_a   = as.character(rep(1:8, times = 6)),

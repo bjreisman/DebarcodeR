@@ -60,7 +60,7 @@ This function allows you to calculate the probability of a cell originating from
 either gaussian mixture modeling or jenks natural breaks classification
 }
 \examples{
-\dontrun{
+\donttest{
 # Requires a deskewed fcbFlowFrame — see deskew_fcbFlowFrame()
 fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",   levels = 8)
 fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)

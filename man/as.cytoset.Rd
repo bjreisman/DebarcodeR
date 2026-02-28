@@ -32,7 +32,7 @@ Requires the \code{flowWorkspace} package to be installed.
 
 }}
 \examples{
-\dontrun{
+\donttest{
 # Requires flowWorkspace
 data(jurkatFCB)
 library(flowCore)

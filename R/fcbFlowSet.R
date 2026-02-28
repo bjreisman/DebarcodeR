@@ -22,7 +22,7 @@
 #' @seealso \code{\link{split}} to produce an fcbFlowSet from an assigned
 #'   fcbFlowFrame, \code{\link{as.cytoset}} for coercion back to cytoset
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # fcbFlowSet is normally created via split(); direct construction is also
 #' # possible if you already have a flowSet:
 #' data(jurkatFCB)

@@ -46,7 +46,7 @@ An fcbFlowFrame with barcode slot populated for the specified channel.
 Corrects morphology based on scatter or uptake control for fcbFlowFrame
 }
 \examples{
-\dontrun{
+\donttest{
 data(jurkatFCB)
 data(jurkatFCB_std)  # pre-extracted single-well uptake control
 

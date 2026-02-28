@@ -40,7 +40,7 @@ mixture model that accounts for correlations between barcoding channels.
 Requires that all channels have been deskewed, clustered, and assigned.
 }
 \examples{
-\dontrun{
+\donttest{
 # Requires all barcoding channels deskewed, clustered, and assigned
 # See deskew_fcbFlowFrame(), cluster_fcbFlowFrame(), assign_fcbFlowFrame()
 fcb <- em_optimize(fcb, niter = 3)

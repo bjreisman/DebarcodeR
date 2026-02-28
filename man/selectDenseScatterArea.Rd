@@ -17,6 +17,11 @@ selectDenseScatterArea(
 
 \item{subsample}{Integer, number of cells to subsample for density estimation.}
 }
+\value{
+A named list with two components: \code{loc}, a matrix of (FSC, SSC)
+  coordinates for cells inside the 95\% density contour, and \code{c}, a
+  numeric vector of cumulative density weights for those cells.
+}
 \description{
 Finds the area containing 95\% of cells based on FSC/SSC density,
 used for the Knijnenburg morphology correction method.

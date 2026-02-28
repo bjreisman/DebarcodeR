@@ -17,7 +17,7 @@
 #' @seealso \code{\link{deskew_fcbFlowFrame}} for single-frame processing,
 #'   \code{\link{cluster_fcbFlowSet}} for the next pipeline step
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(jurkatFCB)
 #' library(flowCore)
 #'

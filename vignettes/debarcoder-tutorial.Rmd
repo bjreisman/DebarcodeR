@@ -294,3 +294,9 @@ write.flowSet(debarcoded_fs, outdir = "debarcoded_output")
 - Krutzik et al. (2006) *Fluorescent cell barcoding in flow cytometry
   allows high-throughput drug screening and signaling profiling.*
   Nature Methods.
+
+***
+
+```{r session-info, eval = TRUE}
+sessionInfo()
+```

@@ -5,8 +5,9 @@ utils::globalVariables("level")
 #'
 #' @param x An fcbFlowFrame with completed assignments.
 #' @param plot Character, plot type: "assignments" (default), "density", "chull", or "data".
-#' @param seed Integer, random seed for color palette generation (default 1).
+#' @param seed Deprecated; no longer used.
 #' @param ... Additional arguments (not used).
+#' @return A ggplot2 object.
 #' @method plot fcbflowframe
 #' @export
 #' @import ggplot2 ggnewscale scales ggforce
@@ -23,9 +24,8 @@ plot.fcbflowframe <- function(x, ..., plot = "assignments", seed = 1) {
   assignment <- apply(assignment, 1, paste0, collapse = ".")
   assignment[grepl(0, assignment)] <- "0.0"
   assignment[grepl("0", assignment)] <- "0.0"
-  set.seed(seed)
   mypal <- hue_pal()(length(table(assignment)) - 1)
-  mypal <- c("grey50", sample(mypal))
+  mypal <- c("grey50", mypal)
   mydata <- cbind(deskewed, assignment = assignment)
   mydata.assigned <- mydata[mydata$assignment != "0.0",]
 

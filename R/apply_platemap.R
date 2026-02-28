@@ -18,7 +18,7 @@
 #' @seealso \code{\link{getAssignments}} and \code{\link[base]{split}} for
 #'   the preceding steps
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Build a platemap: Pacific Blue (8 levels) x Pacific Orange (6 levels)
 #' myplatemap <- data.frame(
 #'   pacific_blue_a   = as.character(rep(1:8, times = 6)),

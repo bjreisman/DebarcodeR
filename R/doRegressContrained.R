@@ -178,7 +178,7 @@ generate_regressors <- function(D, rm){
   X <- matrix(0, nrow = length(Y), ncol = ncol(rm))
 
   for (m in seq_len(ncol(rm))){
-    X[,m] = D[,rm[1,m]]^rm[2,m]
+    X[,m] <- D[,rm[1,m]]^rm[2,m]
   }
 
   return(list('Y' = Y, 'D' = D, 'X' = X))
@@ -205,8 +205,8 @@ generate_regressors <- function(D, rm){
 #' @seealso \code{\link{doRegressConstrained}}
 constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
                                    OFFSET, Bx, rm, monodir){
-  S = 5
-  area = 0.5
+  S <- 5
+  area <- 0.5
   xlimr <- c(floor(min(fsc_limits)), ceiling(max(fsc_limits)))
   ylimr <- c(floor(min(ssc_limits)), ceiling(max(ssc_limits)))
   P <- MASS::kde2d(D[,1], D[,2], n=2^S, lims= c(xlimr, ylimr))
@@ -238,7 +238,7 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
   }
 
   #2. Select points to evaluate on monotonicity
-  S= 3
+  S <- 3
   P <- MASS::kde2d(D[,1], D[,2], n=2^S, lims= c(xlimr, ylimr))
   XX <- matrix(rep(P[[1]],2^S), ncol = 2^S, nrow = 2^S, byrow = TRUE)
   YY <- matrix(rep(P[[2]],2^S), ncol = 2^S, nrow = 2^S, byrow = FALSE)
@@ -345,7 +345,7 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
   NB <- numeric(length = length(Bx))
   Bc <- pracma::lsqlincon(cbind(X, 1),Y,cbind(A,0),b)
   NOFFSET <- Bc[9]
-  NB <- Bc[1:8]
+  NB <- Bc[seq_len(8)]
 
 
   return(list('NB' = NB, 'Bc' = Bc, 'NOFFSET' = NOFFSET))
