@@ -27,6 +27,11 @@ fcbFlowFrame <- setClass("fcbFlowFrame",
 #' @return An object of class \code{fcbFlowFrame}.
 #' @export
 fcbFlowFrame <- function(x, barcodes = list()) {
+  if (inherits(x, "cytoframe")) {
+    if (!requireNamespace("flowWorkspace", quietly = TRUE))
+      stop("Package 'flowWorkspace' is required to convert cytoframe objects")
+    x <- flowWorkspace::cytoframe_to_flowFrame(x)
+  }
   if (!inherits(x, "flowFrame")) {
     stop("x must be an object of class flowFrame")
   }
