@@ -30,12 +30,12 @@ test_that("fcbFlowSet can be constructed from a cytoset", {
 test_that("deskew_fcbFlowFrame accepts cytoframe input", {
   suppressWarnings({
     result <- deskew_fcbFlowFrame(test_cf,
-                                  channel = "pacific_blue_a",
-                                  predictors = c("fsc_a", "ssc_a"),
+                                  channel = "Pacific Blue-A",
+                                  predictors = c("FSC-A", "SSC-A"),
                                   subsample = 1000)
   })
   expect_s4_class(result, "fcbFlowFrame")
-  expect_true("deskewing" %in% names(result@barcodes[["pacific_blue_a"]]))
+  expect_true("deskewing" %in% names(result@barcodes[["Pacific Blue-A"]]))
   expect_equal(nrow(result), nrow(test_ff))
 })
 
@@ -44,12 +44,12 @@ test_that("deskew_fcbFlowFrame accepts cytoframe as uptake", {
   suppressWarnings({
     result <- deskew_fcbFlowFrame(test_ff,
                                   uptake = uptake_cf,
-                                  channel = "pacific_blue_a",
-                                  predictors = c("fsc_a", "ssc_a"),
+                                  channel = "Pacific Blue-A",
+                                  predictors = c("FSC-A", "SSC-A"),
                                   subsample = 1000)
   })
   expect_s4_class(result, "fcbFlowFrame")
-  expect_true("deskewing" %in% names(result@barcodes[["pacific_blue_a"]]))
+  expect_true("deskewing" %in% names(result@barcodes[["Pacific Blue-A"]]))
 })
 
 # -- Conversion back to cytoframe/cytoset --------------------------------

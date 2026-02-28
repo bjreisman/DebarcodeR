@@ -23,7 +23,7 @@ deskew_fcbFlowSet <- function(fcbFlowSet,
                                 #channel name (char)
                                 method = "earth",
                                 #default to earth
-                                predictors = c('fsc_a', 'ssc_a'),
+                                predictors = c('FSC-A', 'SSC-A'),
                                 #defaults to fsc/ssc
                                 subsample = 20e3,
                                 ret.model = TRUE,

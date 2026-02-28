@@ -37,7 +37,7 @@ morphology_corr.earth <- function(fcb,
     updateProgress(detail = "Training adaptive splines...")}
 
   lhs <- paste0("`", predictors, "`", collapse = " + ")
-  earth.formula <- paste(channel, '~', lhs)
+  earth.formula <- paste0("`", channel, "` ~ ", lhs)
   if(what == "x"){
     earth.model <- earth(as.formula(earth.formula),
                          degree = 2,

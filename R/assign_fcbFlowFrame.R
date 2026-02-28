@@ -27,6 +27,9 @@ assign_fcbFlowFrame <- function(fcbFlowFrame,
     )
   }
 
+  # Resolve channel name against barcodes slot (which uses original names)
+  channel <- resolve_channel(channel, names(fcbFlowFrame@barcodes))
+
   if (!'clustering' %in% names(fcbFlowFrame@barcodes[[channel]])) {
     stop(
       "Input must have channels in the barcodes slot that have been run through cluster_fcbFlowFrame"

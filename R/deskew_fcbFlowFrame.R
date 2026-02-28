@@ -3,7 +3,7 @@
 #' @param fcbFlowFrame An fcbFlowFrame, flowFrame, or cytoframe object, post compensation and preprocessing.
 #' @param uptake A flowFrame or cytoframe to use as the uptake (external standard) control.
 #'   If NULL (default), the barcoded sample itself is used.
-#' @param channel The name (string) of the channel to be corrected (cleaned column name).
+#' @param channel The name (string) of the channel to be corrected (use original column name, e.g. "Pacific Blue-A").
 #' @param method The morphology correction method: "earth" (default), "lm", or "knijnenburg".
 #' @param predictors Character vector of channel names for the regression model.
 #' @param subsample Integer, number of cells to subsample for model fitting (default 20000).
@@ -22,7 +22,7 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
                                 #channel name (char)
                                 method = "earth",
                                 #default to earth
-                                predictors = c('fsc_a', 'ssc_a'),
+                                predictors = c('FSC-A', 'SSC-A'),
                                 #defaults to fsc/ssc
                                 subsample = 20e3,
                                 ret.model = TRUE,
@@ -50,6 +50,11 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
   methods <- c("earth", "knijnenburg", "lm")
   method_selected <- match.arg1(method, methods)
 
+  # Resolve channel and predictor names against actual flowFrame columns
+  valid_names <- colnames(fcbFlowFrame)
+  channel <- resolve_channel(channel, valid_names)
+  predictors <- resolve_channels(predictors, valid_names)
+
   if (is.null(uptake)) {
     uptake <- fcbFlowFrame
     if (method != 'knijnenburg') {
@@ -60,7 +65,7 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
 
 
   # fcb sample extracted
-  fcb <- janitor::clean_names(as.data.frame(exprs(fcbFlowFrame)))
+  fcb <- as.data.frame(exprs(fcbFlowFrame))
   # uptake sample extracted
   if (inherits(uptake, "cytoframe")) {
     if (!requireNamespace("flowWorkspace", quietly = TRUE))
@@ -68,7 +73,7 @@ deskew_fcbFlowFrame <- function(fcbFlowFrame,
     uptake <- flowWorkspace::cytoframe_to_flowFrame(uptake)
   }
   if (inherits(uptake, "flowFrame")) {
-    uptake <- janitor::clean_names(as.data.frame(exprs(uptake)))
+    uptake <- as.data.frame(exprs(uptake))
   } else {
     stop("Uptake control must be of class 'flowFrame'")
   }

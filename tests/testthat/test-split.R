@@ -1,12 +1,12 @@
 test_that("split fcbFlowFrame produces fcbFlowSet", {
   fcb <- fcbFlowFrame(test_ff)
-  fcb <- deskew_fcbFlowFrame(fcb, channel = "pacific_blue_a",
-                             predictors = c("fsc_a", "ssc_a"),
+  fcb <- deskew_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
+                             predictors = c("FSC-A", "SSC-A"),
                              subsample = 2000)
-  fcb <- cluster_fcbFlowFrame(fcb, channel = "pacific_blue_a",
+  fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
                               levels = 8, opt = "mixture",
                               subsample = 2000)
-  fcb <- assign_fcbFlowFrame(fcb, channel = "pacific_blue_a")
+  fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
 
   assignments <- getAssignments(fcb)
   result <- split(fcb, assignments)

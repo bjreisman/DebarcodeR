@@ -51,6 +51,9 @@ cluster_fcbFlowFrame <- function(fcbFlowFrame, #flowFrame FCB, output of deskwe_
     )
   }
 
+  # Resolve channel name against barcodes slot (which uses original names)
+  channel <- resolve_channel(channel, names(fcbFlowFrame@barcodes))
+
   options <- c("mixture","fisher", "manual.breaks")
   opt_selected <- match.arg1(opt, options)
 

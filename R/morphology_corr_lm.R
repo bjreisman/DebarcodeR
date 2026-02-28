@@ -26,12 +26,12 @@ morphology_corr.lm <- function(fcb,
     stop('Please select a single predictor')}
 
   if(is.null(slope)){
-    lm.formula <- as.formula(paste(channel, "~", predictors))
+    lm.formula <- as.formula(paste0("`", channel, "` ~ `", predictors, "`"))
   } else {
-    lm.formula <- as.formula(paste0(channel,
-                                    " ~ 1 + offset(",
-                                    slope, "*",
-                                    predictors, ")"))
+    lm.formula <- as.formula(paste0("`", channel,
+                                    "` ~ 1 + offset(",
+                                    slope, "*`",
+                                    predictors, "`)"))
   }
   lm.model <- lm(lm.formula, data = uptake)
   fcb[,channel]<- fcb[,channel] - predict(lm.model, newdata = fcb) +   median(unlist(fcb[,channel]))
