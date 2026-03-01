@@ -51,7 +51,10 @@ Suggests:
     knitr,
     rmarkdown,
     BiocStyle,
-    flowWorkspace
+    flowWorkspace,
+    shiny (>= 1.8.0),
+    bslib (>= 0.6.0),
+    bsicons
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 RoxygenNote: 7.3.3
@@ -74,6 +77,7 @@ Collate:
     'morphology_corr_lm.R'
     'morphology_corr_master.R'
     'plot-fcbFlowFrame-assignments.R'
+    'run_debarcoder.R'
     'selectDenseScatterArea.R'
     'split_fcbFlowFrame.R'
     'utils-barcode-slots.R'

@@ -30,7 +30,7 @@ Output: `fcbFlowSet` (subclass of `flowSet`) split by well assignment.
 | `R/utils-validation.R` | `resolve_channel()`, `assert_fcbFlowFrame()`, `coerce_to_flowFrame()` |
 | `R/selectDenseScatterArea.R` | Knijnenburg dense scatter (has known bug — see `plan_knijnenburg.md`) |
 | `R/plot-fcbFlowFrame-assignments.R` | `plot.fcbFlowFrame()` S3 method for assignment visualization |
-| `R/run_debarcoder.R` | Shiny GUI (`run_debarcoder()`) — UI, server, and code generation *(on `feature/shiny-gui` branch)* |
+| `R/run_debarcoder.R` | Shiny GUI (`run_debarcoder()`) — UI, server, and code generation |
 | `vignettes/debarcoder-tutorial.Rmd` | Full pipeline tutorial — runs live (`eval=TRUE`) on `jurkatFCB` |
 | `tests/testthat/` | 11 test files + `setup.R` |
 
@@ -58,15 +58,14 @@ data("jurkatFCB_std")
 
 ## Branches & Status
 
--   **`devel-2026`** — Bioconductor submission branch (core pipeline, vignette, tests)
--   **`feature/shiny-gui`** — Shiny GUI branch (branched from `devel-2026`)
+-   **`devel-2026`** — Main development branch (core pipeline + Shiny GUI)
 -   **Version:** 1.1.0 (odd y = devel, correct for Bioc submission)
--   **R CMD check:** 0 errors, 0 warnings, 0 notes (both branches, as of last run)
--   **BiocCheck:** (`devel-2026` only) 1 ERROR (support site registration — account issue, not code), 1 WARNING (odd version — expected for devel), 6 NOTEs (cosmetic: function lengths, line lengths, indentation, suppressMessages, mailing list, funder role)
+-   **R CMD check:** 0 errors, 0 warnings, 0 notes (as of last run)
+-   **BiocCheck:** 1 ERROR (support site registration — account issue, not code), 1 WARNING (odd version — expected for devel), 6 NOTEs (cosmetic: function lengths, line lengths, indentation, suppressMessages, mailing list, funder role)
 
 ------------------------------------------------------------------------
 
-## Exported API (21 man pages on `feature/shiny-gui`, 20 on `devel-2026`)
+## Exported API (21 man pages, all with runnable examples)
 
 | Function | Type |
 |---|---|
@@ -81,7 +80,7 @@ data("jurkatFCB_std")
 | `apply_platemap` | Post-processing |
 | `get_barcode_data` | Read-only accessor for barcodes slot |
 | `plot.fcbFlowFrame` | Visualization (S3 method) |
-| `run_debarcoder` | Interactive Shiny GUI *(on `feature/shiny-gui` only)* |
+| `run_debarcoder` | Interactive Shiny GUI |
 | `show` (fcbFlowFrame) | S4 display |
 | `jurkatFCB` / `jurkatFCB_std` | Datasets |
 
@@ -123,7 +122,7 @@ data("jurkatFCB_std")
 - Manually wrapped long lines in `em_optimize.R`, `cluster_fcbFlowFrame.R`, `assign_fcbFlowFrame.R`, `split_fcbFlowFrame.R`, `apply_platemap.R`
 - Added `DebarcodeR.BiocCheck` to `.Rbuildignore`
 
-### Shiny GUI (`feature/shiny-gui` branch)
+### Shiny GUI
 
 -   **`run_debarcoder()`** — interactive Shiny app for the debarcoding pipeline (MVP)
 -   **Wizard-style UI:** `bslib::page_sidebar()` with accordion panels that unlock progressively through 6 steps: Load Data → Configure Channels → Deskew → Cluster → Assign → Export
@@ -169,7 +168,7 @@ Two bugs on one line: `$objective` → `$minimum`; search interval `c(0, 1e-4)` 
 
 1.  **Knijnenburg bug fix** — `selectDenseScatterArea.R` line 43 (`plan_knijnenburg.md`)
 2.  **Phase 5** — GatingSet support
-3.  **Shiny GUI enhancements** (on `feature/shiny-gui` branch):
+3.  **Shiny GUI enhancements:**
     -   EM optimize step (optional accordion panel between Assign and Export)
     -   Platemap upload + `apply_platemap()` in Export panel
     -   Batch mode (multiple FCS files / flowSet)
