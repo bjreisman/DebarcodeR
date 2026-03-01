@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # DebarcodeR 1.1.0
 
 ## New Features
