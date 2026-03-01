@@ -1,4 +1,4 @@
-# DebarcodeR
+# DebarcodeR <img src="man/figures/hexsticker.png" align="right" height="139" />
 
 DebarcodeR is an R package for demultiplexing **fluorescent cell barcoded (FCB)** flow
 cytometry data.  In FCB, samples are labeled with combinations of amine-reactive dyes at
