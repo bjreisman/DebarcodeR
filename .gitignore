@@ -4,4 +4,6 @@
 *.tar.gz
 *.Rcheck/
 *.BiocCheck/
+..Rcheck/
+.positai/
 test_fcs/
