@@ -90,6 +90,12 @@ data("jurkatFCB_std")
 - Updated `test-cytoframe.R` to use flowWorkspace functions directly
 - **Result:** R CMD check 0/0/0; BiocCheck example ERROR resolved (20 exported pages, 19 runnable = 95%); 1 page (`plot.fcbflowframe`) in `\donttest` due to S3 dispatch bug (class case mismatch)
 
+### Plot S3 dispatch fix (completed)
+
+- Renamed `plot.fcbflowframe` → `plot.fcbFlowFrame` to match class name (S3 dispatch is case-sensitive)
+- Unwrapped `\donttest` from plot example — all 20/20 exported man pages now have runnable examples
+- **Result:** R CMD check 0/0/0; BiocCheck `\donttest` NOTE eliminated
+
 ------------------------------------------------------------------------
 
 ## Known Bugs (Not Yet Fixed)
@@ -110,15 +116,9 @@ Two bugs on one line: `$objective` → `$minimum`; search interval `c(0, 1e-4)` 
 
 ------------------------------------------------------------------------
 
-## Known Issues
-
-### `plot.fcbflowframe` S3 dispatch bug
-The S3 method is named `plot.fcbflowframe` (lowercase) but the class is `fcbFlowFrame` (camelCase). S3 dispatch is case-sensitive, so `plot(fcb)` doesn't find the method in R CMD check examples. Works interactively because of namespace method registration. Fix: rename to `plot.fcbFlowFrame` or convert to S4 method.
-
 ## Remaining Work (Ordered)
 
-1.  **Fix plot S3 dispatch** — rename `plot.fcbflowframe` → `plot.fcbFlowFrame`
-2.  **Knijnenburg bug fix** — `selectDenseScatterArea.R` line 43 (`plan_knijnenburg.md`)
+1.  **Knijnenburg bug fix** — `selectDenseScatterArea.R` line 43 (`plan_knijnenburg.md`)
 3.  **Remaining BiocCheck NOTEs** — `1:...` in doRegressContrained.R (5 more instances), `=` assignment (1 instance), line lengths, indentation
 4.  **Phase 5** — GatingSet support
 5.  **Phase 6** — Shiny GUI (`run_debarcoder()`, bslib)
