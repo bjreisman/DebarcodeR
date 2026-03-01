@@ -30,6 +30,7 @@ Output: `fcbFlowSet` (subclass of `flowSet`) split by well assignment.
 | `R/utils-validation.R` | `resolve_channel()`, `assert_fcbFlowFrame()`, `coerce_to_flowFrame()` |
 | `R/selectDenseScatterArea.R` | Knijnenburg dense scatter (has known bug — see `plan_knijnenburg.md`) |
 | `R/plot-fcbFlowFrame-assignments.R` | `plot.fcbFlowFrame()` S3 method for assignment visualization |
+| `R/run_debarcoder.R` | Shiny GUI (`run_debarcoder()`) — UI, server, and code generation *(on `feature/shiny-gui` branch)* |
 | `vignettes/debarcoder-tutorial.Rmd` | Full pipeline tutorial — runs live (`eval=TRUE`) on `jurkatFCB` |
 | `tests/testthat/` | 11 test files + `setup.R` |
 
@@ -55,16 +56,17 @@ data("jurkatFCB_std")
 
 ------------------------------------------------------------------------
 
-## Branch & Status
+## Branches & Status
 
--   **Branch:** `devel-2026`
+-   **`devel-2026`** — Bioconductor submission branch (core pipeline, vignette, tests)
+-   **`feature/shiny-gui`** — Shiny GUI branch (branched from `devel-2026`)
 -   **Version:** 1.1.0 (odd y = devel, correct for Bioc submission)
--   **R CMD check:** 0 errors, 0 warnings, 0 notes (as of last run)
--   **BiocCheck:** 1 ERROR (support site registration — account issue, not code), 1 WARNING (odd version — expected for devel), 6 NOTEs (cosmetic: function lengths, line lengths, indentation, suppressMessages, mailing list, funder role)
+-   **R CMD check:** 0 errors, 0 warnings, 0 notes (both branches, as of last run)
+-   **BiocCheck:** (`devel-2026` only) 1 ERROR (support site registration — account issue, not code), 1 WARNING (odd version — expected for devel), 6 NOTEs (cosmetic: function lengths, line lengths, indentation, suppressMessages, mailing list, funder role)
 
 ------------------------------------------------------------------------
 
-## Exported API (20 man pages, all with runnable examples)
+## Exported API (21 man pages on `feature/shiny-gui`, 20 on `devel-2026`)
 
 | Function | Type |
 |---|---|
@@ -79,6 +81,7 @@ data("jurkatFCB_std")
 | `apply_platemap` | Post-processing |
 | `get_barcode_data` | Read-only accessor for barcodes slot |
 | `plot.fcbFlowFrame` | Visualization (S3 method) |
+| `run_debarcoder` | Interactive Shiny GUI *(on `feature/shiny-gui` only)* |
 | `show` (fcbFlowFrame) | S4 display |
 | `jurkatFCB` / `jurkatFCB_std` | Datasets |
 
@@ -120,6 +123,28 @@ data("jurkatFCB_std")
 - Manually wrapped long lines in `em_optimize.R`, `cluster_fcbFlowFrame.R`, `assign_fcbFlowFrame.R`, `split_fcbFlowFrame.R`, `apply_platemap.R`
 - Added `DebarcodeR.BiocCheck` to `.Rbuildignore`
 
+### Shiny GUI (`feature/shiny-gui` branch)
+
+-   **`run_debarcoder()`** — interactive Shiny app for the debarcoding pipeline (MVP)
+-   **Wizard-style UI:** `bslib::page_sidebar()` with accordion panels that unlock progressively through 6 steps: Load Data → Configure Channels → Deskew → Cluster → Assign → Export
+-   **Two input modes:**
+    -   File upload: user uploads preprocessed FCS files
+    -   R session: `run_debarcoder(data = my_ff, uptake = my_std)` passes objects directly, skipping file upload. Variable names captured via `deparse(substitute())` for code generation.
+-   **Preprocessing requirement:** data must be compensated, transformed, and gated before entering the app. Info callout explains this in the Load Data panel.
+-   **Diagnostic visualizations:** scatter plots (raw → deskewed → assignment-colored), before/after histograms with cluster-level coloring, summary table with cell counts per well
+-   **Value boxes:** total cells, assigned cells, % assigned
+-   **Reproducible code generation:** "Generated Code" tab builds a copy-paste-ready R script as the user tunes parameters, using the caller's actual variable names
+-   **Copy-to-clipboard** button for generated code
+-   **Progress feedback** via `withProgress()` wired to existing `updateProgress` callbacks
+-   **Dependencies:** `shiny`, `bslib`, `bsicons` added to `Suggests`
+-   **Known S3 dispatch issue:** `plot(fcb)` dispatches to flowCore's S4 `plot,flowFrame-method` instead of `plot.fcbFlowFrame`; app calls `plot.fcbFlowFrame()` explicitly as workaround
+
+### Project Cleanup
+
+-   Removed completed plan/handoff files from project root: `PLAN.md`, `plan_bioconductor`, `plan_bioc_deexport.md`, `handoff.md`, `handoff_bioc.md`, `README.html`, `README_files/`
+-   Updated `.gitignore`: added `*.tar.gz`, `*.Rcheck/`, `*.BiocCheck/`, `test_fcs/`
+-   Retained `plan_knijnenburg.md` (documents unfixed bug)
+
 ------------------------------------------------------------------------
 
 ## Known Bugs (Not Yet Fixed)
@@ -144,7 +169,11 @@ Two bugs on one line: `$objective` → `$minimum`; search interval `c(0, 1e-4)` 
 
 1.  **Knijnenburg bug fix** — `selectDenseScatterArea.R` line 43 (`plan_knijnenburg.md`)
 2.  **Phase 5** — GatingSet support
-3.  **Phase 6** — Shiny GUI (`run_debarcoder()`, bslib)
+3.  **Shiny GUI enhancements** (on `feature/shiny-gui` branch):
+    -   EM optimize step (optional accordion panel between Assign and Export)
+    -   Platemap upload + `apply_platemap()` in Export panel
+    -   Batch mode (multiple FCS files / flowSet)
+    -   Smoke tests for app construction
 
 ------------------------------------------------------------------------
 
