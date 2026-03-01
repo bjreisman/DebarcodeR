@@ -11,26 +11,28 @@
 #' @return The resolved channel name (original form).
 #' @keywords internal
 resolve_channel <- function(name, valid_names) {
-  if (name %in% valid_names) return(name)
+    if (name %in% valid_names) {
+        return(name)
+    }
 
-  # Try matching as a cleaned name
-  cleaned <- janitor::make_clean_names(valid_names)
-  match_idx <- match(name, cleaned)
-  if (!is.na(match_idx)) {
-    original <- valid_names[match_idx]
-    warning(
-      "Cleaned channel name '", name, "' matched to '", original, "'. ",
-      "Use original column names directly -- cleaned names are deprecated.",
-      call. = FALSE
+    # Try matching as a cleaned name
+    cleaned <- janitor::make_clean_names(valid_names)
+    match_idx <- match(name, cleaned)
+    if (!is.na(match_idx)) {
+        original <- valid_names[match_idx]
+        warning(
+            "Cleaned channel name '", name, "' matched to '", original, "'. ",
+            "Use original column names directly -- cleaned names are deprecated.",
+            call. = FALSE
+        )
+        return(original)
+    }
+
+    stop(
+        "Channel '", name, "' not found. Available channels: ",
+        paste(valid_names, collapse = ", "),
+        call. = FALSE
     )
-    return(original)
-  }
-
-  stop(
-    "Channel '", name, "' not found. Available channels: ",
-    paste(valid_names, collapse = ", "),
-    call. = FALSE
-  )
 }
 
 #' Resolve multiple channel names (e.g., predictors)
@@ -40,8 +42,10 @@ resolve_channel <- function(name, valid_names) {
 #' @return Character vector of resolved names.
 #' @keywords internal
 resolve_channels <- function(names, valid_names) {
-  vapply(names, resolve_channel, character(1), valid_names = valid_names,
-         USE.NAMES = FALSE)
+    vapply(names, resolve_channel, character(1),
+        valid_names = valid_names,
+        USE.NAMES = FALSE
+    )
 }
 
 #' Assert that an object is an fcbFlowFrame with required pipeline steps
@@ -58,34 +62,34 @@ resolve_channels <- function(names, valid_names) {
 #' @return Invisibly returns \code{x} if all checks pass.
 #' @keywords internal
 assert_fcbFlowFrame <- function(x, needs = NULL, arg_name = "Input") {
-  if (!inherits(x, "fcbFlowFrame")) {
-    stop(arg_name, " must be an fcbFlowFrame object.", call. = FALSE)
-  }
-  if (!is.null(needs)) {
-    if (length(x@barcodes) == 0) {
-      stop(
-        arg_name, " must have channels in the barcodes slot that have been ",
-        "run through deskew_fcbFlowFrame.",
-        call. = FALSE
-      )
+    if (!inherits(x, "fcbFlowFrame")) {
+        stop(arg_name, " must be an fcbFlowFrame object.", call. = FALSE)
     }
-    for (step in needs) {
-      step_present <- vapply(
-        x@barcodes,
-        function(bc) step %in% names(bc),
-        logical(1)
-      )
-      if (!any(step_present)) {
-        stop(
-          arg_name, " must have at least one channel with '", step,
-          "' completed. Available channels: ",
-          paste(names(x@barcodes), collapse = ", "),
-          call. = FALSE
-        )
-      }
+    if (!is.null(needs)) {
+        if (length(x@barcodes) == 0) {
+            stop(
+                arg_name, " must have channels in the barcodes slot that have been ",
+                "run through deskew_fcbFlowFrame.",
+                call. = FALSE
+            )
+        }
+        for (step in needs) {
+            step_present <- vapply(
+                x@barcodes,
+                function(bc) step %in% names(bc),
+                logical(1)
+            )
+            if (!any(step_present)) {
+                stop(
+                    arg_name, " must have at least one channel with '", step,
+                    "' completed. Available channels: ",
+                    paste(names(x@barcodes), collapse = ", "),
+                    call. = FALSE
+                )
+            }
+        }
     }
-  }
-  invisible(x)
+    invisible(x)
 }
 
 #' Coerce a cytoframe or flowFrame to a plain flowFrame
@@ -100,20 +104,20 @@ assert_fcbFlowFrame <- function(x, needs = NULL, arg_name = "Input") {
 #' @return A flowFrame.
 #' @keywords internal
 coerce_to_flowFrame <- function(x, arg_name = "Input") {
-  if (inherits(x, "cytoframe")) {
-    if (!requireNamespace("flowWorkspace", quietly = TRUE)) {
-      stop(
-        "Package 'flowWorkspace' is required to convert cytoframe objects.",
-        call. = FALSE
-      )
+    if (inherits(x, "cytoframe")) {
+        if (!requireNamespace("flowWorkspace", quietly = TRUE)) {
+            stop(
+                "Package 'flowWorkspace' is required to convert cytoframe objects.",
+                call. = FALSE
+            )
+        }
+        return(flowWorkspace::cytoframe_to_flowFrame(x))
     }
-    return(flowWorkspace::cytoframe_to_flowFrame(x))
-  }
-  if (inherits(x, "flowFrame")) {
-    return(x)
-  }
-  stop(
-    arg_name, " must be a flowFrame or cytoframe object.",
-    call. = FALSE
-  )
+    if (inherits(x, "flowFrame")) {
+        return(x)
+    }
+    stop(
+        arg_name, " must be a flowFrame or cytoframe object.",
+        call. = FALSE
+    )
 }

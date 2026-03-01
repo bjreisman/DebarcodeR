@@ -20,38 +20,42 @@
 #' data(jurkatFCB)
 #' data(jurkatFCB_std)
 #' fcb <- fcbFlowFrame(jurkatFCB)
-#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
-#'                            channel = "Pacific Blue-A",
-#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- deskew_fcbFlowFrame(fcb,
+#'     uptake = jurkatFCB_std,
+#'     channel = "Pacific Blue-A",
+#'     predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+#' )
 #' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
-#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
-#'                            channel = "Pacific Orange-A",
-#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- deskew_fcbFlowFrame(fcb,
+#'     uptake = jurkatFCB_std,
+#'     channel = "Pacific Orange-A",
+#'     predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+#' )
 #' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
 #' assignments <- getAssignments(fcb)
 #' str(assignments)
 #' @export
 getAssignments <- function(x, platemap = NULL, simplify = FALSE) {
-  getAssignments.ff <- function(x) {
-    assignments <- lapply(x@barcodes, `[[`, "assignment")
-    assignments <- lapply(assignments, `[[`, "values")
-    assignments <- lapply(assignments, as.factor)
-  }
-  if (inherits(x, "fcbFlowFrame")) {
-    assignments <- getAssignments.ff(x)
-  } else if (inherits(x, "fcbFlowSet")) {
-    assignments <- fsApply(x, getAssignments.ff)
-  }
-  if (!is.null(platemap)) {
-    #return wells instead of levels
-  }
+    getAssignments.ff <- function(x) {
+        assignments <- lapply(x@barcodes, `[[`, "assignment")
+        assignments <- lapply(assignments, `[[`, "values")
+        assignments <- lapply(assignments, as.factor)
+    }
+    if (inherits(x, "fcbFlowFrame")) {
+        assignments <- getAssignments.ff(x)
+    } else if (inherits(x, "fcbFlowSet")) {
+        assignments <- fsApply(x, getAssignments.ff)
+    }
+    if (!is.null(platemap)) {
+        # return wells instead of levels
+    }
 
-  if (simplify) {
-    #some sort of unlist operation
-  }
+    if (simplify) {
+        # some sort of unlist operation
+    }
 
-  assignments <- assignments[!names(assignments)== "wells"]
-  return(assignments)
+    assignments <- assignments[!names(assignments) == "wells"]
+    return(assignments)
 }

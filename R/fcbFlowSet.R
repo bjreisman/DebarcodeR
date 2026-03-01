@@ -13,7 +13,7 @@
 #' @importClassesFrom flowCore flowFrame
 #' @exportClass fcbFlowSet
 .fcbFlowSet <- setClass("fcbFlowSet",
-                          contains = "flowSet"
+    contains = "flowSet"
 )
 
 #' Create an fcbFlowSet
@@ -33,13 +33,14 @@
 #' fcbfs <- fcbFlowSet(fs)
 #' @export
 fcbFlowSet <- function(x) {
-  if (inherits(x, "cytoset")) {
-    if (!requireNamespace("flowWorkspace", quietly = TRUE))
-      stop("Package 'flowWorkspace' is required to convert cytoset objects")
-    x <- flowWorkspace::cytoset_to_flowSet(x)
-  }
-  if (!inherits(x, "flowSet")) {
-    stop("x must be an object of class flowSet")
-  }
-  as(x, "fcbFlowSet")
+    if (inherits(x, "cytoset")) {
+        if (!requireNamespace("flowWorkspace", quietly = TRUE)) {
+            stop("Package 'flowWorkspace' is required to convert cytoset objects")
+        }
+        x <- flowWorkspace::cytoset_to_flowSet(x)
+    }
+    if (!inherits(x, "flowSet")) {
+        stop("x must be an object of class flowSet")
+    }
+    as(x, "fcbFlowSet")
 }

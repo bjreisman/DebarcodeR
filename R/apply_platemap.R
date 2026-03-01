@@ -22,23 +22,29 @@
 #' data(jurkatFCB_std)
 #' library(flowCore)
 #' fcb <- fcbFlowFrame(jurkatFCB)
-#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
-#'                            channel = "Pacific Blue-A",
-#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- deskew_fcbFlowFrame(fcb,
+#'     uptake = jurkatFCB_std,
+#'     channel = "Pacific Blue-A",
+#'     predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+#' )
 #' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
-#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
-#'                            channel = "Pacific Orange-A",
-#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- deskew_fcbFlowFrame(fcb,
+#'     uptake = jurkatFCB_std,
+#'     channel = "Pacific Orange-A",
+#'     predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+#' )
 #' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
 #' assignments <- getAssignments(fcb)
 #' fcbfs <- split(fcb, assignments)
 #' myplatemap <- data.frame(
-#'   pacific_blue_a   = as.character(rep(1:8, times = 6)),
-#'   pacific_orange_a = as.character(rep(1:6, each  = 8)),
-#'   well             = paste0(rep(LETTERS[1:8], times = 6),
-#'                             formatC(rep(1:6, each = 8), width = 2, flag = "0"))
+#'     pacific_blue_a = as.character(rep(1:8, times = 6)),
+#'     pacific_orange_a = as.character(rep(1:6, each = 8)),
+#'     well = paste0(
+#'         rep(LETTERS[1:8], times = 6),
+#'         formatC(rep(1:6, each = 8), width = 2, flag = "0")
+#'     )
 #' )
 #' fcbfs <- apply_platemap(fcbfs, myplatemap, prefix = "Jurkat_FCB")
 #' sampleNames(fcbfs)
@@ -46,52 +52,66 @@
 #' @importFrom dplyr left_join mutate across everything if_else
 #' @export
 apply_platemap <- function(fcbFlowSet, platemap, drop0 = FALSE, prefix = NA) {
-  if (!inherits(fcbFlowSet, "fcbFlowSet")) {
-    stop("Input must be a fcbFlowSet")
-  }
+    if (!inherits(fcbFlowSet, "fcbFlowSet")) {
+        stop("Input must be a fcbFlowSet")
+    }
 
-  if (!inherits(platemap, "data.frame")) {
-    stop("Input must be a data.frame")
-  }
+    if (!inherits(platemap, "data.frame")) {
+        stop("Input must be a data.frame")
+    }
 
-  platemap_clean <- janitor::clean_names(platemap)
-  platemap_clean <- dplyr::mutate(platemap_clean, across(everything(), as.character))
+    platemap_clean <- janitor::clean_names(platemap)
+    platemap_clean <- dplyr::mutate(
+        platemap_clean, across(everything(), as.character)
+    )
 
-  pData.orig <- pData(fcbFlowSet)
-  # Clean pData column names to match cleaned platemap names
-  names(pData.orig) <- janitor::make_clean_names(names(pData.orig))
-  suppressMessages({
-    pData.new <- left_join(pData.orig, platemap_clean)
-  })
-  assigned.fs <- fcbFlowSet[!is.na(pData.new$well)]
-  if (drop0 == FALSE) {
-    unassigned.fs <- fcbFlowSet[is.na(pData.new$well)]
-    unassigned.list <- flowSet_to_list(unassigned.fs)
-    unassigned.concat <- do.call(rbind, lapply(unassigned.list, exprs))
-    unassigned.ff <- unassigned.list[[1]]
-    exprs(unassigned.ff) <- unassigned.concat
-    out.list <- flowSet_to_list(assigned.fs)
-    out.list <- c(out.list, "Unassigned" = unassigned.ff)
-    out.fs <- flowSet(out.list)
-    suppressMessages({suppressWarnings({
-      pData_out <- pData(out.fs)
-      names(pData_out) <- janitor::make_clean_names(names(pData_out))
-      pData_orig_clean <- pData.orig  # already cleaned above
-      pData.new <- left_join(pData_out, pData_orig_clean)
-      pData.new <- left_join(pData.new, platemap_clean)
-      pData.new <- dplyr::mutate(pData.new, well = if_else(is.na(.data$well), "Unassigned", .data$well))
-    })})
-    rownames(pData.new) <- rownames(pData(out.fs))
-    pData(out.fs) <- pData.new
-  } else {
-    out.fs <- assigned.fs
-  }
-  if (is.na(prefix)) {
-    pData(out.fs)$Prefix <- tools::file_path_sans_ext(unlist(fsApply(out.fs, keyword, "FILENAME")))
-  } else {
-    pData(out.fs)$Prefix <- prefix
-  }
-  pData(out.fs)$Filename <- apply(pData(out.fs)[, c("Prefix", "well")], 1, paste0, collapse = "_")
-  sampleNames(out.fs) <- pData(out.fs)$Filename
-  return(out.fs)
+    pData.orig <- pData(fcbFlowSet)
+    # Clean pData column names to match cleaned platemap names
+    names(pData.orig) <- janitor::make_clean_names(names(pData.orig))
+    suppressMessages({
+        pData.new <- left_join(pData.orig, platemap_clean)
+    })
+    assigned.fs <- fcbFlowSet[!is.na(pData.new$well)]
+    if (drop0 == FALSE) {
+        unassigned.fs <- fcbFlowSet[is.na(pData.new$well)]
+        unassigned.list <- flowSet_to_list(unassigned.fs)
+        unassigned.concat <- do.call(rbind, lapply(unassigned.list, exprs))
+        unassigned.ff <- unassigned.list[[1]]
+        exprs(unassigned.ff) <- unassigned.concat
+        out.list <- flowSet_to_list(assigned.fs)
+        out.list <- c(out.list, "Unassigned" = unassigned.ff)
+        out.fs <- flowSet(out.list)
+        suppressMessages({
+            suppressWarnings({
+                pData_out <- pData(out.fs)
+                names(pData_out) <- janitor::make_clean_names(names(pData_out))
+                pData_orig_clean <- pData.orig # already cleaned above
+                pData.new <- left_join(pData_out, pData_orig_clean)
+                pData.new <- left_join(pData.new, platemap_clean)
+                pData.new <- dplyr::mutate(
+                    pData.new,
+                    well = if_else(
+                        is.na(.data$well), "Unassigned", .data$well
+                    )
+                )
+            })
+        })
+        rownames(pData.new) <- rownames(pData(out.fs))
+        pData(out.fs) <- pData.new
+    } else {
+        out.fs <- assigned.fs
+    }
+    if (is.na(prefix)) {
+        pData(out.fs)$Prefix <- tools::file_path_sans_ext(
+            unlist(fsApply(out.fs, keyword, "FILENAME"))
+        )
+    } else {
+        pData(out.fs)$Prefix <- prefix
+    }
+    pData(out.fs)$Filename <- apply(
+        pData(out.fs)[, c("Prefix", "well")], 1,
+        paste0, collapse = "_"
+    )
+    sampleNames(out.fs) <- pData(out.fs)$Filename
+    return(out.fs)
 }

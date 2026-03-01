@@ -17,40 +17,42 @@
 morphology_corr.knijnenburg <- function(fcb,
                                         uptake,
                                         channel,
-                                        fsc_ssc = c(fsc = 'FSC-A', ssc = 'SSC-A'),
+                                        fsc_ssc = c(fsc = "FSC-A", ssc = "SSC-A"),
                                         subsample = 10e3,
                                         updateProgress = NULL,
                                         ret.model = FALSE) {
-  if (is.function(updateProgress)) {
-    updateProgress(detail = "Mapping cellular Density")
-  }
+    if (is.function(updateProgress)) {
+        updateProgress(detail = "Mapping cellular Density")
+    }
 
-  area_density <- selectDenseScatterArea(uptake,
-                                         subsample = subsample,
-                                         fsc_ssc = fsc_ssc)
+    area_density <- selectDenseScatterArea(uptake,
+        subsample = subsample,
+        fsc_ssc = fsc_ssc
+    )
 
 
-  if (is.function(updateProgress)) {
-    updateProgress(detail = "Performing Morphology Correction")
-  }
-  regression.output <- doRegressConstrained(
-    uptake,
-    fcb,
-    fsc_ssc = fsc_ssc,
-    Loc = area_density$loc,
-    weight = area_density$c,
-    trans = "none",
-    columns = c(channel),
-    monodir = c(1, 1)
-  )
-  cor.data <- regression.output[[1]]
-  fcb[, channel] <- cor.data[, channel]
+    if (is.function(updateProgress)) {
+        updateProgress(detail = "Performing Morphology Correction")
+    }
+    regression.output <- doRegressConstrained(
+        uptake,
+        fcb,
+        fsc_ssc = fsc_ssc,
+        Loc = area_density$loc,
+        weight = area_density$c,
+        trans = "none",
+        columns = c(channel),
+        monodir = c(1, 1)
+    )
+    cor.data <- regression.output[[1]]
+    fcb[, channel] <- cor.data[, channel]
 
-  if (ret.model == FALSE) {
-    return(list(values = fcb[, channel]))
-  } else{
-    return(list(values = fcb[, channel],
-                model = regression.output))
-  }
+    if (ret.model == FALSE) {
+        return(list(values = fcb[, channel]))
+    } else {
+        return(list(
+            values = fcb[, channel],
+            model = regression.output
+        ))
+    }
 }
-

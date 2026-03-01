@@ -11,8 +11,8 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment  = "#>"
+    collapse = TRUE,
+    comment  = "#>"
 )
 ```
 
@@ -68,8 +68,8 @@ We recommend filtering on the internal standard channel (`APC-H7-A`)
 to remove unresponsive cells before debarcoding:
 
 ```{r filter-is}
-filter_is  <- expressionFilter(`APC-H7-A` > 2.5, filterId = "ISfilter")
-jurkatFCB  <- Subset(jurkatFCB, filter_is)
+filter_is <- expressionFilter(`APC-H7-A` > 2.5, filterId = "ISfilter")
+jurkatFCB <- Subset(jurkatFCB, filter_is)
 ```
 
 The two barcoding channels form an 8x6 grid — one cluster per sample:
@@ -78,12 +78,14 @@ The two barcoding channels form an 8x6 grid — one cluster per sample:
 set.seed(6183)
 plot_raw <- as.data.frame(exprs(jurkatFCB))
 ggplot(plot_raw, aes(x = `Pacific Blue-A`, y = `Pacific Orange-A`)) +
-  geom_bin2d(bins = 150) +
-  scale_fill_viridis_c(option = "A", trans = "sqrt", name = "Count") +
-  labs(x = "Pacific Blue-A", y = "Pacific Orange-A",
-       title = "Raw barcoding channels: 8 \u00d7 6 sample grid") +
-  coord_fixed() +
-  theme_classic()
+    geom_bin2d(bins = 150) +
+    scale_fill_viridis_c(option = "A", trans = "sqrt", name = "Count") +
+    labs(
+        x = "Pacific Blue-A", y = "Pacific Orange-A",
+        title = "Raw barcoding channels: 8 \u00d7 6 sample grid"
+    ) +
+    coord_fixed() +
+    theme_classic()
 ```
 
 ## External standard
@@ -115,14 +117,16 @@ fcb <- fcbFlowFrame(jurkatFCB)
 predictors <- c("FSC-A", "SSC-A", "FSC-H", "SSC-H", "FSC-W", "SSC-W", "APC-H7-A")
 
 fcb <- deskew_fcbFlowFrame(fcb,
-                           uptake     = jurkatFCB_std,
-                           channel    = "Pacific Blue-A",
-                           predictors = predictors)
+    uptake     = jurkatFCB_std,
+    channel    = "Pacific Blue-A",
+    predictors = predictors
+)
 
 fcb <- deskew_fcbFlowFrame(fcb,
-                           uptake     = jurkatFCB_std,
-                           channel    = "Pacific Orange-A",
-                           predictors = predictors)
+    uptake     = jurkatFCB_std,
+    channel    = "Pacific Orange-A",
+    predictors = predictors
+)
 fcb
 ```
 
@@ -130,21 +134,24 @@ Deskewing removes the correlation between cell size and fluorescence
 intensity, sharpening the separation between adjacent levels:
 
 ```{r plot-deskew, fig.width = 7, fig.height = 3.5, message = FALSE, warning = FALSE}
-raw_pb      <- exprs(jurkatFCB)[, "Pacific Blue-A"]
+raw_pb <- exprs(jurkatFCB)[, "Pacific Blue-A"]
 deskewed_pb <- get_barcode_data(fcb, "Pacific Blue-A", "deskewing", "values")
 
 deskew_long <- rbind(
-  data.frame(step = "Before deskewing", value = raw_pb),
-  data.frame(step = "After deskewing",  value = deskewed_pb)
+    data.frame(step = "Before deskewing", value = raw_pb),
+    data.frame(step = "After deskewing", value = deskewed_pb)
 )
 deskew_long$step <- factor(deskew_long$step,
-                            levels = c("Before deskewing", "After deskewing"))
+    levels = c("Before deskewing", "After deskewing")
+)
 ggplot(deskew_long, aes(x = value)) +
-  geom_histogram(bins = 150, fill = "steelblue4", color = NA) +
-  facet_wrap(~step, nrow = 1) +
-  labs(x = "Pacific Blue-A", y = "Cell count",
-       title = "Deskewing sharpens level separation") +
-  theme_classic()
+    geom_histogram(bins = 150, fill = "steelblue4", color = NA) +
+    facet_wrap(~step, nrow = 1) +
+    labs(
+        x = "Pacific Blue-A", y = "Cell count",
+        title = "Deskewing sharpens level separation"
+    ) +
+    theme_classic()
 ```
 
 ## Step 2: Cluster
@@ -154,10 +161,14 @@ to the deskewed values for each channel to estimate the probability of
 each cell originating from each barcoding level.
 
 ```{r cluster, message = FALSE, warning = FALSE}
-fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
-                            levels = 8, subsample = 10000)
-fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A",
-                            levels = 6, subsample = 10000)
+fcb <- cluster_fcbFlowFrame(fcb,
+    channel = "Pacific Blue-A",
+    levels = 8, subsample = 10000
+)
+fcb <- cluster_fcbFlowFrame(fcb,
+    channel = "Pacific Orange-A",
+    levels = 6, subsample = 10000
+)
 fcb
 ```
 
@@ -167,16 +178,21 @@ Cells are colored by their most probable level assignment:
 ```{r plot-cluster, fig.width = 6.5, fig.height = 4, message = FALSE, warning = FALSE}
 prob_mat <- get_barcode_data(fcb, "Pacific Blue-A", "clustering", "probabilities")
 level <- factor(colnames(prob_mat)[max.col(prob_mat)],
-                levels = colnames(prob_mat))
+    levels = colnames(prob_mat)
+)
 
 cl_df <- data.frame(deskewed = deskewed_pb, level = level)
 ggplot(cl_df, aes(x = deskewed, fill = level)) +
-  geom_histogram(bins = 150, position = "stack", color = NA) +
-  scale_fill_brewer(palette = "RdYlBu", name = "Level",
-                    guide = guide_legend(reverse = TRUE)) +
-  labs(x = "Pacific Blue-A (deskewed)", y = "Cell count",
-       title = "Clustering: 8 levels identified (Pacific Blue-A)") +
-  theme_classic()
+    geom_histogram(bins = 150, position = "stack", color = NA) +
+    scale_fill_brewer(
+        palette = "RdYlBu", name = "Level",
+        guide = guide_legend(reverse = TRUE)
+    ) +
+    labs(
+        x = "Pacific Blue-A (deskewed)", y = "Cell count",
+        title = "Clustering: 8 levels identified (Pacific Blue-A)"
+    ) +
+    theme_classic()
 ```
 
 ## Step 3: Multivariate EM optimization *(optional)*
@@ -206,9 +222,10 @@ Unassigned cells receive level 0 rather than being discarded.
 
 ```{r assign}
 fcb <- assign_fcbFlowFrame(fcb,
-                           channel       = "wells",
-                           likelihoodcut = 12,
-                           ambiguitycut  = 0.05)
+    channel       = "wells",
+    likelihoodcut = 12,
+    ambiguitycut  = 0.05
+)
 ```
 
 After assignment, the 8x6 grid of samples is cleanly resolved in the
@@ -221,19 +238,21 @@ assigned <- asgn[["Pacific Blue-A"]] != "0" & asgn[["Pacific Orange-A"]] != "0"
 well_id <- paste(asgn[["Pacific Blue-A"]], asgn[["Pacific Orange-A"]], sep = ".")
 
 asgn_df <- data.frame(
-  pb   = deskewed_pb[assigned],
-  po   = deskewed_po[assigned],
-  well = well_id[assigned]
+    pb   = deskewed_pb[assigned],
+    po   = deskewed_po[assigned],
+    well = well_id[assigned]
 )
 n_wells <- length(unique(asgn_df$well))
 
 ggplot(asgn_df, aes(x = pb, y = po, color = well)) +
-  geom_point(size = 0.15, alpha = 0.4) +
-  scale_color_manual(values = hue_pal()(n_wells), guide = "none") +
-  labs(x = "Pacific Blue-A (deskewed)", y = "Pacific Orange-A (deskewed)",
-       title = "Final assignments: 48 samples resolved") +
-  coord_fixed() +
-  theme_classic()
+    geom_point(size = 0.15, alpha = 0.4) +
+    scale_color_manual(values = hue_pal()(n_wells), guide = "none") +
+    labs(
+        x = "Pacific Blue-A (deskewed)", y = "Pacific Orange-A (deskewed)",
+        title = "Final assignments: 48 samples resolved"
+    ) +
+    coord_fixed() +
+    theme_classic()
 ```
 
 ## Step 5: Split and apply plate map
@@ -254,15 +273,18 @@ underscores, as produced by `janitor::clean_names()`).
 
 ```{r platemap}
 myplatemap <- data.frame(
-  pacific_blue_a   = as.character(rep(seq_len(8), times = 6)),
-  pacific_orange_a = as.character(rep(seq_len(6), each  = 8)),
-  well             = paste0(rep(LETTERS[seq_len(8)], times = 6),
-                            formatC(rep(seq_len(6), each = 8), width = 2, flag = "0"))
+    pacific_blue_a = as.character(rep(seq_len(8), times = 6)),
+    pacific_orange_a = as.character(rep(seq_len(6), each = 8)),
+    well = paste0(
+        rep(LETTERS[seq_len(8)], times = 6),
+        formatC(rep(seq_len(6), each = 8), width = 2, flag = "0")
+    )
 )
 
 debarcoded_fs <- apply_platemap(debarcoded_fs,
-                                myplatemap,
-                                prefix = "Jurkat_FCB_001")
+    myplatemap,
+    prefix = "Jurkat_FCB_001"
+)
 sampleNames(debarcoded_fs)
 ```
 

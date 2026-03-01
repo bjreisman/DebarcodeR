@@ -27,8 +27,10 @@ Retrieves pipeline results stored in the \code{barcodes} slot of an
 \examples{
 data(jurkatFCB)
 fcb <- fcbFlowFrame(jurkatFCB)
-fcb <- deskew_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
-                           predictors = c("FSC-A", "SSC-A"))
+fcb <- deskew_fcbFlowFrame(fcb,
+    channel = "Pacific Blue-A",
+    predictors = c("FSC-A", "SSC-A")
+)
 deskewed <- get_barcode_data(fcb, "Pacific Blue-A", "deskewing", "values")
 head(deskewed)
 }

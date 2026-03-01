@@ -22,25 +22,29 @@ morphology_corr.lm <- function(fcb,
                                slope = 1,
                                updateProgress = NULL,
                                ret.model = FALSE) {
+    if (length(predictors) != 1) {
+        stop("Please select a single predictor")
+    }
 
-  if(length(predictors) != 1){
-    stop('Please select a single predictor')}
+    if (is.null(slope)) {
+        lm.formula <- as.formula(paste0("`", channel, "` ~ `", predictors, "`"))
+    } else {
+        lm.formula <- as.formula(paste0(
+            "`", channel,
+            "` ~ 1 + offset(",
+            slope, "*`",
+            predictors, "`)"
+        ))
+    }
+    lm.model <- lm(lm.formula, data = uptake)
+    fcb[, channel] <- fcb[, channel] - predict(lm.model, newdata = fcb) + median(unlist(fcb[, channel]))
 
-  if(is.null(slope)){
-    lm.formula <- as.formula(paste0("`", channel, "` ~ `", predictors, "`"))
-  } else {
-    lm.formula <- as.formula(paste0("`", channel,
-                                    "` ~ 1 + offset(",
-                                    slope, "*`",
-                                    predictors, "`)"))
-  }
-  lm.model <- lm(lm.formula, data = uptake)
-  fcb[,channel]<- fcb[,channel] - predict(lm.model, newdata = fcb) +   median(unlist(fcb[,channel]))
-
-  if(ret.model == FALSE){
-    return(list(values = fcb[,channel]))
-  } else{
-    return(list(values = fcb[,channel],
-                model = lm.model))
-  }
+    if (ret.model == FALSE) {
+        return(list(values = fcb[, channel]))
+    } else {
+        return(list(
+            values = fcb[, channel],
+            model = lm.model
+        ))
+    }
 }

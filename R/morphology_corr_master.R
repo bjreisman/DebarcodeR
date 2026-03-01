@@ -17,101 +17,96 @@
 #'
 #' @keywords internal
 
-#mybarcodedff$barcodes$pacificOrange$deskew
+# mybarcodedff$barcodes$pacificOrange$deskew
 
-morphology_corr <- function(fcb, #takes a flowframe_fcb
-                            uptake = NULL, #get rid of this
-                            channel, #channel name (char)
-                            method = c("earth", "knijnenburg", "lm"), #default to earth
-                            predictors = c('FSC-A', 'SSC-A'), #defaults to FSC/SSC
+morphology_corr <- function(fcb, # takes a flowframe_fcb
+                            uptake = NULL, # get rid of this
+                            channel, # channel name (char)
+                            method = c("earth", "knijnenburg", "lm"), # default to earth
+                            predictors = c("FSC-A", "SSC-A"), # defaults to FSC/SSC
                             subsample = 20e3,
                             ret.model = TRUE,
                             verbose = FALSE,
                             updateProgress = NULL,
                             ...) {
+    # validation of inputs -------------------------
+    method_selected <- match.arg(method, c("earth", "knijnenburg", "lm"))
 
-
-  #validation of inputs -------------------------
-  method_selected <- match.arg(method, c("earth", "knijnenburg", "lm"))
-
-  if (is.null(uptake)) {
-    warning("No uptake control provided, using barcoded data to train model,
+    if (is.null(uptake)) {
+        warning("No uptake control provided, using barcoded data to train model,
             `knihnenburg` method may provide best results'")
-    uptake <- fcb
-  }
+        uptake <- fcb
+    }
 
-  # if (apply_scales == TRUE) {
-  #   fcb <- apply_scales(fcb, exp_info)
-  #   uptake <- apply_scales(uptake, exp_info)
-  # } else if (apply_scales == FALSE){
-  #   fcb <- fcb
-  #   uptake <- uptake
-  # } else{
-  #   stop("apply_scales was not TRUE/FALSE")
-  # }
-
-
-  if(method_selected == "earth") {
-    fcb2 <- morphology_corr.earth(
-      fcb = fcb,
-      uptake = uptake,
-      channel = channel,
-      predictors = predictors,
-      subsample = subsample,
-      ret.model = ret.model,
-      updateProgress = updateProgress,
-      ...
-    )
-
-  } else if(method_selected == "knijnenburg") {
-    fcb2 <- morphology_corr.knijnenburg(
-      fcb = fcb,
-      uptake = uptake,
-      channel = channel,
-      fsc_ssc = predictors,
-      subsample = subsample,
-      ret.model = ret.model,
-      updateProgress = updateProgress,
-      ...
-    )
+    # if (apply_scales == TRUE) {
+    #   fcb <- apply_scales(fcb, exp_info)
+    #   uptake <- apply_scales(uptake, exp_info)
+    # } else if (apply_scales == FALSE){
+    #   fcb <- fcb
+    #   uptake <- uptake
+    # } else{
+    #   stop("apply_scales was not TRUE/FALSE")
+    # }
 
 
-  }  else if(method_selected == "lm") {
-    fcb2 <- morphology_corr.lm(
-      fcb = fcb,
-      uptake = uptake,
-      channel = channel,
-      predictors = predictors,
-      slope = 1,
-      ret.model = ret.model,
-      updateProgress = updateProgress,
-      ...
-    )
+    if (method_selected == "earth") {
+        fcb2 <- morphology_corr.earth(
+            fcb = fcb,
+            uptake = uptake,
+            channel = channel,
+            predictors = predictors,
+            subsample = subsample,
+            ret.model = ret.model,
+            updateProgress = updateProgress,
+            ...
+        )
+    } else if (method_selected == "knijnenburg") {
+        fcb2 <- morphology_corr.knijnenburg(
+            fcb = fcb,
+            uptake = uptake,
+            channel = channel,
+            fsc_ssc = predictors,
+            subsample = subsample,
+            ret.model = ret.model,
+            updateProgress = updateProgress,
+            ...
+        )
+    } else if (method_selected == "lm") {
+        fcb2 <- morphology_corr.lm(
+            fcb = fcb,
+            uptake = uptake,
+            channel = channel,
+            predictors = predictors,
+            slope = 1,
+            ret.model = ret.model,
+            updateProgress = updateProgress,
+            ...
+        )
+    }
 
-  }
+    if (ret.model == TRUE) {
+        # print(str(fcb[["model"]]))
+        fcb.mod <- fcb2[["model"]]
+        fcb2 <- fcb2[["values"]]
+        # print(str(fcb.mod))
+    }
 
-  if(ret.model == TRUE) {
-    #print(str(fcb[["model"]]))
-    fcb.mod <- fcb2[["model"]]
-    fcb2 <- fcb2[["values"]]
-   # print(str(fcb.mod))
-
-  }
-
-  # if (apply_scales == TRUE) {
-  #   fcb3 <- apply_scales(fcb2, exp_info, inverse = TRUE)
-  # } else{
-     fcb3 <- fcb2
-  #
-  # }
-  #print(str(fcb3))
-  if(ret.model == TRUE){
-   # print(99)
-    return(list(values = fcb3, #focus on this:
-                model = fcb.mod))
-  } else{
-    return(fcb3)
-  }
+    # if (apply_scales == TRUE) {
+    #   fcb3 <- apply_scales(fcb2, exp_info, inverse = TRUE)
+    # } else{
+    fcb3 <- fcb2
+    #
+    # }
+    # print(str(fcb3))
+    if (ret.model == TRUE) {
+        # print(99)
+        return(list(
+            values = fcb3, # focus on this:
+            model = fcb.mod
+        ))
+    } else {
+        return(fcb3)
+    }
 }
 
 #
@@ -204,8 +199,6 @@ morphology_corr <- function(fcb, #takes a flowframe_fcb
 # hist(vec$pbx8, n = 200)
 
 
-
 #' Option selector.
 #'
 #' @param arg a choice or a vector of choices
-

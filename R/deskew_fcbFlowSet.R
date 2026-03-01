@@ -22,53 +22,52 @@
 #' library(flowCore)
 #' fcbfs <- fcbFlowSet(flowSet(list(A = jurkatFCB)))
 #' fcbfs <- deskew_fcbFlowSet(
-#'   fcbfs,
-#'   uptake     = jurkatFCB_std,
-#'   channel    = "Pacific Blue-A",
-#'   predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+#'     fcbfs,
+#'     uptake     = jurkatFCB_std,
+#'     channel    = "Pacific Blue-A",
+#'     predictors = c("FSC-A", "SSC-A", "APC-H7-A")
 #' )
 #' @import earth janitor
 #' @export
 
 deskew_fcbFlowSet <- function(fcbFlowSet,
-                                uptake = NULL,
-                                channel,
-                                #channel name (char)
-                                method = "earth",
-                                #default to earth
-                                predictors = c('FSC-A', 'SSC-A'),
-                                #defaults to fsc/ssc
-                                subsample = 20e3,
-                                ret.model = TRUE,
-                                verbose = FALSE,
-                                updateProgress = NULL,
-                                ...)
-{
+                              uptake = NULL,
+                              channel,
+                              # channel name (char)
+                              method = "earth",
+                              # default to earth
+                              predictors = c("FSC-A", "SSC-A"),
+                              # defaults to fsc/ssc
+                              subsample = 20e3,
+                              ret.model = TRUE,
+                              verbose = FALSE,
+                              updateProgress = NULL,
+                              ...) {
+    # validation of inputs -------------------------
+    if (inherits(fcbFlowSet, "cytoset")) {
+        if (!requireNamespace("flowWorkspace", quietly = TRUE)) {
+            stop("Package 'flowWorkspace' is required to convert cytoset objects")
+        }
+        fcbFlowSet <- flowWorkspace::cytoset_to_flowSet(fcbFlowSet)
+    }
+    if (inherits(fcbFlowSet, "fcbFlowSet")) {
+        # already correct class, proceed
+    } else if (inherits(fcbFlowSet, "flowSet")) {
+        fcbFlowSet <- fcbFlowSet(fcbFlowSet)
+    } else {
+        stop("Input must be a flowSet or fcbFlowSet")
+    }
 
+    fcbFlowSet.deskewed <- fsApply(fcbFlowSet, deskew_fcbFlowFrame,
+        uptake = uptake, channel = channel,
+        method = method,
+        predictors = predictors,
+        subsample = subsample,
+        ret.model = ret.model,
+        verbose = verbose,
+        updateProgress = updateProgress,
+        ...
+    )
 
-  #validation of inputs -------------------------
-  if (inherits(fcbFlowSet, "cytoset")) {
-    if (!requireNamespace("flowWorkspace", quietly = TRUE))
-      stop("Package 'flowWorkspace' is required to convert cytoset objects")
-    fcbFlowSet <- flowWorkspace::cytoset_to_flowSet(fcbFlowSet)
-  }
-  if (inherits(fcbFlowSet, "fcbFlowSet")) {
-    # already correct class, proceed
-  } else if (inherits(fcbFlowSet, "flowSet")) {
-    fcbFlowSet <- fcbFlowSet(fcbFlowSet)
-  } else {
-    stop("Input must be a flowSet or fcbFlowSet")
-  }
-
-  fcbFlowSet.deskewed <- fsApply(fcbFlowSet, deskew_fcbFlowFrame,
-          uptake = uptake, channel = channel,
-          method = method,
-          predictors = predictors,
-          subsample = subsample,
-          ret.model = ret.model,
-          verbose = verbose,
-          updateProgress = updateProgress,
-          ...)
-
-return(fcbFlowSet(fcbFlowSet.deskewed))
+    return(fcbFlowSet(fcbFlowSet.deskewed))
 }

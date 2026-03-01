@@ -18,26 +18,30 @@
 #' data(jurkatFCB_std)
 #' library(flowCore)
 #' fcbfs <- fcbFlowSet(flowSet(list(A = jurkatFCB)))
-#' fcbfs <- deskew_fcbFlowSet(fcbfs, uptake = jurkatFCB_std,
-#'                            channel = "Pacific Blue-A",
-#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
-#' fcbfs <- cluster_fcbFlowSet(fcbfs, channel = "Pacific Blue-A",
-#'                            levels = 8, opt = "fisher")
+#' fcbfs <- deskew_fcbFlowSet(fcbfs,
+#'     uptake = jurkatFCB_std,
+#'     channel = "Pacific Blue-A",
+#'     predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+#' )
+#' fcbfs <- cluster_fcbFlowSet(fcbfs,
+#'     channel = "Pacific Blue-A",
+#'     levels = 8, opt = "fisher"
+#' )
 #' fcbfs <- assign_fcbFlowSet(fcbfs, channel = "Pacific Blue-A")
 #' @export
 assign_fcbFlowSet <- function(fcbFlowSet,
-                                channel,
-                                likelihoodcut = 8 ,
-                                ambiguitycut = 0.02){
+                              channel,
+                              likelihoodcut = 8,
+                              ambiguitycut = 0.02) {
+    if (!inherits(fcbFlowSet, "fcbFlowSet")) {
+        stop("Input must be a fcbFlowSet")
+    }
 
-  if (!inherits(fcbFlowSet, "fcbFlowSet")) {
-    stop("Input must be a fcbFlowSet")
-  }
+    fcbFlowSet.assigned <- fsApply(fcbFlowSet, assign_fcbFlowFrame,
+        channel = channel,
+        likelihoodcut = likelihoodcut,
+        ambiguitycut = ambiguitycut
+    )
 
-  fcbFlowSet.assigned <- fsApply(fcbFlowSet, assign_fcbFlowFrame,
-                                 channel = channel,
-                                 likelihoodcut = likelihoodcut,
-                                 ambiguitycut = ambiguitycut)
-
-  return(fcbFlowSet(fcbFlowSet.assigned))
+    return(fcbFlowSet(fcbFlowSet.assigned))
 }

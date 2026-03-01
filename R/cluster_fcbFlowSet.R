@@ -1,7 +1,7 @@
 #' Defines populations on barcoded datasets
 #'
-#'This function allows you to calculate the probability of a cell originating from a given population using
-#'either gaussian mixture modeling or jenks natural breaks classification
+#' This function allows you to calculate the probability of a cell originating from a given population using
+#' either gaussian mixture modeling or jenks natural breaks classification
 #'
 #' @param fcbFlowSet An fcbFlowSet object post deskewing (at least one channel in the barcodes slot).
 #' @param channel The name (string) of the channel to be clustered.
@@ -25,11 +25,15 @@
 #' data(jurkatFCB_std)
 #' library(flowCore)
 #' fcbfs <- fcbFlowSet(flowSet(list(A = jurkatFCB)))
-#' fcbfs <- deskew_fcbFlowSet(fcbfs, uptake = jurkatFCB_std,
-#'                            channel = "Pacific Blue-A",
-#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
-#' fcbfs <- cluster_fcbFlowSet(fcbfs, channel = "Pacific Blue-A",
-#'                            levels = 8, opt = "fisher")
+#' fcbfs <- deskew_fcbFlowSet(fcbfs,
+#'     uptake = jurkatFCB_std,
+#'     channel = "Pacific Blue-A",
+#'     predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+#' )
+#' fcbfs <- cluster_fcbFlowSet(fcbfs,
+#'     channel = "Pacific Blue-A",
+#'     levels = 8, opt = "fisher"
+#' )
 #' @seealso \code{\link{cluster_fcbFlowFrame}} for single-frame processing,
 #'   \code{\link{deskew_fcbFlowSet}} for the preceding step,
 #'   \code{\link{assign_fcbFlowSet}} for the next step
@@ -42,34 +46,32 @@
 # uptake for two channels - use as model (Prior)
 # READ smsn.mix paper and function
 
-cluster_fcbFlowSet <- function(fcbFlowSet, #flowFrame FCB, output of deskwe_fcbFlowFrame
-                       channel, #channel name (char)
-                       levels, #number of levels
-                       opt = "mixture", #mixture (guassian mixture models) or fisher (univariate k-means)
-                       dist = NULL, #for gaussian mixture models, Skew.normal, normal, T.dist
-                       subsample = 10e3,
-                       trim = 0,
-                       ret.model = TRUE,
-                       updateProgress = NULL){
+cluster_fcbFlowSet <- function(fcbFlowSet, # flowFrame FCB, output of deskwe_fcbFlowFrame
+                               channel, # channel name (char)
+                               levels, # number of levels
+                               opt = "mixture", # mixture (guassian mixture models) or fisher (univariate k-means)
+                               dist = NULL, # for gaussian mixture models, Skew.normal, normal, T.dist
+                               subsample = 10e3,
+                               trim = 0,
+                               ret.model = TRUE,
+                               updateProgress = NULL) {
+    # validation of inputs -------------------------
+    if (!inherits(fcbFlowSet, "fcbFlowSet")) {
+        stop("Input must be a fcbFlowSet")
+    }
 
+    fcbFlowSet.clustered <- fsApply(fcbFlowSet, cluster_fcbFlowFrame,
+        channel = channel,
+        levels = levels,
+        opt = opt,
+        dist = dist,
+        subsample = subsample,
+        trim = trim,
+        ret.model = ret.model,
+        updateProgress = updateProgress
+    )
 
-
-  #validation of inputs -------------------------
-  if (!inherits(fcbFlowSet, "fcbFlowSet")) {
-    stop("Input must be a fcbFlowSet")
-  }
-
-  fcbFlowSet.clustered <- fsApply(fcbFlowSet, cluster_fcbFlowFrame,
-                                 channel = channel,
-                                 levels = levels,
-                                 opt = opt,
-                                 dist = dist,
-                                 subsample = subsample,
-                                 trim = trim,
-                                 ret.model = ret.model,
-                                 updateProgress = updateProgress)
-
-  return(fcbFlowSet(fcbFlowSet.clustered))
+    return(fcbFlowSet(fcbFlowSet.clustered))
 }
 
 # plot as histogram and show fit overlay (Ben has code?)

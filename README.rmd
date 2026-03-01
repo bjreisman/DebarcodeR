@@ -23,11 +23,12 @@ DebarcodeR reuses many of the classes and methods for working with FCS files imp
 
 ```{r installation, eval=FALSE}
 # install flowCore first
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
+}
 BiocManager::install("flowCore")
 
-#Followed by DebarcodeR
+# Followed by DebarcodeR
 remotes::install_github("bjreisman/DebarcodeR")
 ```
 
@@ -36,7 +37,6 @@ remotes::install_github("bjreisman/DebarcodeR")
 Debarcoder is designed to take FCS files represented as FlowFrames as an input and provides a set of flowFrames (flowSet) as an output. It is important that the flowFrame provided as an input has been fully 'preprocessed' which includes compensation, scaling (asinh, logicile, etc...), and gating. These steps are implemented in flowCore and related packages including CytoML and flowWorkspace. This quick-start guide assumes you are starting from a preprocessed flow-frame. If you're starting from unprocessed FCS files, please see the one of the other tutorials for guidance.
 
 ```{r load packages, message=FALSE}
-
 library(flowCore)
 library(DebarcodeR)
 library(ggcyto)
@@ -52,45 +52,44 @@ data("jurkatFCB")
 
 
 
-ggplot(jurkatFCB, aes(x= `FSC-A`, y = `SSC-A`)) + 
-  geom_bin2d(bins = 200) + 
-  theme_classic() + 
-  scale_fill_viridis_c(option = "A", guide = F)
+ggplot(jurkatFCB, aes(x = `FSC-A`, y = `SSC-A`)) +
+    geom_bin2d(bins = 200) +
+    theme_classic() +
+    scale_fill_viridis_c(option = "A", guide = F)
 
-ggplot(jurkatFCB, aes(x= `APC-H7-A`, y = `SSC-A`)) + 
-  geom_bin2d(bins = 200) + 
-  theme_classic() + 
-  geom_vline(xintercept = 2.5, linetype = 2) + 
-  scale_fill_viridis_c(option = "A", guide = F)
+ggplot(jurkatFCB, aes(x = `APC-H7-A`, y = `SSC-A`)) +
+    geom_bin2d(bins = 200) +
+    theme_classic() +
+    geom_vline(xintercept = 2.5, linetype = 2) +
+    scale_fill_viridis_c(option = "A", guide = F)
 
 
 # We recommend filtering on cells which have taken up the internal standard
-filter.is<- expressionFilter(`APC-H7-A` > 2.5, filterId = "ISfilter")
+filter.is <- expressionFilter(`APC-H7-A` > 2.5, filterId = "ISfilter")
 jurkatFCB <- Subset(jurkatFCB, filter.is)
 
-ggplot(jurkatFCB, aes(x= `Pacific Blue-A`, y = `Pacific Orange-A`)) + 
-  geom_bin2d(bins = 200) + 
-  theme_classic() + 
-  scale_fill_viridis_c(option = "A", guide = F) + 
-  scale_x_continuous(limits = c(2.5, 7.2)) + 
-  scale_y_continuous(limits = c(2, 7)) + 
-  coord_fixed()
+ggplot(jurkatFCB, aes(x = `Pacific Blue-A`, y = `Pacific Orange-A`)) +
+    geom_bin2d(bins = 200) +
+    theme_classic() +
+    scale_fill_viridis_c(option = "A", guide = F) +
+    scale_x_continuous(limits = c(2.5, 7.2)) +
+    scale_y_continuous(limits = c(2, 7)) +
+    coord_fixed()
 ```
 
 One of the experimental controls that allows DebarcodeR to accurately model dye uptake is the 'external standard' which consists of a single sample which has been stained with a single level of each barcoding dye. In this case, since each tube was run separately we can pull out any single 'sample' to use as our external standard, though in the 'real world' we won't normally have a 'truth' column to filter on.
 
 ```{r generateExternalStandard}
-
-filter.11 <- expressionFilter(`row` == 1 & `col` == 1, filterId="rowfilter")
+filter.11 <- expressionFilter(`row` == 1 & `col` == 1, filterId = "rowfilter")
 jurkatFCB.std <- Subset(jurkatFCB, filter.11)
 
-ggplot(jurkatFCB.std, aes(x= `Pacific Blue-A`, y = `Pacific Orange-A`)) + 
-  geom_bin2d(bins = 200) + 
-  theme_classic() + 
-  scale_fill_viridis_c(option = "A", guide = F) + 
-  scale_x_continuous(limits = c(2.5, 7.2)) + 
-  scale_y_continuous(limits = c(2, 7)) +
-  coord_fixed()
+ggplot(jurkatFCB.std, aes(x = `Pacific Blue-A`, y = `Pacific Orange-A`)) +
+    geom_bin2d(bins = 200) +
+    theme_classic() +
+    scale_fill_viridis_c(option = "A", guide = F) +
+    scale_x_continuous(limits = c(2.5, 7.2)) +
+    scale_y_continuous(limits = c(2, 7)) +
+    coord_fixed()
 ```
 
 ## Deskewing
@@ -102,20 +101,24 @@ The channel which has the most impact on the effectiveness of deskeweing is the 
 Predictors as supplied as a character vector. Internally, this function uses `janitor::clean_names()` function to sanitized the input. The deskew function is called once for each barcoding channel with the output saved in the `@barcodes` slot of the object.
 
 ```{r deskew}
-my.predictors <- c("fsc_a", "ssc_a",
-                   "fsc_h", "ssc_h",
-                   "fsc_w", "ssc_w",
-                   "apc_h7_a")
+my.predictors <- c(
+    "fsc_a", "ssc_a",
+    "fsc_h", "ssc_h",
+    "fsc_w", "ssc_w",
+    "apc_h7_a"
+)
 debarcoded.ff <- deskew_fcbFlowFrame(jurkatFCB,
-                                     uptake = jurkatFCB.std,
-                                     predictors = my.predictors,
-                                     channel = c("pacific_blue_a"))
+    uptake = jurkatFCB.std,
+    predictors = my.predictors,
+    channel = c("pacific_blue_a")
+)
 
-#debarcoded.ff@barcodes$pacific_blue_a$deskewing$model
-debarcoded.ff <- deskew_fcbFlowFrame(debarcoded.ff, #output of first run
-                                     uptake = jurkatFCB.std,
-                                     predictors = my.predictors,
-                                     channel = c("pacific_orange_a"))
+# debarcoded.ff@barcodes$pacific_blue_a$deskewing$model
+debarcoded.ff <- deskew_fcbFlowFrame(debarcoded.ff, # output of first run
+    uptake = jurkatFCB.std,
+    predictors = my.predictors,
+    channel = c("pacific_orange_a")
+)
 ```
 
 ## Clustering
@@ -126,11 +129,12 @@ The next step is to cluster the 'deskewed' data to estimate the barcoding level 
 
 ```{r cluster_univaraite}
 debarcoded.ff <- cluster_fcbFlowFrame(debarcoded.ff,
-                                      channel = c("pacific_orange_a"),
-                                      levels = 6)
+    channel = c("pacific_orange_a"),
+    levels = 6
+)
 debarcoded.ff <- cluster_fcbFlowFrame(debarcoded.ff,
-                                      channel = c("pacific_blue_a"),                                      levels = 8)
-
+    channel = c("pacific_blue_a"), levels = 8
+)
 ```
 
 #### Multivariate Clustering
@@ -151,19 +155,22 @@ Unassigned cells are not discarded, but rather assigned a level of 0. The `getAs
 
 ```{r assign}
 debarcoded.ff <- assign_fcbFlowFrame(debarcoded.ff,
-                                  channel = c("wells"),
-                                  likelihoodcut = 12,
-                                  ambiguitycut = 0.05)
+    channel = c("wells"),
+    likelihoodcut = 12,
+    ambiguitycut = 0.05
+)
 
 debarcoded.ff <- assign_fcbFlowFrame(debarcoded.ff,
-                                  channel = c("pacific_orange_a"),
-                                  likelihoodcut = 12,
-                                  ambiguitycut = 0.05)
+    channel = c("pacific_orange_a"),
+    likelihoodcut = 12,
+    ambiguitycut = 0.05
+)
 
 debarcoded.ff <- assign_fcbFlowFrame(debarcoded.ff,
-                                  channel = c("pacific_blue_a"),
-                                  likelihoodcut = 12,
-                                  ambiguitycut = 0.05)
+    channel = c("pacific_blue_a"),
+    likelihoodcut = 12,
+    ambiguitycut = 0.05
+)
 
 myassignments <- getAssignments(debarcoded.ff)
 ```
@@ -173,40 +180,44 @@ myassignments <- getAssignments(debarcoded.ff)
 The final step is to apply the assignments to the data which converts to the flowFrame (representing a single FCS file) to a flowSet (representing a collection of FCS files). This part of the workflow is largely outsourced to flowCore though we have added a modified `split` function which can accept lists of variables in addition to a single variable. The `apply_platemap` function takes care of updating the pData and filenames such that all files have a common prefix followed by their well.
 
 ```{r split}
-
 debarcoded.fs <- split(jurkatFCB, getAssignments(debarcoded.ff))
 
-#make a platemap
+# make a platemap
 myplatemap <- tibble(
-  `Pacific Blue-A` = rep(1:8, times = 6),
-  `Pacific Orange-A` = rep(1:6, each = 8)
-) %>% 
-  mutate(well = paste0(LETTERS[`Pacific Blue-A`], "0", `Pacific Orange-A`)) %>%
-  janitor::clean_names() %>%
-  mutate_all(as.character)
+    `Pacific Blue-A` = rep(1:8, times = 6),
+    `Pacific Orange-A` = rep(1:6, each = 8)
+) %>%
+    mutate(well = paste0(LETTERS[`Pacific Blue-A`], "0", `Pacific Orange-A`)) %>%
+    janitor::clean_names() %>%
+    mutate_all(as.character)
 
 debarcoded.fs <- apply_platemap(debarcoded.fs,
-                                myplatemap,
-                                prefix = "Jurkat_FCB_001")
+    myplatemap,
+    prefix = "Jurkat_FCB_001"
+)
 
 
-#pretty plot, each well is a random color
+# pretty plot, each well is a random color
 mypal <- c(sample(scales::hue_pal()(48)), "grey50")
 
-ggplot(debarcoded.fs, aes(x=`Pacific Blue-A`,
-                          y = `Pacific Orange-A`,
-                          col = well)) +
-  geom_point(shape = ".", alpha = 0.1) + 
-  scale_color_manual(values = mypal, guide = F) + 
-  theme_classic() + 
-  coord_fixed()
+ggplot(debarcoded.fs, aes(
+    x = `Pacific Blue-A`,
+    y = `Pacific Orange-A`,
+    col = well
+)) +
+    geom_point(shape = ".", alpha = 0.1) +
+    scale_color_manual(values = mypal, guide = F) +
+    theme_classic() +
+    coord_fixed()
 
-ggplot(debarcoded.fs, aes(x=`Pacific Blue-A`,
-                          y = `Pacific Orange-A`)) +
-  geom_point(shape = ".", alpha = 0.1) + 
- # scale_color_manual(values = mypal, guide = F) + 
-  theme_classic() + 
-  coord_fixed()
+ggplot(debarcoded.fs, aes(
+    x = `Pacific Blue-A`,
+    y = `Pacific Orange-A`
+)) +
+    geom_point(shape = ".", alpha = 0.1) +
+    # scale_color_manual(values = mypal, guide = F) +
+    theme_classic() +
+    coord_fixed()
 ```
 
 ```{r write, eval = FALSE}

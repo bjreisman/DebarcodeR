@@ -17,23 +17,25 @@
 #' @examples
 #' data(jurkatFCB)
 #' fcb <- fcbFlowFrame(jurkatFCB)
-#' fcb <- deskew_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
-#'                            predictors = c("FSC-A", "SSC-A"))
+#' fcb <- deskew_fcbFlowFrame(fcb,
+#'     channel = "Pacific Blue-A",
+#'     predictors = c("FSC-A", "SSC-A")
+#' )
 #' deskewed <- get_barcode_data(fcb, "Pacific Blue-A", "deskewing", "values")
 #' head(deskewed)
 #' @export
 get_barcode_data <- function(fcbFF, channel, step, field = NULL) {
-  bc <- fcbFF@barcodes[[channel]]
-  if (is.null(bc)) {
-    stop(
-      "Channel '", channel, "' not found in barcodes slot. ",
-      "Available: ", paste(names(fcbFF@barcodes), collapse = ", "),
-      call. = FALSE
-    )
-  }
-  data <- bc[[step]]
-  if (!is.null(field)) data <- data[[field]]
-  data
+    bc <- fcbFF@barcodes[[channel]]
+    if (is.null(bc)) {
+        stop(
+            "Channel '", channel, "' not found in barcodes slot. ",
+            "Available: ", paste(names(fcbFF@barcodes), collapse = ", "),
+            call. = FALSE
+        )
+    }
+    data <- bc[[step]]
+    if (!is.null(field)) data <- data[[field]]
+    data
 }
 
 #' Set data in the barcodes slot
@@ -48,9 +50,9 @@ get_barcode_data <- function(fcbFF, channel, step, field = NULL) {
 #' @return The modified fcbFlowFrame.
 #' @keywords internal
 set_barcode_data <- function(fcbFF, channel, step, data) {
-  if (is.null(fcbFF@barcodes[[channel]])) {
-    fcbFF@barcodes[[channel]] <- list()
-  }
-  fcbFF@barcodes[[channel]][[step]] <- data
-  fcbFF
+    if (is.null(fcbFF@barcodes[[channel]])) {
+        fcbFF@barcodes[[channel]] <- list()
+    }
+    fcbFF@barcodes[[channel]][[step]] <- data
+    fcbFF
 }

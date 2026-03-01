@@ -30,11 +30,15 @@ data(jurkatFCB)
 data(jurkatFCB_std)
 library(flowCore)
 fcbfs <- fcbFlowSet(flowSet(list(A = jurkatFCB)))
-fcbfs <- deskew_fcbFlowSet(fcbfs, uptake = jurkatFCB_std,
-                           channel = "Pacific Blue-A",
-                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
-fcbfs <- cluster_fcbFlowSet(fcbfs, channel = "Pacific Blue-A",
-                           levels = 8, opt = "fisher")
+fcbfs <- deskew_fcbFlowSet(fcbfs,
+    uptake = jurkatFCB_std,
+    channel = "Pacific Blue-A",
+    predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+)
+fcbfs <- cluster_fcbFlowSet(fcbfs,
+    channel = "Pacific Blue-A",
+    levels = 8, opt = "fisher"
+)
 fcbfs <- assign_fcbFlowSet(fcbfs, channel = "Pacific Blue-A")
 }
 \seealso{

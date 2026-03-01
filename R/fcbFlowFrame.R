@@ -13,9 +13,9 @@
 #' @importClassesFrom flowCore flowFrame
 #' @exportClass fcbFlowFrame
 fcbFlowFrame <- setClass("fcbFlowFrame",
-          contains = "flowFrame",
-          slots = c(barcodes = "list")
-         )
+    contains = "flowFrame",
+    slots = c(barcodes = "list")
+)
 
 #' Create an fcbFlowFrame
 #'
@@ -35,15 +35,16 @@ fcbFlowFrame <- setClass("fcbFlowFrame",
 #' fcb
 #' @export
 fcbFlowFrame <- function(x, barcodes = list()) {
-  if (inherits(x, "cytoframe")) {
-    if (!requireNamespace("flowWorkspace", quietly = TRUE))
-      stop("Package 'flowWorkspace' is required to convert cytoframe objects")
-    x <- flowWorkspace::cytoframe_to_flowFrame(x)
-  }
-  if (!inherits(x, "flowFrame")) {
-    stop("x must be an object of class flowFrame")
-  }
-  as(x, "fcbFlowFrame")
+    if (inherits(x, "cytoframe")) {
+        if (!requireNamespace("flowWorkspace", quietly = TRUE)) {
+            stop("Package 'flowWorkspace' is required to convert cytoframe objects")
+        }
+        x <- flowWorkspace::cytoframe_to_flowFrame(x)
+    }
+    if (!inherits(x, "flowFrame")) {
+        stop("x must be an object of class flowFrame")
+    }
+    as(x, "fcbFlowFrame")
 }
 
 #' Show method for fcbFlowFrame
@@ -61,35 +62,37 @@ fcbFlowFrame <- function(x, barcodes = list()) {
 #' @importFrom methods show
 #' @export
 setMethod("show", "fcbFlowFrame", function(object) {
-  n_cells <- nrow(object)
-  n_channels <- ncol(object)
-  cat(sprintf("fcbFlowFrame with %s cells x %d channels\n",
-              format(n_cells, big.mark = ","), n_channels))
+    n_cells <- nrow(object)
+    n_channels <- ncol(object)
+    cat(sprintf(
+        "fcbFlowFrame with %s cells x %d channels\n",
+        format(n_cells, big.mark = ","), n_channels
+    ))
 
-  bc <- object@barcodes
-  if (length(bc) == 0) {
-    cat("Barcodes: none (run deskew_fcbFlowFrame to begin)\n")
-  } else {
-    cat("Barcodes:\n")
-    for (ch in names(bc)) {
-      steps <- names(bc[[ch]])
-      state <- character(0)
+    bc <- object@barcodes
+    if (length(bc) == 0) {
+        cat("Barcodes: none (run deskew_fcbFlowFrame to begin)\n")
+    } else {
+        cat("Barcodes:\n")
+        for (ch in names(bc)) {
+            steps <- names(bc[[ch]])
+            state <- character(0)
 
-      if ("deskewing" %in% steps) {
-        state <- c(state, "deskewed")
-      }
-      if ("clustering" %in% steps) {
-        probs <- bc[[ch]][["clustering"]][["probabilities"]]
-        n_levels <- if (!is.null(probs)) ncol(probs) else "?"
-        state <- c(state, sprintf("clustered (%d levels)", n_levels))
-      }
-      if ("assignment" %in% steps) {
-        state <- c(state, "assigned")
-      }
+            if ("deskewing" %in% steps) {
+                state <- c(state, "deskewed")
+            }
+            if ("clustering" %in% steps) {
+                probs <- bc[[ch]][["clustering"]][["probabilities"]]
+                n_levels <- if (!is.null(probs)) ncol(probs) else "?"
+                state <- c(state, sprintf("clustered (%d levels)", n_levels))
+            }
+            if ("assignment" %in% steps) {
+                state <- c(state, "assigned")
+            }
 
-      pipeline_str <- if (length(state) > 0) paste(state, collapse = " -> ") else "no steps completed"
-      cat(sprintf("  %s: %s\n", ch, pipeline_str))
+            pipeline_str <- if (length(state) > 0) paste(state, collapse = " -> ") else "no steps completed"
+            cat(sprintf("  %s: %s\n", ch, pipeline_str))
+        }
     }
-  }
-  invisible(object)
+    invisible(object)
 })

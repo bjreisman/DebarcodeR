@@ -50,10 +50,10 @@ data(jurkatFCB)
 data(jurkatFCB_std)
 fcb <- fcbFlowFrame(jurkatFCB)
 fcb <- deskew_fcbFlowFrame(
-  fcb,
-  uptake     = jurkatFCB_std,
-  channel    = "Pacific Blue-A",
-  predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+    fcb,
+    uptake     = jurkatFCB_std,
+    channel    = "Pacific Blue-A",
+    predictors = c("FSC-A", "SSC-A", "APC-H7-A")
 )
 fcb
 }

@@ -21,10 +21,10 @@
 #' data(jurkatFCB_std)
 #' fcb <- fcbFlowFrame(jurkatFCB)
 #' fcb <- deskew_fcbFlowFrame(
-#'   fcb,
-#'   uptake     = jurkatFCB_std,
-#'   channel    = "Pacific Blue-A",
-#'   predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+#'     fcb,
+#'     uptake     = jurkatFCB_std,
+#'     channel    = "Pacific Blue-A",
+#'     predictors = c("FSC-A", "SSC-A", "APC-H7-A")
 #' )
 #' fcb
 #' @import earth janitor
@@ -33,95 +33,92 @@
 deskew_fcbFlowFrame <- function(fcbFlowFrame,
                                 uptake = NULL,
                                 channel,
-                                #channel name (char)
+                                # channel name (char)
                                 method = "earth",
-                                #default to earth
-                                predictors = c('FSC-A', 'SSC-A'),
-                                #defaults to fsc/ssc
+                                # default to earth
+                                predictors = c("FSC-A", "SSC-A"),
+                                # defaults to fsc/ssc
                                 subsample = 20e3,
                                 ret.model = TRUE,
                                 verbose = FALSE,
                                 updateProgress = NULL,
-                                ...)
-{
-
-
-  #validation of inputs -------------------------
-  if (inherits(fcbFlowFrame, "cytoframe") || inherits(fcbFlowFrame, "flowFrame")) {
-    fcbFlowFrame <- coerce_to_flowFrame(fcbFlowFrame)
-  }
-  if (inherits(fcbFlowFrame, "fcbFlowFrame")) {
-    # already correct class, proceed
-  } else if (inherits(fcbFlowFrame, "flowFrame")) {
-    fcbFlowFrame <- fcbFlowFrame(fcbFlowFrame)
-  } else {
-    stop("Input must be a flowFrame, cytoframe, or fcbFlowFrame")
-  }
-
-
-  method_selected <- match.arg(method, c("earth", "knijnenburg", "lm"))
-
-  # Resolve channel and predictor names against actual flowFrame columns
-  valid_names <- colnames(fcbFlowFrame)
-  channel <- resolve_channel(channel, valid_names)
-  predictors <- resolve_channels(predictors, valid_names)
-
-  if (is.null(uptake)) {
-    uptake <- fcbFlowFrame
-    if (method != 'knijnenburg') {
-      warning("Barcoded sample being used as uptake control, ",
-              "`knijnenburg` method may provide best results")
+                                ...) {
+    # validation of inputs -------------------------
+    if (inherits(fcbFlowFrame, "cytoframe") || inherits(fcbFlowFrame, "flowFrame")) {
+        fcbFlowFrame <- coerce_to_flowFrame(fcbFlowFrame)
     }
-  }
+    if (inherits(fcbFlowFrame, "fcbFlowFrame")) {
+        # already correct class, proceed
+    } else if (inherits(fcbFlowFrame, "flowFrame")) {
+        fcbFlowFrame <- fcbFlowFrame(fcbFlowFrame)
+    } else {
+        stop("Input must be a flowFrame, cytoframe, or fcbFlowFrame")
+    }
 
 
-  # fcb sample extracted
-  fcb <- as.data.frame(exprs(fcbFlowFrame))
-  # uptake sample extracted
-  uptake <- coerce_to_flowFrame(uptake, arg_name = "Uptake control")
-  uptake <- as.data.frame(exprs(uptake))
+    method_selected <- match.arg(method, c("earth", "knijnenburg", "lm"))
 
-  # earth model
-  if (method_selected == "earth") {
-    fcb2 <- morphology_corr.earth(
-      fcb = fcb,
-      uptake = uptake,
-      channel = channel,
-      predictors = predictors,
-      subsample = subsample,
-      ret.model = ret.model,
-      updateProgress = updateProgress,
-      ...
-    )
+    # Resolve channel and predictor names against actual flowFrame columns
+    valid_names <- colnames(fcbFlowFrame)
+    channel <- resolve_channel(channel, valid_names)
+    predictors <- resolve_channels(predictors, valid_names)
 
-    # knijnenburg model
-  } else if (method_selected == "knijnenburg") {
-    fcb2 <- morphology_corr.knijnenburg(
-      fcb = fcb,
-      uptake = uptake,
-      channel = channel,
-      fsc_ssc = predictors,
-      subsample = subsample,
-      ret.model = ret.model,
-      updateProgress = updateProgress
-    )
+    if (is.null(uptake)) {
+        uptake <- fcbFlowFrame
+        if (method != "knijnenburg") {
+            warning(
+                "Barcoded sample being used as uptake control, ",
+                "`knijnenburg` method may provide best results"
+            )
+        }
+    }
 
-    # linear model
-  }  else if (method_selected == "lm") {
-    fcb2 <- morphology_corr.lm(
-      fcb = fcb,
-      uptake = uptake,
-      channel = channel,
-      predictors = predictors,
-      ret.model = ret.model,
-      slope = 1,
-      updateProgress = updateProgress
-    )
-  }
 
-  fcbFlowFrame <- set_barcode_data(fcbFlowFrame, channel, "deskewing", fcb2)
+    # fcb sample extracted
+    fcb <- as.data.frame(exprs(fcbFlowFrame))
+    # uptake sample extracted
+    uptake <- coerce_to_flowFrame(uptake, arg_name = "Uptake control")
+    uptake <- as.data.frame(exprs(uptake))
 
-  return(fcbFlowFrame)
+    # earth model
+    if (method_selected == "earth") {
+        fcb2 <- morphology_corr.earth(
+            fcb = fcb,
+            uptake = uptake,
+            channel = channel,
+            predictors = predictors,
+            subsample = subsample,
+            ret.model = ret.model,
+            updateProgress = updateProgress,
+            ...
+        )
+
+        # knijnenburg model
+    } else if (method_selected == "knijnenburg") {
+        fcb2 <- morphology_corr.knijnenburg(
+            fcb = fcb,
+            uptake = uptake,
+            channel = channel,
+            fsc_ssc = predictors,
+            subsample = subsample,
+            ret.model = ret.model,
+            updateProgress = updateProgress
+        )
+
+        # linear model
+    } else if (method_selected == "lm") {
+        fcb2 <- morphology_corr.lm(
+            fcb = fcb,
+            uptake = uptake,
+            channel = channel,
+            predictors = predictors,
+            ret.model = ret.model,
+            slope = 1,
+            updateProgress = updateProgress
+        )
+    }
+
+    fcbFlowFrame <- set_barcode_data(fcbFlowFrame, channel, "deskewing", fcb2)
+
+    return(fcbFlowFrame)
 }
-
-

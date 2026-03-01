@@ -23,56 +23,59 @@
 morphology_corr.earth <- function(fcb,
                                   uptake,
                                   ret.model = FALSE,
-                                  what = c('x', 'x + se'),
+                                  what = c("x", "x + se"),
                                   nfold = 1,
                                   ncross = 0,
                                   channel,
-                                  predictors = c('FSC-A', 'SSC-A'),
+                                  predictors = c("FSC-A", "SSC-A"),
                                   subsample = 30e3,
                                   updateProgress = NULL,
                                   ...) {
-  what <- match.arg(what, c("x", "x + se"))
-
-  if (is.function(updateProgress)) {
-    updateProgress(detail = "Training adaptive splines...")}
-
-  lhs <- paste0("`", predictors, "`", collapse = " + ")
-  earth.formula <- paste0("`", channel, "` ~ ", lhs)
-  if(what == "x"){
-    earth.model <- earth(as.formula(earth.formula),
-                         degree = 2,
-                         nprune = 21,
-                         nfold = nfold,
-                         ncross = ncross,
-                         keepxy = TRUE,
-                         data = uptake,
-                         ...)
+    what <- match.arg(what, c("x", "x + se"))
 
     if (is.function(updateProgress)) {
-      updateProgress(detail = "Fitting fcb data...")}
-    fcb[,channel] <- fcb[,channel] - predict(earth.model, fcb) + median(unlist(uptake[,channel]))
+        updateProgress(detail = "Training adaptive splines...")
+    }
 
-  } else if(what == "x + se") {
-    earth.model <- earth(as.formula(earth.formula),
-                         degree = 2,
-                         nprune = 21,
-                         nfold = nfold,
-                         ncross = ncross,
-                         keepxy = TRUE,
-                         varmod.method = "x.earth",
-                         data = uptake,
-                         trace = 0.3)
+    lhs <- paste0("`", predictors, "`", collapse = " + ")
+    earth.formula <- paste0("`", channel, "` ~ ", lhs)
+    if (what == "x") {
+        earth.model <- earth(as.formula(earth.formula),
+            degree = 2,
+            nprune = 21,
+            nfold = nfold,
+            ncross = ncross,
+            keepxy = TRUE,
+            data = uptake,
+            ...
+        )
 
-    fcb[,channel] <- fcb[,channel] - predict(earth.model, fcb) + median(unlist(uptake[,channel]))
-    fcb[,paste0(channel,"se")]<- predict(earth.model, newdata = fcb, interval = "se")
-  }
+        if (is.function(updateProgress)) {
+            updateProgress(detail = "Fitting fcb data...")
+        }
+        fcb[, channel] <- fcb[, channel] - predict(earth.model, fcb) + median(unlist(uptake[, channel]))
+    } else if (what == "x + se") {
+        earth.model <- earth(as.formula(earth.formula),
+            degree = 2,
+            nprune = 21,
+            nfold = nfold,
+            ncross = ncross,
+            keepxy = TRUE,
+            varmod.method = "x.earth",
+            data = uptake,
+            trace = 0.3
+        )
 
-  if(ret.model == FALSE){
-    return(list(values = as.numeric(fcb[,channel])))
-  } else{
-    return(list(values = as.numeric(fcb[,channel]),
-                model = earth.model))
-  }
+        fcb[, channel] <- fcb[, channel] - predict(earth.model, fcb) + median(unlist(uptake[, channel]))
+        fcb[, paste0(channel, "se")] <- predict(earth.model, newdata = fcb, interval = "se")
+    }
+
+    if (ret.model == FALSE) {
+        return(list(values = as.numeric(fcb[, channel])))
+    } else {
+        return(list(
+            values = as.numeric(fcb[, channel]),
+            model = earth.model
+        ))
+    }
 }
-
-

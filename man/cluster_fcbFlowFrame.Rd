@@ -63,9 +63,11 @@ either gaussian mixture modeling or jenks natural breaks classification
 data(jurkatFCB)
 data(jurkatFCB_std)
 fcb <- fcbFlowFrame(jurkatFCB)
-fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
-                           channel = "Pacific Blue-A",
-                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+fcb <- deskew_fcbFlowFrame(fcb,
+    uptake = jurkatFCB_std,
+    channel = "Pacific Blue-A",
+    predictors = c("FSC-A", "SSC-A", "APC-H7-A")
+)
 fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
 }
 \seealso{
