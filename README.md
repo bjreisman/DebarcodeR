@@ -1,5 +1,3 @@
-![](README_files/figure-html/hexsticker.png)
-
 # DebarcodeR
 
 DebarcodeR is an R package for demultiplexing **fluorescent cell barcoded (FCB)** flow
@@ -94,6 +92,31 @@ write.flowSet(debarcoded_fs, outdir = "output")
 
 For a detailed walkthrough with explanations of each parameter, see
 `vignette("debarcoder-tutorial", package = "DebarcodeR")`.
+
+---
+
+## Interactive GUI
+
+DebarcodeR includes an interactive Shiny app for parameter tuning and
+visualization. The app walks through each pipeline step and generates a
+reproducible R script you can paste into your analysis code.
+
+```r
+# Launch with file upload
+run_debarcoder()
+
+# Or pass preprocessed data from your R session
+run_debarcoder(data = my_gated_ff, uptake = my_std_ff)
+```
+
+When you pass objects via the `data` and `uptake` arguments, the app
+skips the file upload step and uses your variable names in the generated
+code. The app requires `shiny`, `bslib`, and `bsicons` — install them
+with:
+
+```r
+install.packages(c("shiny", "bslib", "bsicons"))
+```
 
 ---
 
