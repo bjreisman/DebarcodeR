@@ -33,6 +33,8 @@ Output: `fcbFlowSet` (subclass of `flowSet`) split by well assignment.
 | `R/run_debarcoder.R` | Shiny GUI (`run_debarcoder()`) — UI, server, and code generation |
 | `vignettes/debarcoder-tutorial.Rmd` | Full pipeline tutorial — runs live (`eval=TRUE`) on `jurkatFCB` |
 | `tests/testthat/` | 11 test files + `setup.R` |
+| `FuturePlans/` | Plans for features not yet implemented |
+| `DebarcodeR_v1.1.0_update_summary.md` | Collaborator-facing summary of all v1.1.0 changes |
 
 ------------------------------------------------------------------------
 
@@ -62,6 +64,8 @@ data("jurkatFCB_std")
 -   **Version:** 1.1.0 (odd y = devel, correct for Bioc submission)
 -   **R CMD check:** 0 errors, 0 warnings, 0 notes (as of last run)
 -   **BiocCheck:** 1 ERROR (support site registration — account issue, not code), 1 WARNING (odd version — expected for devel), 6 NOTEs (cosmetic: function lengths, line lengths, indentation, suppressMessages, mailing list, funder role)
+-   **Git:** `devel-2026` is 134 commits ahead of `cytolab/DebarcodeR:master`. All substantive upstream changes are already incorporated. Merge plan in `FuturePlans/plan_gitmerge.md`.
+-   **Force push still needed:** After `git filter-repo` rewrote history to remove `.positai/` and `..Rcheck/`, a `git push --force origin devel-2026` is required to sync with GitHub.
 
 ------------------------------------------------------------------------
 
@@ -91,6 +95,20 @@ data("jurkatFCB_std")
 
 ------------------------------------------------------------------------
 
+## Channel Name Handling (Important)
+
+All pipeline functions use **original FCS channel names** (e.g. `"Pacific Blue-A"`). Cleaned/janitor-style names (e.g. `"pacific_blue_a"`) are accepted as **input** with a deprecation warning via `resolve_channel()`, but results are **stored** under the original name. This means:
+
+- `deskew_fcbFlowFrame(fcb, channel = "pacific_blue_a", ...)` — works, emits warning
+- `get_barcode_data(fcb, "pacific_blue_a", ...)` — returns `NULL` (key is `"Pacific Blue-A"`)
+- `getAssignments(fcb)[["pacific_blue_a"]]` — returns `NULL` (key is `"Pacific Blue-A"`)
+
+**Always use original FCS names for retrieval.**
+
+The `_flow_helpers.R` wrappers (`debarcode_sample()`, `split_by_assignments()`) and `_params.R` in the notebook directory have been updated to use original FCS names.
+
+------------------------------------------------------------------------
+
 ## Completed Work
 
 ### Phases 1–4 (prior sessions)
@@ -111,13 +129,14 @@ data("jurkatFCB_std")
 
 - De-exported 6 functions, deleted 3 conversion wrappers, marked 5 Knijnenburg helpers internal
 - Exported `get_barcode_data()` as public accessor; vignette uses it instead of `@barcodes`
-- All 20 exported man pages have runnable examples (100%)
+- All 21 exported man pages have runnable examples (100%)
 - Fixed `plot.fcbflowframe` → `plot.fcbFlowFrame` S3 dispatch case mismatch
 
 ### Code Style Cleanup
 
 - Fixed all `1:n` → `seq_len(n)` in `doRegressContrained.R`
 - Fixed `=` → `<-` assignment in `doRegressContrained.R`
+- Fixed MATLAB-style indexing `b(noc+1)` → `b[noc + 1, 1]` in `doRegressContrained.R`
 - Ran `styler::style_pkg(".", indent_by = 4L)` — indentation NOTEs down from 29% to ~3%
 - Manually wrapped long lines in `em_optimize.R`, `cluster_fcbFlowFrame.R`, `assign_fcbFlowFrame.R`, `split_fcbFlowFrame.R`, `apply_platemap.R`
 - Added `DebarcodeR.BiocCheck` to `.Rbuildignore`
@@ -138,10 +157,23 @@ data("jurkatFCB_std")
 -   **Dependencies:** `shiny`, `bslib`, `bsicons` added to `Suggests`
 -   **Known S3 dispatch issue:** `plot(fcb)` dispatches to flowCore's S4 `plot,flowFrame-method` instead of `plot.fcbFlowFrame`; app calls `plot.fcbFlowFrame()` explicitly as workaround
 
+### Session: 2026-03-01
+
+-   **`_flow_helpers.R` updated:** `debarcode_sample()` and `split_by_assignments()` now use original FCS channel names (`"Pacific Blue-A"`, `"FSC-A"`, etc.) and the explicit `fcbFlowFrame()` constructor. Located at `Notebook/2026/02_2026/_flow_helpers.R`.
+-   **`_params.R` updated:** `debarcode_channel` and `debarcode_predictors` updated to original FCS names. Located at `Notebook/2026/02_2026/20260219_BAXBAKKO_Timecourse_Conv/_params.R`.
+-   **`20260219_FlowCytAnalysis_v2.qmd` created:** Updated analysis script using `get_barcode_data()` and `exprs()` accessors instead of direct `@barcodes`/`@exprs` slot access, and correct channel names.
+-   **`NEWS.md` rewritten:** Structured changelog with New Features, API Changes, Bioconductor Compliance, Bug Fixes, Known Issues sections.
+-   **`DebarcodeR_v1.1.0_update_summary.md` created:** Collaborator-facing prose summary of all v1.1.0 changes.
+-   **Git history cleaned:** `git filter-repo` removed `.positai/` and `..Rcheck/` (which contained absolute filesystem paths) from all historical commits. **Force push still needed.**
+-   **`.gitignore` updated:** Added `..Rcheck/` and `.positai/` patterns.
+-   **`FuturePlans/` created:** Added to `.Rbuildignore`. Contains:
+    -   `plan_debarcode_wrapper.md` — plan for a `debarcode()` convenience function
+    -   `plan_gitmerge.md` — plan for merging `devel-2026` into `cytolab/DebarcodeR:master`
+
 ### Project Cleanup
 
 -   Removed completed plan/handoff files from project root: `PLAN.md`, `plan_bioconductor`, `plan_bioc_deexport.md`, `handoff.md`, `handoff_bioc.md`, `README.html`, `README_files/`
--   Updated `.gitignore`: added `*.tar.gz`, `*.Rcheck/`, `*.BiocCheck/`, `test_fcs/`
+-   Updated `.gitignore`: added `*.tar.gz`, `*.Rcheck/`, `*.BiocCheck/`, `..Rcheck/`, `.positai/`, `test_fcs/`
 -   Retained `plan_knijnenburg.md` (documents unfixed bug)
 
 ------------------------------------------------------------------------
@@ -160,15 +192,22 @@ tmin <- optimize(ft, c(0, 1e-4), tol = 1e-9)$objective
 tmin <- optimize(ft, c(0, max(z_d)), tol = 1e-9)$minimum
 ```
 
-Two bugs on one line: `$objective` → `$minimum`; search interval `c(0, 1e-4)` → `c(0, max(z_d))`.
+Two bugs on one line: `$objective` → `$minimum`; search interval `c(0, 1e-4)` → `c(0, max(z_d))`. Only affects the Knijnenburg deskewing method — earth/lm methods are unaffected.
+
+### S3 dispatch for `plot()`
+
+`plot(fcbFlowFrame_object)` dispatches to flowCore's S4 `plot,flowFrame-method` instead of `plot.fcbFlowFrame`. Workaround: call `plot.fcbFlowFrame()` explicitly.
 
 ------------------------------------------------------------------------
 
 ## Remaining Work (Ordered)
 
-1.  **Knijnenburg bug fix** — `selectDenseScatterArea.R` line 43 (`plan_knijnenburg.md`)
-2.  **Phase 5** — GatingSet support
-3.  **Shiny GUI enhancements:**
+1.  **Force push to GitHub** — `git push --force origin devel-2026` (after filter-repo history rewrite)
+2.  **Knijnenburg bug fix** — `selectDenseScatterArea.R` line 43 (`plan_knijnenburg.md`)
+3.  **`debarcode()` convenience wrapper** — single-call deskew → cluster → assign function (`FuturePlans/plan_debarcode_wrapper.md`)
+4.  **Merge to cytolab/master** — PR from `devel-2026` → `cytolab/DebarcodeR:master` (`FuturePlans/plan_gitmerge.md`)
+5.  **Phase 5** — GatingSet support
+6.  **Shiny GUI enhancements:**
     -   EM optimize step (optional accordion panel between Assign and Export)
     -   Platemap upload + `apply_platemap()` in Export panel
     -   Batch mode (multiple FCS files / flowSet)
