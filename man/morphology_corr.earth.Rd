@@ -49,3 +49,4 @@ A list with corrected values and optionally the fitted model.
 Corrects morphology using multivariate adaptive regression splines
 as implemented in the earth package.
 }
+\keyword{internal}

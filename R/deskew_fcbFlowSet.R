@@ -17,22 +17,16 @@
 #' @seealso \code{\link{deskew_fcbFlowFrame}} for single-frame processing,
 #'   \code{\link{cluster_fcbFlowSet}} for the next pipeline step
 #' @examples
-#' \donttest{
 #' data(jurkatFCB)
+#' data(jurkatFCB_std)
 #' library(flowCore)
-#'
-#' # Build a small flowSet from the tutorial data
-#' std_filter <- expressionFilter(`row` == 1 & `col` == 1, filterId = "std")
-#' jurkatFCB_std <- Subset(jurkatFCB, std_filter)
 #' fcbfs <- fcbFlowSet(flowSet(list(A = jurkatFCB)))
-#'
 #' fcbfs <- deskew_fcbFlowSet(
 #'   fcbfs,
 #'   uptake     = jurkatFCB_std,
 #'   channel    = "Pacific Blue-A",
 #'   predictors = c("FSC-A", "SSC-A", "APC-H7-A")
 #' )
-#' }
 #' @import earth janitor
 #' @export
 

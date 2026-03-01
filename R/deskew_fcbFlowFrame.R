@@ -17,11 +17,8 @@
 #'   \code{\link{deskew_fcbFlowSet}} to process an entire flowSet,
 #'   \code{\link{morphology_corr.earth}} for details on the default method
 #' @examples
-#' \donttest{
 #' data(jurkatFCB)
-#' data(jurkatFCB_std)  # pre-extracted single-well uptake control
-#'
-#' # Deskew — APC-H7-A is the internal standard dye channel
+#' data(jurkatFCB_std)
 #' fcb <- fcbFlowFrame(jurkatFCB)
 #' fcb <- deskew_fcbFlowFrame(
 #'   fcb,
@@ -30,7 +27,6 @@
 #'   predictors = c("FSC-A", "SSC-A", "APC-H7-A")
 #' )
 #' fcb
-#' }
 #' @import earth janitor
 #' @export
 

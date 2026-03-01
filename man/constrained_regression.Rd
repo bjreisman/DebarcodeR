@@ -48,3 +48,4 @@ constraints. Not intended to be called directly by the user.
 \seealso{
 \code{\link{doRegressConstrained}}
 }
+\keyword{internal}

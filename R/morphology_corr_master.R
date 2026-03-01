@@ -15,7 +15,7 @@
 #' @param ... Additional arguments passed to the correction method.
 #' @return A list with corrected values and optionally the fitted model.
 #'
-#' @export
+#' @keywords internal
 
 #mybarcodedff$barcodes$pacificOrange$deskew
 

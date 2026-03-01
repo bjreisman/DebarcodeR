@@ -18,16 +18,12 @@ If a \code{cytoset} is provided (from the \code{flowWorkspace} package),
 it is automatically converted to a \code{flowSet} first.
 }
 \examples{
-\donttest{
-# fcbFlowSet is normally created via split(); direct construction is also
-# possible if you already have a flowSet:
 data(jurkatFCB)
 library(flowCore)
 fs <- flowSet(list(sample1 = jurkatFCB))
 fcbfs <- fcbFlowSet(fs)
 }
-}
 \seealso{
 \code{\link{split}} to produce an fcbFlowSet from an assigned
-  fcbFlowFrame, \code{\link{as.cytoset}} for coercion back to cytoset
+  fcbFlowFrame, \code{as(x, "flowSet")} for coercion back to flowSet
 }

@@ -10,3 +10,9 @@ A container for debarcoded flow cytometry data, extending flowCore's
 \code{flowSet} class. Contains a collection of flowFrames, one per
 debarcoded sample.
 }
+\examples{
+data(jurkatFCB)
+library(flowCore)
+fcbfs <- fcbFlowSet(flowSet(list(sample1 = jurkatFCB)))
+class(fcbfs)
+}

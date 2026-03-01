@@ -38,3 +38,4 @@ A list with corrected values and optionally the fitted model.
 \description{
 Simple linear regression approach for morphology correction.
 }
+\keyword{internal}

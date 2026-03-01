@@ -28,7 +28,7 @@ fcbFlowFrame <- setClass("fcbFlowFrame",
 #' @param barcodes A list of barcode data (default: empty list).
 #' @return An object of class \code{fcbFlowFrame}.
 #' @seealso \code{\link{deskew_fcbFlowFrame}} to begin the debarcoding pipeline,
-#'   \code{\link{as.flowFrame}} and \code{\link{as.cytoframe}} for coercion
+#'   \code{as(x, "flowFrame")} for coercion back to flowFrame
 #' @examples
 #' data(jurkatFCB)
 #' fcb <- fcbFlowFrame(jurkatFCB)
@@ -54,6 +54,10 @@ fcbFlowFrame <- function(x, barcodes = list()) {
 #'
 #' @param object An fcbFlowFrame object.
 #' @return Invisibly returns \code{object}.
+#' @examples
+#' data(jurkatFCB)
+#' fcb <- fcbFlowFrame(jurkatFCB)
+#' show(fcb)
 #' @importFrom methods show
 #' @export
 setMethod("show", "fcbFlowFrame", function(object) {

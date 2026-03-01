@@ -21,3 +21,4 @@ regression model matrix. Not intended to be called directly.
 \seealso{
 \code{\link{doRegressConstrained}} \code{\link{regression_model_matrix}}
 }
+\keyword{internal}

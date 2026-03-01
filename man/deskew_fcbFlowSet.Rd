@@ -45,22 +45,16 @@ An fcbFlowSet with barcode slots populated for the specified channel.
 Applies \code{\link{deskew_fcbFlowFrame}} to each frame in an fcbFlowSet.
 }
 \examples{
-\donttest{
 data(jurkatFCB)
+data(jurkatFCB_std)
 library(flowCore)
-
-# Build a small flowSet from the tutorial data
-std_filter <- expressionFilter(`row` == 1 & `col` == 1, filterId = "std")
-jurkatFCB_std <- Subset(jurkatFCB, std_filter)
 fcbfs <- fcbFlowSet(flowSet(list(A = jurkatFCB)))
-
 fcbfs <- deskew_fcbFlowSet(
   fcbfs,
   uptake     = jurkatFCB_std,
   channel    = "Pacific Blue-A",
   predictors = c("FSC-A", "SSC-A", "APC-H7-A")
 )
-}
 }
 \seealso{
 \code{\link{deskew_fcbFlowFrame}} for single-frame processing,

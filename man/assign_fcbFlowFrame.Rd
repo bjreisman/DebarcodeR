@@ -39,15 +39,14 @@ discretely assign each cell to a barcoding level.  Unassigned cells are
 given a level of 0 rather than being discarded.
 }
 \examples{
-\donttest{
-# Requires deskewed and clustered fcbFlowFrame — see cluster_fcbFlowFrame()
+data(jurkatFCB)
+data(jurkatFCB_std)
+fcb <- fcbFlowFrame(jurkatFCB)
+fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+                           channel = "Pacific Blue-A",
+                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
 fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
-fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
-
-# After em_optimize(), assign combined well labels
-fcb <- assign_fcbFlowFrame(fcb, channel = "wells",
-                           likelihoodcut = 12, ambiguitycut = 0.05)
-}
 }
 \seealso{
 \code{\link{cluster_fcbFlowFrame}} for the preceding step,

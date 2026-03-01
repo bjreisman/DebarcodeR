@@ -131,7 +131,7 @@ intensity, sharpening the separation between adjacent levels:
 
 ```{r plot-deskew, fig.width = 7, fig.height = 3.5, message = FALSE, warning = FALSE}
 raw_pb      <- exprs(jurkatFCB)[, "Pacific Blue-A"]
-deskewed_pb <- fcb@barcodes[["Pacific Blue-A"]][["deskewing"]][["values"]]
+deskewed_pb <- get_barcode_data(fcb, "Pacific Blue-A", "deskewing", "values")
 
 deskew_long <- rbind(
   data.frame(step = "Before deskewing", value = raw_pb),
@@ -165,7 +165,7 @@ The Gaussian mixture model identifies each level as a distinct component.
 Cells are colored by their most probable level assignment:
 
 ```{r plot-cluster, fig.width = 6.5, fig.height = 4, message = FALSE, warning = FALSE}
-prob_mat <- fcb@barcodes[["Pacific Blue-A"]][["clustering"]][["probabilities"]]
+prob_mat <- get_barcode_data(fcb, "Pacific Blue-A", "clustering", "probabilities")
 level <- factor(colnames(prob_mat)[max.col(prob_mat)],
                 levels = colnames(prob_mat))
 
@@ -216,7 +216,7 @@ deskewed channel space (cells not meeting the cutoffs are excluded):
 
 ```{r plot-assign, fig.width = 5.5, fig.height = 5.5, message = FALSE, warning = FALSE}
 asgn <- getAssignments(fcb)
-deskewed_po <- fcb@barcodes[["Pacific Orange-A"]][["deskewing"]][["values"]]
+deskewed_po <- get_barcode_data(fcb, "Pacific Orange-A", "deskewing", "values")
 assigned <- asgn[["Pacific Blue-A"]] != "0" & asgn[["Pacific Orange-A"]] != "0"
 well_id <- paste(asgn[["Pacific Blue-A"]], asgn[["Pacific Orange-A"]], sep = ".")
 

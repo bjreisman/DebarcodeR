@@ -27,3 +27,6 @@ An fcbFlowSet with each flowFrame named by the combined factor levels.
 \description{
 Split a flowFrame by a list of factors
 }
+\examples{
+# See split,fcbFlowFrame,list-method for a full example
+}

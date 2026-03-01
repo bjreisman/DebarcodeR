@@ -15,7 +15,7 @@
 #' @param monodir Monotonicity direction constraints.
 #' @param cofactor Cofactor for transformation.
 #' @return Morphology-corrected values.
-
+#' @keywords internal
 #' @importFrom stats lm optimize
 doRegressConstrained <- function(single_level_bc, fcb_df = NULL,
                                 Loc, weight, trans,
@@ -146,7 +146,7 @@ doRegressConstrained <- function(single_level_bc, fcb_df = NULL,
 #' @param vars Integer vector defining which variable each column uses.
 #' @param powers Numeric vector of power transformations per column.
 #' @return A regression model matrix.
-#'
+#' @keywords internal
 #' @seealso \code{\link{selectDenseScatterArea}} \code{\link{doRegressConstrained}}
 regression_model_matrix <- function(nrow = 2, ncol = 8,
                                     vars = c(1, 1, 1, 2, 2, 2, 3, 3),
@@ -169,7 +169,7 @@ regression_model_matrix <- function(nrow = 2, ncol = 8,
 #' @param D Data matrix with scatter and channel values.
 #' @param rm Regression model matrix defining variable/power combinations.
 #' @return A list with components X (design matrix), Y (response), and Bx (basis).
-#'
+#' @keywords internal
 #' @seealso \code{\link{doRegressConstrained}} \code{\link{regression_model_matrix}}
 generate_regressors <- function(D, rm){
 
@@ -201,7 +201,7 @@ generate_regressors <- function(D, rm){
 #' @param rm Regression model matrix.
 #' @param monodir Monotonicity direction constraints.
 #' @return Constrained regression result.
-#'
+#' @keywords internal
 #' @seealso \code{\link{doRegressConstrained}}
 constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
                                    OFFSET, Bx, rm, monodir){
@@ -289,7 +289,7 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
 
   if (!is.null(val3)){
     A <- matrix(nrow = noc + 2, ncol = ncol(rm))
-    A[1:noc,] <- A1-A2
+    A[seq_len(noc),] <- A1-A2
 
     XBP <- matrix(nrow = 2, ncol=3)
     if (monodir[1]==1 & monodir[2]==1){

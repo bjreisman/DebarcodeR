@@ -9,10 +9,7 @@
 #' @return A named list with two components: \code{loc}, a matrix of (FSC, SSC)
 #'   coordinates for cells inside the 95\% density contour, and \code{c}, a
 #'   numeric vector of cumulative density weights for those cells.
-# fsc_ssc <- c(fsc = 'FSC-A', ssc = 'SSC-A')
-# fsc_ssc[['fsc']]
-#fsc_ssc[['fsc']]
-
+#' @keywords internal
 #' @importFrom stats optimize
 selectDenseScatterArea <- function (data,
                                     fsc_ssc = c(fsc = 'FSC-A', ssc = 'SSC-A'),

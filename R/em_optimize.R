@@ -20,15 +20,24 @@
 #'   \code{channel = "wells"}), \code{\link{cluster_fcbFlowFrame}} for the
 #'   preceding univariate clustering
 #' @examples
-#' \donttest{
-#' # Requires all barcoding channels deskewed, clustered, and assigned
-#' # See deskew_fcbFlowFrame(), cluster_fcbFlowFrame(), assign_fcbFlowFrame()
+#' data(jurkatFCB)
+#' data(jurkatFCB_std)
+#' fcb <- fcbFlowFrame(jurkatFCB)
+#' # Deskew, cluster, and assign both barcoding channels
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Blue-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Orange-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
+#' # EM optimize across channels
 #' fcb <- em_optimize(fcb, niter = 3)
-#'
-#' # Then assign well labels from the multivariate model
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "wells",
 #'                            likelihoodcut = 12, ambiguitycut = 0.05)
-#' }
 #' @export
 #' @import mclust
 #' @importFrom data.table tstrsplit

@@ -12,7 +12,7 @@
 #' @return A list with corrected values and optionally the fitted model.
 #'
 #' @seealso \code{\link{selectDenseScatterArea}} \code{\link{doRegressConstrained}}
-#' @export
+#' @keywords internal
 
 morphology_corr.knijnenburg <- function(fcb,
                                         uptake,

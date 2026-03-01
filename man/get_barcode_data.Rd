@@ -11,14 +11,28 @@ get_barcode_data(fcbFF, channel, step, field = NULL)
 
 \item{channel}{Channel name.}
 
-\item{step}{Pipeline step: "deskewing", "clustering", or "assignment".}
+\item{step}{Pipeline step: \code{"deskewing"}, \code{"clustering"}, or
+\code{"assignment"}.}
 
-\item{field}{Optional field within the step (e.g., "values", "probabilities", "model").}
+\item{field}{Optional field within the step (e.g., \code{"values"},
+\code{"probabilities"}, \code{"model"}).}
 }
 \value{
-The requested data.
+The requested data, or \code{NULL} if the field does not exist.
 }
 \description{
-Get data from the barcodes slot
+Retrieves pipeline results stored in the \code{barcodes} slot of an
+\code{fcbFlowFrame}. Preferred over direct \code{@barcodes} access.
 }
-\keyword{internal}
+\examples{
+data(jurkatFCB)
+fcb <- fcbFlowFrame(jurkatFCB)
+fcb <- deskew_fcbFlowFrame(fcb, channel = "Pacific Blue-A",
+                           predictors = c("FSC-A", "SSC-A"))
+deskewed <- get_barcode_data(fcb, "Pacific Blue-A", "deskewing", "values")
+head(deskewed)
+}
+\seealso{
+\code{\link{fcbFlowFrame}}, \code{\link{deskew_fcbFlowFrame}},
+  \code{\link{cluster_fcbFlowFrame}}, \code{\link{assign_fcbFlowFrame}}
+}

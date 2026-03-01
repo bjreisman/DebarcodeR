@@ -16,10 +16,7 @@ The probability matrix normalized by column (max = 1 per column).
 Column-normalizes the probability matrix by dividing each column by its maximum.
 Used to identify cells in low-density tails of each population.
 }
-\examples{
-probs <- matrix(c(0.9, 0.1, 0.3, 0.7), nrow = 2, ncol = 2)
-calculate.likelihood(probs)
-}
 \seealso{
 \code{\link{calculate.ambiguity}}, \code{\link{assign_fcbFlowFrame}}
 }
+\keyword{internal}

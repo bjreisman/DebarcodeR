@@ -25,6 +25,18 @@ An fcbFlowSet object with assignment slots populated.
 \description{
 Applies \code{\link{assign_fcbFlowFrame}} to each frame in an fcbFlowSet.
 }
+\examples{
+data(jurkatFCB)
+data(jurkatFCB_std)
+library(flowCore)
+fcbfs <- fcbFlowSet(flowSet(list(A = jurkatFCB)))
+fcbfs <- deskew_fcbFlowSet(fcbfs, uptake = jurkatFCB_std,
+                           channel = "Pacific Blue-A",
+                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+fcbfs <- cluster_fcbFlowSet(fcbfs, channel = "Pacific Blue-A",
+                           levels = 8, opt = "fisher")
+fcbfs <- assign_fcbFlowSet(fcbfs, channel = "Pacific Blue-A")
+}
 \seealso{
 \code{\link{assign_fcbFlowFrame}} for single-frame processing,
   \code{\link{cluster_fcbFlowSet}} for the preceding step

@@ -48,3 +48,4 @@ Morphology-corrected values.
 Implements the Knijnenburg et al. constrained regression approach for
 morphology correction of barcoding channels.
 }
+\keyword{internal}

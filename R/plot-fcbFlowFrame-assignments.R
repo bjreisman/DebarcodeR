@@ -8,6 +8,23 @@ utils::globalVariables("level")
 #' @param seed Deprecated; no longer used.
 #' @param ... Additional arguments (not used).
 #' @return A ggplot2 object.
+#' @examples
+#' \donttest{
+#' data(jurkatFCB)
+#' data(jurkatFCB_std)
+#' fcb <- fcbFlowFrame(jurkatFCB)
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Blue-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Orange-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
+#' plot(fcb)
+#' }
 #' @method plot fcbflowframe
 #' @export
 #' @import ggplot2 ggnewscale scales ggforce

@@ -38,3 +38,6 @@ An fcbFlowSet with each flowFrame named by the assignments.
 \description{
 Split an fcbFlowSet by assignments
 }
+\examples{
+# See split,fcbFlowFrame,list-method for a single-frame example
+}

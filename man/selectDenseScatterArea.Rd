@@ -26,3 +26,4 @@ A named list with two components: \code{loc}, a matrix of (FSC, SSC)
 Finds the area containing 95\% of cells based on FSC/SSC density,
 used for the Knijnenburg morphology correction method.
 }
+\keyword{internal}

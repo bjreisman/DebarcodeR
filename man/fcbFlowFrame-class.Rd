@@ -41,5 +41,5 @@ fcb
 }
 \seealso{
 \code{\link{deskew_fcbFlowFrame}} to begin the debarcoding pipeline,
-  \code{\link{as.flowFrame}} and \code{\link{as.cytoframe}} for coercion
+  \code{as(x, "flowFrame")} for coercion back to flowFrame
 }

@@ -30,18 +30,30 @@ Joins barcoding level assignments to human-readable well names, updates
 \code{pData}, and renames each flowFrame to \code{<prefix>_<well>}.
 }
 \examples{
-\donttest{
-# Build a platemap: Pacific Blue (8 levels) x Pacific Orange (6 levels)
+data(jurkatFCB)
+data(jurkatFCB_std)
+library(flowCore)
+fcb <- fcbFlowFrame(jurkatFCB)
+fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+                           channel = "Pacific Blue-A",
+                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
+fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
+fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+                           channel = "Pacific Orange-A",
+                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
+assignments <- getAssignments(fcb)
+fcbfs <- split(fcb, assignments)
 myplatemap <- data.frame(
   pacific_blue_a   = as.character(rep(1:8, times = 6)),
   pacific_orange_a = as.character(rep(1:6, each  = 8)),
   well             = paste0(rep(LETTERS[1:8], times = 6),
                             formatC(rep(1:6, each = 8), width = 2, flag = "0"))
 )
-
 fcbfs <- apply_platemap(fcbfs, myplatemap, prefix = "Jurkat_FCB")
 sampleNames(fcbfs)
-}
 }
 \seealso{
 \code{\link{getAssignments}} and \code{\link[base]{split}} for

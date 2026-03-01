@@ -38,3 +38,4 @@ Implements the constrained regression approach from Knijnenburg et al. (2011).
 \seealso{
 \code{\link{selectDenseScatterArea}} \code{\link{doRegressConstrained}}
 }
+\keyword{internal}

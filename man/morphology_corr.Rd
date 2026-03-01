@@ -45,3 +45,4 @@ A list with corrected values and optionally the fitted model.
 Master function that dispatches to the appropriate morphology correction
 method (earth, knijnenburg, or lm).
 }
+\keyword{internal}

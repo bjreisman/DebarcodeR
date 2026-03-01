@@ -47,6 +47,17 @@ An fcbFlowSet with clustering slots populated for all frames.
 This function allows you to calculate the probability of a cell originating from a given population using
 either gaussian mixture modeling or jenks natural breaks classification
 }
+\examples{
+data(jurkatFCB)
+data(jurkatFCB_std)
+library(flowCore)
+fcbfs <- fcbFlowSet(flowSet(list(A = jurkatFCB)))
+fcbfs <- deskew_fcbFlowSet(fcbfs, uptake = jurkatFCB_std,
+                           channel = "Pacific Blue-A",
+                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+fcbfs <- cluster_fcbFlowSet(fcbfs, channel = "Pacific Blue-A",
+                           levels = 8, opt = "fisher")
+}
 \seealso{
 \code{\link{cluster_fcbFlowFrame}} for single-frame processing,
   \code{\link{deskew_fcbFlowSet}} for the preceding step,

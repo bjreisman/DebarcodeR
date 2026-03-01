@@ -54,22 +54,18 @@ test_that("deskew_fcbFlowFrame accepts cytoframe as uptake", {
 
 # -- Conversion back to cytoframe/cytoset --------------------------------
 
-test_that("as.cytoframe converts fcbFlowFrame to cytoframe", {
+test_that("fcbFlowFrame can be coerced to cytoframe via flowWorkspace", {
   fcb <- fcbFlowFrame(test_ff)
-  cf_out <- as.cytoframe(fcb)
+  cf_out <- flowFrame_to_cytoframe(as(fcb, "flowFrame"))
   expect_s4_class(cf_out, "cytoframe")
   expect_equal(nrow(cf_out), nrow(test_ff))
   expect_equal(ncol(cf_out), ncol(test_ff))
 })
 
-test_that("as.cytoset converts fcbFlowSet to cytoset", {
+test_that("fcbFlowSet can be coerced to cytoset via flowWorkspace", {
   fs <- flowSet(list(sample1 = test_ff))
   fcbfs <- fcbFlowSet(fs)
-  cs_out <- as.cytoset(fcbfs)
+  cs_out <- flowSet_to_cytoset(as(fcbfs, "flowSet"))
   expect_s4_class(cs_out, "cytoset")
   expect_equal(length(cs_out), 1)
-})
-
-test_that("as.cytoframe rejects non-fcbFlowFrame input", {
-  expect_error(as.cytoframe(test_ff))
 })

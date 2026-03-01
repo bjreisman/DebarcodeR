@@ -17,14 +17,21 @@
 #'   \code{\link[base]{split}} to split data by the returned factors,
 #'   \code{\link{apply_platemap}} to map level combinations to well names
 #' @examples
-#' \donttest{
-#' # After all pipeline steps are complete:
+#' data(jurkatFCB)
+#' data(jurkatFCB_std)
+#' fcb <- fcbFlowFrame(jurkatFCB)
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Blue-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Orange-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
 #' assignments <- getAssignments(fcb)
-#' # assignments is a named list of factors, e.g.:
-#' # $`Pacific Blue-A`   : factor with levels 0..8
-#' # $`Pacific Orange-A` : factor with levels 0..6
-#' fcbfs <- split(fcb, assignments)
-#' }
+#' str(assignments)
 #' @export
 getAssignments <- function(x, platemap = NULL, simplify = FALSE) {
   getAssignments.ff <- function(x) {

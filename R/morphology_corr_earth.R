@@ -18,7 +18,7 @@
 #' @return A list with corrected values and optionally the fitted model.
 #' @import earth
 #' @importFrom stats as.formula median
-#' @export
+#' @keywords internal
 
 morphology_corr.earth <- function(fcb,
                                   uptake,

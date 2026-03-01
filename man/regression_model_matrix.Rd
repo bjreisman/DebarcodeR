@@ -36,3 +36,4 @@ Used to build the regression model, not to be called directly by the used
 \seealso{
 \code{\link{selectDenseScatterArea}} \code{\link{doRegressConstrained}}
 }
+\keyword{internal}

@@ -16,10 +16,7 @@ The probability matrix normalized by row.
 Row-normalizes the probability matrix so each cell's probabilities sum to 1.
 Used to identify cells that are ambiguously assigned between populations.
 }
-\examples{
-probs <- matrix(c(0.9, 0.1, 0.3, 0.7), nrow = 2, ncol = 2)
-calculate.ambiguity(probs)
-}
 \seealso{
 \code{\link{calculate.likelihood}}, \code{\link{assign_fcbFlowFrame}}
 }
+\keyword{internal}

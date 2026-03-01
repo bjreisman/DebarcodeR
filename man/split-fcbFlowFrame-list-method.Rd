@@ -30,12 +30,23 @@ Splits an fcbFlowFrame into separate flowFrames based on barcode
 assignments, returned as an fcbFlowSet with updated pData.
 }
 \examples{
-\donttest{
-# After the full pipeline (deskew -> cluster -> assign):
+data(jurkatFCB)
+data(jurkatFCB_std)
+library(flowCore)
+fcb <- fcbFlowFrame(jurkatFCB)
+fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+                           channel = "Pacific Blue-A",
+                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
+fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
+fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+                           channel = "Pacific Orange-A",
+                           predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
 assignments <- getAssignments(fcb)
 fcbfs <- split(fcb, assignments)
-pData(fcbfs)  # one row per barcode combination
-}
+pData(fcbfs)
 }
 \seealso{
 \code{\link{getAssignments}} to generate \code{f},

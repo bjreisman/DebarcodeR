@@ -12,7 +12,7 @@
 #' @param ret.model Logical, retain the fitted model (default FALSE).
 #' @return A list with corrected values and optionally the fitted model.
 #' @importFrom stats as.formula lm median
-#' @export
+#' @keywords internal
 
 morphology_corr.lm <- function(fcb,
                                uptake,

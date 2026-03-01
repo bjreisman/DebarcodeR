@@ -17,3 +17,8 @@ Prints a concise summary of the fcbFlowFrame including cell count, channel
 count, and the debarcoding state (which pipeline steps have been completed)
 for each barcoded channel.
 }
+\examples{
+data(jurkatFCB)
+fcb <- fcbFlowFrame(jurkatFCB)
+show(fcb)
+}

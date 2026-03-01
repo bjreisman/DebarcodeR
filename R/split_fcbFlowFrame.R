@@ -42,12 +42,23 @@ split_by_assignments <- function(x, f, flowSet) {
 #' @seealso \code{\link{getAssignments}} to generate \code{f},
 #'   \code{\link{apply_platemap}} to rename wells after splitting
 #' @examples
-#' \donttest{
-#' # After the full pipeline (deskew -> cluster -> assign):
+#' data(jurkatFCB)
+#' data(jurkatFCB_std)
+#' library(flowCore)
+#' fcb <- fcbFlowFrame(jurkatFCB)
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Blue-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Orange-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
+#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
 #' assignments <- getAssignments(fcb)
 #' fcbfs <- split(fcb, assignments)
-#' pData(fcbfs)  # one row per barcode combination
-#' }
+#' pData(fcbfs)
 #' @import flowCore
 #' @export
 setMethod("split",
@@ -75,6 +86,8 @@ setMethod("split",
 #' @param merge.na Not used.
 #' @param ... Additional arguments (not used).
 #' @return An fcbFlowSet with each flowFrame named by the assignments.
+#' @examples
+#' # See split,fcbFlowFrame,list-method for a single-frame example
 #' @import flowCore
 #' @importFrom dplyr left_join
 #' @export
@@ -126,6 +139,8 @@ setMethod("split",
 #' @param merge.na Not used.
 #' @param ... Additional arguments (not used).
 #' @return An fcbFlowSet with each flowFrame named by the combined factor levels.
+#' @examples
+#' # See split,fcbFlowFrame,list-method for a full example
 #' @import flowCore
 #' @export
 setMethod("split",

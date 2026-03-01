@@ -57,9 +57,7 @@ Config/testthat/edition: 3
 RoxygenNote: 7.3.3
 Collate: 
     'apply_platemap.R'
-    'as_cytoframe.R'
     'fcbFlowFrame.R'
-    'as_flowFrame.R'
     'assign_fcbFlowFrame.R'
     'assign_fcbFlowSet.R'
     'cluster_fcbFlowFrame.R'

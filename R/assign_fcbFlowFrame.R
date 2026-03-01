@@ -24,15 +24,14 @@
 #'   \code{\link{em_optimize}} for multivariate refinement before assigning
 #'   \code{"wells"}, \code{\link{getAssignments}} to extract the result
 #' @examples
-#' \donttest{
-#' # Requires deskewed and clustered fcbFlowFrame — see cluster_fcbFlowFrame()
+#' data(jurkatFCB)
+#' data(jurkatFCB_std)
+#' fcb <- fcbFlowFrame(jurkatFCB)
+#' fcb <- deskew_fcbFlowFrame(fcb, uptake = jurkatFCB_std,
+#'                            channel = "Pacific Blue-A",
+#'                            predictors = c("FSC-A", "SSC-A", "APC-H7-A"))
+#' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Blue-A", levels = 8)
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Blue-A")
-#' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
-#'
-#' # After em_optimize(), assign combined well labels
-#' fcb <- assign_fcbFlowFrame(fcb, channel = "wells",
-#'                            likelihoodcut = 12, ambiguitycut = 0.05)
-#' }
 #' @export
 assign_fcbFlowFrame <- function(fcbFlowFrame,
                                 channel,
@@ -102,10 +101,7 @@ assign_fcbFlowFrame <- function(fcbFlowFrame,
 #' @param probs A numeric matrix of probabilities (cells x populations).
 #' @return The probability matrix normalized by row.
 #' @seealso \code{\link{calculate.likelihood}}, \code{\link{assign_fcbFlowFrame}}
-#' @examples
-#' probs <- matrix(c(0.9, 0.1, 0.3, 0.7), nrow = 2, ncol = 2)
-#' calculate.ambiguity(probs)
-#' @export
+#' @keywords internal
 calculate.ambiguity <- function(probs) {
   row.sum <- rowSums(probs)
   probs.norm.row <- probs / row.sum
@@ -120,10 +116,7 @@ calculate.ambiguity <- function(probs) {
 #' @param probs A numeric matrix of probabilities (cells x populations).
 #' @return The probability matrix normalized by column (max = 1 per column).
 #' @seealso \code{\link{calculate.ambiguity}}, \code{\link{assign_fcbFlowFrame}}
-#' @examples
-#' probs <- matrix(c(0.9, 0.1, 0.3, 0.7), nrow = 2, ncol = 2)
-#' calculate.likelihood(probs)
-#' @export
+#' @keywords internal
 #' @importFrom matrixStats colMaxs
 calculate.likelihood <- function(probs) {
   col.max <- matrixStats::colMaxs(probs)

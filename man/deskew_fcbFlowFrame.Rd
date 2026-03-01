@@ -46,11 +46,8 @@ An fcbFlowFrame with barcode slot populated for the specified channel.
 Corrects morphology based on scatter or uptake control for fcbFlowFrame
 }
 \examples{
-\donttest{
 data(jurkatFCB)
-data(jurkatFCB_std)  # pre-extracted single-well uptake control
-
-# Deskew — APC-H7-A is the internal standard dye channel
+data(jurkatFCB_std)
 fcb <- fcbFlowFrame(jurkatFCB)
 fcb <- deskew_fcbFlowFrame(
   fcb,
@@ -59,7 +56,6 @@ fcb <- deskew_fcbFlowFrame(
   predictors = c("FSC-A", "SSC-A", "APC-H7-A")
 )
 fcb
-}
 }
 \seealso{
 \code{\link{cluster_fcbFlowFrame}} for the next pipeline step,
