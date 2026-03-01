@@ -6,3 +6,4 @@
 ^DebarcodeR.*\.tar\.gz$
 ^DebarcodeR\.Rcheck$
 ^\.positai$
+^DebarcodeR\.BiocCheck$

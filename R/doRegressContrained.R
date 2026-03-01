@@ -55,12 +55,12 @@ doRegressConstrained <- function(single_level_bc, fcb_df = NULL,
               D2 <- D2
             },
             logF = {
-              D <- cbind(D[1:2], log(D[3] + lo))
-              D2 <- cbind(D2[1:2], log(D2[3] + lo))
+              D <- cbind(D[seq_len(2)], log(D[3] + lo))
+              D2 <- cbind(D2[seq_len(2)], log(D2[3] + lo))
             },
             arcsinh = {
-              D <- cbind(D[1:2], asinh(D[3]/cofactor))
-              D2 <- cbind(D2[1:2], asinh(D2[3]/cofactor))
+              D <- cbind(D[seq_len(2)], asinh(D[3]/cofactor))
+              D2 <- cbind(D2[seq_len(2)], asinh(D2[3]/cofactor))
             }
     )
 
@@ -89,8 +89,8 @@ doRegressConstrained <- function(single_level_bc, fcb_df = NULL,
       Bc <- con_reg[['Bc']]
       NOFFSET <- con_reg[['NOFFSET']]
       NB <- con_reg[['NB']]
-      Nresidual <- Y - (X%*%Bc[1:8] + NOFFSET)
-      Nresidual2 <- Y2 - (X2%*%Bc[1:8] + NOFFSET)
+      Nresidual <- Y - (X%*%Bc[seq_len(8)] + NOFFSET)
+      Nresidual2 <- Y2 - (X2%*%Bc[seq_len(8)] + NOFFSET)
     }
     else {
       NB <- Bx
@@ -218,7 +218,7 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
   ft <- function(t) {abs(sum(PP[PP>t])- area)}
   tmin <- optimize(ft, c(0,max(PP)))$minimum
 
-  ZZ= matrix(nrow=sum(PP>tmin), ncol=4)
+  ZZ <- matrix(nrow=sum(PP>tmin), ncol=4)
   ZZ[,1] <- as.numeric(XX[PP>tmin])
   ZZ[,2] <- as.numeric(YY[PP>tmin])
   ZZ[,3] <- ZZ[,1]*ZZ[,2]
@@ -247,8 +247,8 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
   noc <- 2*(2^S-1)*2^S
   Q <- matrix(nrow=noc, ncol = 4)
   p <- 0
-  for (i in 1:2^S) {
-    for (j in 1:(2^S-1)) {
+  for (i in seq_len(2^S)) {
+    for (j in seq_len(2^S - 1)) {
       p <- p + 1
       if (monodir[1] == 1) {
         Q[p,] <- c(XX[1,j], YY[i,1], XX[1,j+1], YY[i,1])
@@ -258,8 +258,8 @@ constrained_regression <- function(X, Y, fsc_limits, ssc_limits, val3, D,
     }
   }
 
-  for (i in 1:2^S) {
-    for (j in 1:(2^S-1)) {
+  for (i in seq_len(2^S)) {
+    for (j in seq_len(2^S - 1)) {
       p <- p + 1
       if (monodir[2] == 1) {
         Q[p,] <- c(XX[1,i], YY[j,1], XX[1,i], YY[j+1,1])
