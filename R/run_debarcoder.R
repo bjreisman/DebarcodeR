@@ -258,12 +258,8 @@ debarcoder_server <- function(input, output, session) {
         if (!is.null(input$is_channel) && nzchar(input$is_channel)) {
             is_ch <- input$is_channel
             threshold <- input$is_threshold
-            filt_expr <- paste0("`", is_ch, "` > ", threshold)
-            is_filter <- flowCore::expressionFilter(
-                expr = parse(text = filt_expr)[[1]],
-                filterId = "ISfilter"
-            )
-            ff <- flowCore::Subset(ff, is_filter)
+            keep <- flowCore::exprs(ff)[, is_ch] > threshold
+            ff <- ff[keep, ]
         }
 
         fcb <- fcbFlowFrame(ff)
@@ -476,8 +472,8 @@ debarcoder_server <- function(input, output, session) {
         shiny::req(fcb)
 
         if (step_rv() >= 5L) {
-            # Post-assignment: use plot.fcbFlowFrame
-            plot(fcb, plot = "assignments")
+            # Explicit S3 call — S4 plot,flowFrame-method takes precedence
+            plot.fcbFlowFrame(fcb, plot = "assignments")
         } else if (step_rv() >= 3L && length(config$bc_channels) >= 2L) {
             # Post-deskew: scatter of deskewed values
             ch1 <- config$bc_channels[1]
@@ -645,21 +641,21 @@ debarcoder_server <- function(input, output, session) {
             fcb <- fcb_rv()
             asgn <- getAssignments(fcb)
 
-            # Use original flowFrame for splitting (preserves all channels)
-            ff <- raw_ff_rv()
+            # Split the filtered flowFrame (same length as assignments)
+            ff <- methods::as(fcb, "flowFrame")
             debarcoded_fs <- split(ff, asgn)
 
             tmpdir <- tempfile("debarcoded_")
             dir.create(tmpdir)
             flowCore::write.flowSet(debarcoded_fs, outdir = tmpdir)
 
-            # Zip the output directory
+            # write.flowSet creates files without .fcs extension
             wd <- getwd()
             on.exit(setwd(wd))
             setwd(tmpdir)
-            fcs_files <- list.files(".", pattern = "\\.fcs$",
-                recursive = TRUE
-            )
+            all_files <- list.files(".", recursive = FALSE)
+            # Exclude annotation.txt from zip
+            fcs_files <- all_files[all_files != "annotation.txt"]
             utils::zip(file, files = fcs_files)
         },
         contentType = "application/zip"
