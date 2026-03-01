@@ -79,30 +79,16 @@ data("jurkatFCB_std")
 -   **`test-em-optimize.R` updated:** now uses full `jurkatFCB` (24k) with `subsample=10000` for clustering to avoid GMM convergence failure with sparse data
 -   **BiocCheck run:** 1 ERROR (examples), 1 WARNING (version — expected), 9 NOTES
 
-------------------------------------------------------------------------
+### BiocCheck Example Compliance (completed)
 
-## In Progress: BiocCheck Example Compliance
-
-BiocCheck requires 80% of exported man pages to have runnable examples. Currently 21%. Plan documented in `plan_bioc_deexport.md`.
-
-### Functions to de-export (9 total)
-
-| Group | Functions |
-|----|----|
-| Internal dispatch | `morphology_corr`, `morphology_corr.earth`, `morphology_corr.knijnenburg`, `morphology_corr.lm` |
-| Redundant wrappers | `as.flowFrame`, `as.cytoframe`, `as.cytoset` — S4 coercion and `flowWorkspace` already provide these |
-| Trivial utilities | `calculate.ambiguity`, `calculate.likelihood` — 3-line internal math |
-
-**Rationale for conversion wrappers:** `as.flowFrame` is just `as(x, "flowFrame")` (already works via S4 inheritance); `as.cytoframe`/`as.cytoset` are thin wrappers around `flowWorkspace::flowFrame_to_cytoframe()` / `flowWorkspace::flowSet_to_cytoset()`. All three define new S4 generics (Bioc guidelines discourage this).
-
-**Kept exported:** all `*_fcbFlowSet` batch wrappers (`deskew_fcbFlowSet`, `cluster_fcbFlowSet`, `assign_fcbFlowSet`) — user convenience for multi-file workflows.
-
-### After de-export
-
--   Export `get_barcode_data()` as a proper public accessor (replaces `@barcodes` slot access in vignette)
--   Unwrap `\donttest` from 9 existing examples
--   Add examples to 8 man pages that currently lack them
--   Target: 20/20 (100%) runnable examples
+- De-exported 6 functions to `@keywords internal`: `morphology_corr` (×4), `calculate.ambiguity`, `calculate.likelihood`
+- **Deleted** `as.flowFrame`, `as.cytoframe`, `as.cytoset` entirely (trivial wrappers; use `as(x, "flowFrame")` or `flowWorkspace::flowFrame_to_cytoframe()` directly)
+- Marked 5 Knijnenburg helpers as `@keywords internal` (`doRegressConstrained`, `regression_model_matrix`, `generate_regressors`, `constrained_regression`, `selectDenseScatterArea`)
+- Exported `get_barcode_data()` as public accessor; vignette now uses it instead of `@barcodes`
+- Unwrapped `\donttest` from 8 examples, added examples to 8 man pages
+- Fixed `1:noc` → `seq_len(noc)` in `doRegressContrained.R`
+- Updated `test-cytoframe.R` to use flowWorkspace functions directly
+- **Result:** R CMD check 0/0/0; BiocCheck example ERROR resolved (20 exported pages, 19 runnable = 95%); 1 page (`plot.fcbflowframe`) in `\donttest` due to S3 dispatch bug (class case mismatch)
 
 ------------------------------------------------------------------------
 
@@ -124,12 +110,18 @@ Two bugs on one line: `$objective` → `$minimum`; search interval `c(0, 1e-4)` 
 
 ------------------------------------------------------------------------
 
+## Known Issues
+
+### `plot.fcbflowframe` S3 dispatch bug
+The S3 method is named `plot.fcbflowframe` (lowercase) but the class is `fcbFlowFrame` (camelCase). S3 dispatch is case-sensitive, so `plot(fcb)` doesn't find the method in R CMD check examples. Works interactively because of namespace method registration. Fix: rename to `plot.fcbFlowFrame` or convert to S4 method.
+
 ## Remaining Work (Ordered)
 
-1.  **BiocCheck example compliance** — de-export 9 functions, export `get_barcode_data()`, add/unwrap examples (`plan_bioc_deexport.md`)
+1.  **Fix plot S3 dispatch** — rename `plot.fcbflowframe` → `plot.fcbFlowFrame`
 2.  **Knijnenburg bug fix** — `selectDenseScatterArea.R` line 43 (`plan_knijnenburg.md`)
-3.  **Phase 5** — GatingSet support
-4.  **Phase 6** — Shiny GUI (`run_debarcoder()`, bslib)
+3.  **Remaining BiocCheck NOTEs** — `1:...` in doRegressContrained.R (5 more instances), `=` assignment (1 instance), line lengths, indentation
+4.  **Phase 5** — GatingSet support
+5.  **Phase 6** — Shiny GUI (`run_debarcoder()`, bslib)
 
 ------------------------------------------------------------------------
 
