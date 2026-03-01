@@ -4,9 +4,18 @@
 \alias{run_debarcoder}
 \title{Launch the DebarcodeR Shiny GUI}
 \usage{
-run_debarcoder(launch.browser = TRUE)
+run_debarcoder(data = NULL, uptake = NULL, launch.browser = TRUE)
 }
 \arguments{
+\item{data}{Optional preprocessed \code{flowFrame}, \code{cytoframe}, or
+\code{fcbFlowFrame}.
+When provided the file-upload step is skipped and the app starts with
+channel configuration.  Data should already be compensated, transformed,
+and gated to the target population.}
+
+\item{uptake}{Optional \code{flowFrame} to use as the external standard
+for deskewing.  Must have the same transformations applied as \code{data}.}
+
 \item{launch.browser}{Logical; passed to \code{\link[shiny]{runApp}}.
 Default \code{TRUE} opens the app in the system browser.}
 }
@@ -17,10 +26,15 @@ Called for its side effect (launches a Shiny app). Returns the
 \description{
 Opens an interactive Shiny application that walks through the DebarcodeR
 debarcoding pipeline step by step: load data, configure channels, deskew,
-cluster, assign, and export.
+cluster, assign, and export.  As the user tunes parameters interactively,
+the app generates a reproducible R script that can be copied into an
+analysis pipeline.
 }
 \examples{
 if (interactive()) {
     run_debarcoder()
+
+    # Or pass data from the R session:
+    # run_debarcoder(data = my_gated_ff, uptake = my_std_ff)
 }
 }

@@ -2,8 +2,17 @@
 #'
 #' Opens an interactive Shiny application that walks through the DebarcodeR
 #' debarcoding pipeline step by step: load data, configure channels, deskew,
-#' cluster, assign, and export.
+#' cluster, assign, and export.  As the user tunes parameters interactively,
+#' the app generates a reproducible R script that can be copied into an
+#' analysis pipeline.
 #'
+#' @param data Optional preprocessed \code{flowFrame}, \code{cytoframe}, or
+#'   \code{fcbFlowFrame}.
+#'   When provided the file-upload step is skipped and the app starts with
+#'   channel configuration.  Data should already be compensated, transformed,
+#'   and gated to the target population.
+#' @param uptake Optional \code{flowFrame} to use as the external standard
+#'   for deskewing.  Must have the same transformations applied as \code{data}.
 #' @param launch.browser Logical; passed to \code{\link[shiny]{runApp}}.
 #'   Default \code{TRUE} opens the app in the system browser.
 #' @return Called for its side effect (launches a Shiny app). Returns the
@@ -11,22 +20,75 @@
 #' @examples
 #' if (interactive()) {
 #'     run_debarcoder()
+#'
+#'     # Or pass data from the R session:
+#'     # run_debarcoder(data = my_gated_ff, uptake = my_std_ff)
 #' }
 #' @export
-run_debarcoder <- function(launch.browser = TRUE) {
-    if (!requireNamespace("shiny", quietly = TRUE)) {
-        stop("Package 'shiny' is required. Install it with install.packages('shiny').")
+run_debarcoder <- function(data = NULL, uptake = NULL,
+                           launch.browser = TRUE) {
+    for (pkg in c("shiny", "bslib", "bsicons")) {
+        if (!requireNamespace(pkg, quietly = TRUE)) {
+            stop(
+                "Package '", pkg, "' is required. ",
+                "Install it with install.packages('", pkg, "')."
+            )
+        }
     }
-    if (!requireNamespace("bslib", quietly = TRUE)) {
-        stop("Package 'bslib' is required. Install it with install.packages('bslib').")
+
+    # Capture caller's variable names for generated code
+    data_name <- if (!is.null(data)) {
+        deparse(substitute(data))
+    } else {
+        "my_flowframe"
     }
-    if (!requireNamespace("bsicons", quietly = TRUE)) {
-        stop("Package 'bsicons' is required. Install it with install.packages('bsicons').")
+    uptake_name <- if (!is.null(uptake)) {
+        deparse(substitute(uptake))
+    } else {
+        NULL
+    }
+
+    # Validate inputs
+    if (!is.null(data)) {
+        if (inherits(data, "cytoframe")) {
+            if (requireNamespace("flowWorkspace", quietly = TRUE)) {
+                data <- flowWorkspace::cytoframe_to_flowFrame(data)
+            } else {
+                stop("Package 'flowWorkspace' is needed to convert cytoframe.")
+            }
+        }
+        if (!inherits(data, "flowFrame")) {
+            stop("'data' must be a flowFrame, cytoframe, or fcbFlowFrame.")
+        }
+    }
+    if (!is.null(uptake)) {
+        if (inherits(uptake, "cytoframe")) {
+            if (requireNamespace("flowWorkspace", quietly = TRUE)) {
+                uptake <- flowWorkspace::cytoframe_to_flowFrame(uptake)
+            } else {
+                stop("Package 'flowWorkspace' is needed to convert cytoframe.")
+            }
+        }
+        if (!inherits(uptake, "flowFrame")) {
+            stop("'uptake' must be a flowFrame or cytoframe.")
+        }
+    }
+
+    # Bundle init data for the server
+    init <- list(
+        data = data,
+        uptake = uptake,
+        data_name = data_name,
+        uptake_name = uptake_name
+    )
+
+    server <- function(input, output, session) {
+        debarcoder_server(input, output, session, init = init)
     }
 
     app <- shiny::shinyApp(
-        ui = debarcoder_ui(),
-        server = debarcoder_server
+        ui = debarcoder_ui(has_data = !is.null(data)),
+        server = server
     )
     shiny::runApp(app, launch.browser = launch.browser)
 }
@@ -36,10 +98,90 @@ run_debarcoder <- function(launch.browser = TRUE) {
 # UI
 # ---------------------------------------------------------------------------
 
-debarcoder_ui <- function() {
+debarcoder_ui <- function(has_data = FALSE) {
+    # Clipboard JS helper
+    clipboard_js <- shiny::tags$script(shiny::HTML("
+        Shiny.addCustomMessageHandler('copy-code', function(code) {
+            navigator.clipboard.writeText(code).then(function() {
+                // Brief visual feedback via button text
+                var btn = document.getElementById('btn_copy_code');
+                if (btn) {
+                    var orig = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    setTimeout(function() { btn.textContent = orig; }, 1500);
+                }
+            });
+        });
+    "))
+
+    # Build the Load Data panel content based on whether data was passed
+
+    if (has_data) {
+        load_panel_content <- shiny::tagList(
+            shiny::tags$div(
+                class = "alert alert-success",
+                role = "alert",
+                shiny::tags$strong("Data loaded from R session."),
+                shiny::tags$br(),
+                shiny::textOutput("preloaded_summary", inline = TRUE)
+            ),
+            shiny::selectInput("is_channel",
+                "Internal standard channel (optional)",
+                choices = NULL
+            ),
+            shiny::numericInput("is_threshold",
+                "IS filter threshold",
+                value = 2.5, min = 0, step = 0.1
+            ),
+            shiny::actionButton("btn_load", "Apply Filter & Continue",
+                class = "btn-primary w-100"
+            )
+        )
+    } else {
+        load_panel_content <- shiny::tagList(
+            shiny::tags$div(
+                class = "alert alert-info",
+                role = "alert",
+                shiny::tags$strong("Preprocessing required"),
+                shiny::tags$br(),
+                "FCS data should be compensated, transformed, and gated ",
+                "to the target population before debarcoding. The ",
+                "external standard should have the same transforms applied.",
+                shiny::tags$br(), shiny::tags$br(),
+                shiny::tags$em(
+                    "Tip: pass data directly from R with ",
+                    shiny::tags$code(
+                        "run_debarcoder(data = my_ff, uptake = my_std)"
+                    )
+                )
+            ),
+            shiny::fileInput("fcs_file", "Barcoded FCS file",
+                accept = ".fcs"
+            ),
+            shiny::fileInput("std_file",
+                "External standard FCS (optional)",
+                accept = ".fcs"
+            ),
+            shiny::selectInput("is_channel",
+                "Internal standard channel",
+                choices = NULL
+            ),
+            shiny::numericInput("is_threshold",
+                "IS filter threshold",
+                value = 2.5, min = 0, step = 0.1
+            ),
+            shiny::actionButton("btn_load", "Load & Filter",
+                class = "btn-primary w-100"
+            )
+        )
+    }
+
     bslib::page_sidebar(
         title = "DebarcodeR",
         theme = bslib::bs_theme(version = 5, preset = "shiny"),
+
+        # Include clipboard JS
+        shiny::tags$head(clipboard_js),
 
         sidebar = bslib::sidebar(
             width = 350,
@@ -53,23 +195,7 @@ debarcoder_ui <- function() {
                     title = "1. Load Data",
                     value = "step_load",
                     icon = bsicons::bs_icon("upload"),
-                    shiny::fileInput("fcs_file", "Barcoded FCS file",
-                        accept = ".fcs"
-                    ),
-                    shiny::fileInput("std_file",
-                        "External standard FCS (optional)",
-                        accept = ".fcs"
-                    ),
-                    shiny::selectInput("is_channel", "Internal standard channel",
-                        choices = NULL
-                    ),
-                    shiny::numericInput("is_threshold",
-                        "IS filter threshold",
-                        value = 2.5, min = 0, step = 0.1
-                    ),
-                    shiny::actionButton("btn_load", "Load & Filter",
-                        class = "btn-primary w-100"
-                    )
+                    load_panel_content
                 ),
 
                 # --- Step 2: Configure Channels ---
@@ -78,7 +204,8 @@ debarcoder_ui <- function() {
                     value = "step_config",
                     icon = bsicons::bs_icon("sliders"),
                     shiny::uiOutput("config_ui"),
-                    shiny::actionButton("btn_config", "Save Configuration",
+                    shiny::actionButton("btn_config",
+                        "Save Configuration",
                         class = "btn-primary w-100"
                     )
                 ),
@@ -92,7 +219,8 @@ debarcoder_ui <- function() {
                         choices = c("earth", "lm", "knijnenburg"),
                         selected = "earth"
                     ),
-                    shiny::numericInput("deskew_subsample", "Subsample",
+                    shiny::numericInput("deskew_subsample",
+                        "Subsample",
                         value = 20000, min = 100, step = 1000
                     ),
                     shiny::actionButton("btn_deskew", "Run Deskew",
@@ -111,17 +239,22 @@ debarcoder_ui <- function() {
                     ),
                     shiny::conditionalPanel(
                         condition = "input.cluster_method == 'mixture'",
-                        shiny::selectInput("cluster_dist", "Distribution",
-                            choices = c("Normal", "Skew.normal", "Tdist")
+                        shiny::selectInput("cluster_dist",
+                            "Distribution",
+                            choices = c(
+                                "Normal", "Skew.normal", "Tdist"
+                            )
                         )
                     ),
-                    shiny::numericInput("cluster_subsample", "Subsample",
+                    shiny::numericInput("cluster_subsample",
+                        "Subsample",
                         value = 3000, min = 100, step = 500
                     ),
                     shiny::numericInput("cluster_trim", "Trim",
                         value = 0, min = 0, max = 0.5, step = 0.01
                     ),
-                    shiny::actionButton("btn_cluster", "Run Cluster",
+                    shiny::actionButton("btn_cluster",
+                        "Run Cluster",
                         class = "btn-primary w-100"
                     )
                 ),
@@ -137,7 +270,8 @@ debarcoder_ui <- function() {
                     ),
                     shiny::sliderInput("ambiguity_cut",
                         "Ambiguity cutoff",
-                        min = 0, max = 0.5, value = 0.02, step = 0.01
+                        min = 0, max = 0.5, value = 0.02,
+                        step = 0.01
                     ),
                     shiny::actionButton("btn_assign", "Run Assign",
                         class = "btn-primary w-100"
@@ -149,7 +283,8 @@ debarcoder_ui <- function() {
                     title = "6. Export",
                     value = "step_export",
                     icon = bsicons::bs_icon("download"),
-                    shiny::textInput("export_prefix", "Filename prefix",
+                    shiny::textInput("export_prefix",
+                        "Filename prefix",
                         value = "debarcoded"
                     ),
                     shiny::downloadButton("btn_download",
@@ -196,6 +331,18 @@ debarcoder_ui <- function() {
             bslib::nav_panel(
                 "Summary Table",
                 shiny::tableOutput("table_summary")
+            ),
+            bslib::nav_panel(
+                "Generated Code",
+                shiny::tags$div(
+                    class = "d-flex justify-content-end mb-2 mt-2",
+                    shiny::actionButton("btn_copy_code",
+                        "Copy to clipboard",
+                        class = "btn-outline-secondary btn-sm",
+                        icon = bsicons::bs_icon("clipboard")
+                    )
+                ),
+                shiny::verbatimTextOutput("code_display")
             )
         )
     )
@@ -206,12 +353,17 @@ debarcoder_ui <- function() {
 # Server
 # ---------------------------------------------------------------------------
 
-debarcoder_server <- function(input, output, session) {
-    # Reactive state
+debarcoder_server <- function(input, output, session, init) {
+    # --- Reactive state ---
     fcb_rv <- shiny::reactiveVal(NULL)
-    raw_ff_rv <- shiny::reactiveVal(NULL) # original flowFrame (pre-filter)
+    raw_ff_rv <- shiny::reactiveVal(NULL)
     std_rv <- shiny::reactiveVal(NULL)
     step_rv <- shiny::reactiveVal(0L)
+    code_rv <- shiny::reactiveVal("")
+
+    # Names for generated code
+    data_name <- init$data_name
+    uptake_name <- init$uptake_name
 
     config <- shiny::reactiveValues(
         bc_channels = character(),
@@ -222,21 +374,53 @@ debarcoder_server <- function(input, output, session) {
     # --- Helpers ---
     fluorescence_channels <- function(ff) {
         all_names <- flowCore::colnames(ff)
-        # Exclude common scatter/time channels
         scatter_pat <- "^(FSC|SSC|Time)"
         all_names[!grepl(scatter_pat, all_names)]
     }
 
-    scatter_channels <- function(ff) {
-        all_names <- flowCore::colnames(ff)
-        scatter_pat <- "^(FSC|SSC)"
-        all_names[grepl(scatter_pat, all_names)]
+    quote_str <- function(x) paste0('"', x, '"')
+
+    # Format a character vector as c("a", "b", "c")
+    fmt_vec <- function(x) {
+        paste0("c(", paste0(quote_str(x), collapse = ", "), ")")
     }
+
+    append_code <- function(new_lines) {
+        current <- code_rv()
+        code_rv(paste0(current, new_lines, "\n"))
+    }
+
+    # --- Initialize from R session data ---
+    if (!is.null(init$data)) {
+        ff <- init$data
+        raw_ff_rv(ff)
+
+        # Pre-populate IS channel choices
+        fluor <- fluorescence_channels(ff)
+        shiny::updateSelectInput(session, "is_channel",
+            choices = c("(none)" = "", fluor)
+        )
+    }
+    if (!is.null(init$uptake)) {
+        std_rv(init$uptake)
+    }
+
+    # Preloaded data summary
+    output$preloaded_summary <- shiny::renderText({
+        ff <- raw_ff_rv()
+        if (is.null(ff)) return("")
+        paste0(
+            format(nrow(ff), big.mark = ","), " cells, ",
+            ncol(ff), " channels"
+        )
+    })
 
     # --- Step 1: Load Data ---
     shiny::observeEvent(input$fcs_file, {
         req_file <- input$fcs_file
-        ff <- flowCore::read.FCS(req_file$datapath, transformation = FALSE)
+        ff <- flowCore::read.FCS(
+            req_file$datapath, transformation = FALSE
+        )
         raw_ff_rv(ff)
         fluor <- fluorescence_channels(ff)
         shiny::updateSelectInput(session, "is_channel",
@@ -246,13 +430,28 @@ debarcoder_server <- function(input, output, session) {
 
     shiny::observeEvent(input$std_file, {
         req_file <- input$std_file
-        std_ff <- flowCore::read.FCS(req_file$datapath, transformation = FALSE)
+        std_ff <- flowCore::read.FCS(
+            req_file$datapath, transformation = FALSE
+        )
         std_rv(std_ff)
+        uptake_name <<- "my_uptake"
     })
 
     shiny::observeEvent(input$btn_load, {
         shiny::req(raw_ff_rv())
         ff <- raw_ff_rv()
+
+        # Start building generated code
+        code_lines <- "# --- DebarcodeR Pipeline ---\n"
+        code_lines <- paste0(
+            code_lines,
+            "# Generated by run_debarcoder() on ",
+            Sys.Date(), "\n\n"
+        )
+        code_lines <- paste0(
+            code_lines, "library(DebarcodeR)\n",
+            "library(flowCore)\n\n"
+        )
 
         # Apply IS filter if selected
         if (!is.null(input$is_channel) && nzchar(input$is_channel)) {
@@ -260,13 +459,28 @@ debarcoder_server <- function(input, output, session) {
             threshold <- input$is_threshold
             keep <- flowCore::exprs(ff)[, is_ch] > threshold
             ff <- ff[keep, ]
+
+            code_lines <- paste0(
+                code_lines,
+                "# Filter on internal standard\n",
+                "keep <- exprs(", data_name,
+                ")[, ", quote_str(is_ch),
+                "] > ", threshold, "\n",
+                data_name, " <- ", data_name, "[keep, ]\n\n"
+            )
         }
+
+        code_lines <- paste0(
+            code_lines,
+            "# Create fcbFlowFrame\n",
+            "fcb <- fcbFlowFrame(", data_name, ")\n\n"
+        )
 
         fcb <- fcbFlowFrame(ff)
         fcb_rv(fcb)
+        code_rv(code_lines)
         step_rv(1L)
 
-        # Open next accordion panel
         bslib::accordion_panel_open(
             id = "wizard", values = "step_config"
         )
@@ -277,7 +491,6 @@ debarcoder_server <- function(input, output, session) {
         shiny::req(step_rv() >= 1L)
         ff <- fcb_rv()
         fluor <- fluorescence_channels(ff)
-        scatter <- scatter_channels(ff)
         all_ch <- flowCore::colnames(ff)
 
         shiny::tagList(
@@ -289,10 +502,7 @@ debarcoder_server <- function(input, output, session) {
             shiny::checkboxGroupInput("pred_channels",
                 "Predictor channels (for deskewing)",
                 choices = all_ch[all_ch != "Time"],
-                selected = intersect(
-                    c("FSC-A", "SSC-A"),
-                    all_ch
-                )
+                selected = intersect(c("FSC-A", "SSC-A"), all_ch)
             )
         )
     })
@@ -331,7 +541,15 @@ debarcoder_server <- function(input, output, session) {
     shiny::observeEvent(input$btn_deskew, {
         shiny::req(step_rv() >= 2L)
         fcb <- fcb_rv()
-        std <- std_rv() # may be NULL
+        std <- std_rv()
+
+        # Build code for deskew step
+        deskew_code <- "# Deskew\n"
+        uptake_arg <- if (!is.null(uptake_name)) {
+            uptake_name
+        } else {
+            "NULL"
+        }
 
         n_channels <- length(config$bc_channels)
         shiny::withProgress(
@@ -345,10 +563,7 @@ debarcoder_server <- function(input, output, session) {
                     )
 
                     progress_cb <- function(detail) {
-                        shiny::incProgress(
-                            amount = 0,
-                            detail = detail
-                        )
+                        shiny::incProgress(amount = 0, detail = detail)
                     }
 
                     fcb <- deskew_fcbFlowFrame(
@@ -361,10 +576,25 @@ debarcoder_server <- function(input, output, session) {
                         updateProgress = progress_cb
                     )
                     shiny::incProgress(amount = 1 / n_channels)
+
+                    deskew_code <- paste0(
+                        deskew_code,
+                        "fcb <- deskew_fcbFlowFrame(fcb,\n",
+                        "    uptake     = ", uptake_arg, ",\n",
+                        "    channel    = ", quote_str(ch), ",\n",
+                        "    method     = ",
+                        quote_str(input$deskew_method), ",\n",
+                        "    predictors = ",
+                        fmt_vec(config$predictors), ",\n",
+                        "    subsample  = ",
+                        input$deskew_subsample, "\n",
+                        ")\n\n"
+                    )
                 }
             }
         )
         fcb_rv(fcb)
+        append_code(deskew_code)
         step_rv(3L)
         bslib::accordion_panel_open(
             id = "wizard", values = "step_cluster"
@@ -375,6 +605,8 @@ debarcoder_server <- function(input, output, session) {
     shiny::observeEvent(input$btn_cluster, {
         shiny::req(step_rv() >= 3L)
         fcb <- fcb_rv()
+
+        cluster_code <- "# Cluster\n"
 
         n_channels <- length(config$bc_channels)
         shiny::withProgress(
@@ -388,10 +620,7 @@ debarcoder_server <- function(input, output, session) {
                     )
 
                     progress_cb <- function(detail) {
-                        shiny::incProgress(
-                            amount = 0,
-                            detail = detail
-                        )
+                        shiny::incProgress(amount = 0, detail = detail)
                     }
 
                     dist_arg <- if (input$cluster_method == "mixture") {
@@ -411,10 +640,34 @@ debarcoder_server <- function(input, output, session) {
                         updateProgress = progress_cb
                     )
                     shiny::incProgress(amount = 1 / n_channels)
+
+                    dist_line <- if (!is.null(dist_arg)) {
+                        paste0(
+                            "    dist      = ",
+                            quote_str(dist_arg), ",\n"
+                        )
+                    } else {
+                        ""
+                    }
+
+                    cluster_code <- paste0(
+                        cluster_code,
+                        "fcb <- cluster_fcbFlowFrame(fcb,\n",
+                        "    channel   = ", quote_str(ch), ",\n",
+                        "    levels    = ", config$levels[[ch]], ",\n",
+                        "    opt       = ",
+                        quote_str(input$cluster_method), ",\n",
+                        dist_line,
+                        "    subsample = ",
+                        input$cluster_subsample, ",\n",
+                        "    trim      = ", input$cluster_trim, "\n",
+                        ")\n\n"
+                    )
                 }
             }
         )
         fcb_rv(fcb)
+        append_code(cluster_code)
         step_rv(4L)
         bslib::accordion_panel_open(
             id = "wizard", values = "step_assign"
@@ -426,6 +679,8 @@ debarcoder_server <- function(input, output, session) {
         shiny::req(step_rv() >= 4L)
         fcb <- fcb_rv()
 
+        assign_code <- "# Assign\n"
+
         for (ch in config$bc_channels) {
             fcb <- assign_fcbFlowFrame(
                 fcb,
@@ -433,12 +688,41 @@ debarcoder_server <- function(input, output, session) {
                 likelihoodcut = input$likelihood_cut,
                 ambiguitycut = input$ambiguity_cut
             )
+
+            assign_code <- paste0(
+                assign_code,
+                "fcb <- assign_fcbFlowFrame(fcb,\n",
+                "    channel       = ", quote_str(ch), ",\n",
+                "    likelihoodcut = ", input$likelihood_cut, ",\n",
+                "    ambiguitycut  = ", input$ambiguity_cut, "\n",
+                ")\n\n"
+            )
         }
+
+        # Add split/export code
+        assign_code <- paste0(
+            assign_code,
+            "# Extract assignments and split\n",
+            "assignments <- getAssignments(fcb)\n",
+            "debarcoded_fs <- split(", data_name,
+            ", assignments)\n"
+        )
+
         fcb_rv(fcb)
+        append_code(assign_code)
         step_rv(5L)
         bslib::accordion_panel_open(
             id = "wizard", values = "step_export"
         )
+    })
+
+    # --- Generated Code ---
+    output$code_display <- shiny::renderText({
+        code_rv()
+    })
+
+    shiny::observeEvent(input$btn_copy_code, {
+        session$sendCustomMessage("copy-code", code_rv())
     })
 
     # --- Value Boxes ---
@@ -452,8 +736,9 @@ debarcoder_server <- function(input, output, session) {
         if (step_rv() < 5L) return("--")
         fcb <- fcb_rv()
         asgn <- getAssignments(fcb)
-        # A cell is "assigned" if none of its channel assignments are "0"
-        assigned_mask <- Reduce(`&`, lapply(asgn, function(a) a != "0"))
+        assigned_mask <- Reduce(
+            `&`, lapply(asgn, function(a) a != "0")
+        )
         format(sum(assigned_mask), big.mark = ",")
     })
 
@@ -461,8 +746,12 @@ debarcoder_server <- function(input, output, session) {
         if (step_rv() < 5L) return("--")
         fcb <- fcb_rv()
         asgn <- getAssignments(fcb)
-        assigned_mask <- Reduce(`&`, lapply(asgn, function(a) a != "0"))
-        pct <- round(100 * sum(assigned_mask) / length(assigned_mask), 1)
+        assigned_mask <- Reduce(
+            `&`, lapply(asgn, function(a) a != "0")
+        )
+        pct <- round(
+            100 * sum(assigned_mask) / length(assigned_mask), 1
+        )
         paste0(pct, "%")
     })
 
@@ -472,37 +761,47 @@ debarcoder_server <- function(input, output, session) {
         shiny::req(fcb)
 
         if (step_rv() >= 5L) {
-            # Explicit S3 call — S4 plot,flowFrame-method takes precedence
             plot.fcbFlowFrame(fcb, plot = "assignments")
-        } else if (step_rv() >= 3L && length(config$bc_channels) >= 2L) {
-            # Post-deskew: scatter of deskewed values
+        } else if (step_rv() >= 3L &&
+            length(config$bc_channels) >= 2L) {
             ch1 <- config$bc_channels[1]
             ch2 <- config$bc_channels[2]
             v1 <- get_barcode_data(fcb, ch1, "deskewing", "values")
             v2 <- get_barcode_data(fcb, ch2, "deskewing", "values")
             df <- data.frame(x = v2, y = v1)
-            ggplot2::ggplot(df, ggplot2::aes(x = .data[["x"]], y = .data[["y"]])) +
+            ggplot2::ggplot(
+                df,
+                ggplot2::aes(x = .data[["x"]], y = .data[["y"]])
+            ) +
                 ggplot2::geom_bin2d(bins = 150) +
                 ggplot2::scale_fill_viridis_c(
                     option = "A", trans = "sqrt", name = "Count"
                 ) +
-                ggplot2::labs(x = ch2, y = ch1, title = "Deskewed channels") +
+                ggplot2::labs(
+                    x = ch2, y = ch1, title = "Deskewed channels"
+                ) +
                 ggplot2::theme_classic()
-        } else if (step_rv() >= 1L && length(config$bc_channels) >= 2L) {
-            # Pre-deskew: raw scatter
+        } else if (step_rv() >= 1L &&
+            length(config$bc_channels) >= 2L) {
             ch1 <- config$bc_channels[1]
             ch2 <- config$bc_channels[2]
             expr_mat <- flowCore::exprs(fcb)
-            df <- data.frame(x = expr_mat[, ch2], y = expr_mat[, ch1])
-            ggplot2::ggplot(df, ggplot2::aes(x = .data[["x"]], y = .data[["y"]])) +
+            df <- data.frame(
+                x = expr_mat[, ch2], y = expr_mat[, ch1]
+            )
+            ggplot2::ggplot(
+                df,
+                ggplot2::aes(x = .data[["x"]], y = .data[["y"]])
+            ) +
                 ggplot2::geom_bin2d(bins = 150) +
                 ggplot2::scale_fill_viridis_c(
                     option = "A", trans = "sqrt", name = "Count"
                 ) +
-                ggplot2::labs(x = ch2, y = ch1, title = "Raw channels") +
+                ggplot2::labs(
+                    x = ch2, y = ch1, title = "Raw channels"
+                ) +
                 ggplot2::theme_classic()
         } else if (step_rv() >= 1L) {
-            # Loaded but <2 barcoding channels configured: show first two fluor
             fluor <- fluorescence_channels(fcb)
             if (length(fluor) >= 2L) {
                 expr_mat <- flowCore::exprs(fcb)
@@ -512,7 +811,9 @@ debarcoder_server <- function(input, output, session) {
                 )
                 ggplot2::ggplot(
                     df,
-                    ggplot2::aes(x = .data[["x"]], y = .data[["y"]])
+                    ggplot2::aes(
+                        x = .data[["x"]], y = .data[["y"]]
+                    )
                 ) +
                     ggplot2::geom_bin2d(bins = 150) +
                     ggplot2::scale_fill_viridis_c(
@@ -551,7 +852,6 @@ debarcoder_server <- function(input, output, session) {
             )
 
             if (step_rv() >= 4L) {
-                # Add clustering coloring for "After" panel
                 probs <- get_barcode_data(
                     fcb, ch, "clustering", "probabilities"
                 )
@@ -567,14 +867,15 @@ debarcoder_server <- function(input, output, session) {
         })
 
         plot_df <- do.call(rbind, plots_data)
-        plot_df$step <- factor(plot_df$step, levels = c("Before", "After"))
+        plot_df$step <- factor(
+            plot_df$step, levels = c("Before", "After")
+        )
 
         if (step_rv() >= 4L) {
-            # Colored by cluster level (After panels)
             after_df <- plot_df[plot_df$step == "After", ]
             before_df <- plot_df[plot_df$step == "Before", ]
 
-            p <- ggplot2::ggplot() +
+            ggplot2::ggplot() +
                 ggplot2::geom_histogram(
                     data = before_df,
                     ggplot2::aes(x = .data[["value"]]),
@@ -586,19 +887,17 @@ debarcoder_server <- function(input, output, session) {
                         x = .data[["value"]],
                         fill = .data[["level"]]
                     ),
-                    bins = 100, color = NA,
-                    position = "stack"
+                    bins = 100, color = NA, position = "stack"
                 ) +
                 ggplot2::facet_grid(
                     channel ~ step, scales = "free"
                 ) +
                 ggplot2::labs(
-                    x = "Intensity", y = "Count",
-                    fill = "Level"
+                    x = "Intensity", y = "Count", fill = "Level"
                 ) +
                 ggplot2::theme_classic()
         } else {
-            p <- ggplot2::ggplot(
+            ggplot2::ggplot(
                 plot_df,
                 ggplot2::aes(x = .data[["value"]])
             ) +
@@ -611,7 +910,6 @@ debarcoder_server <- function(input, output, session) {
                 ggplot2::labs(x = "Intensity", y = "Count") +
                 ggplot2::theme_classic()
         }
-        p
     })
 
     # --- Summary Table ---
@@ -620,12 +918,13 @@ debarcoder_server <- function(input, output, session) {
         fcb <- fcb_rv()
         asgn <- getAssignments(fcb)
 
-        # Collapse to well-level labels
         asgn_df <- as.data.frame(asgn)
         well_label <- apply(asgn_df, 1, paste0, collapse = ".")
         well_label[grepl("0", well_label)] <- "Unassigned"
 
-        counts <- as.data.frame(table(well_label), stringsAsFactors = FALSE)
+        counts <- as.data.frame(
+            table(well_label), stringsAsFactors = FALSE
+        )
         names(counts) <- c("Well", "Cells")
         counts <- counts[order(counts$Well), ]
         counts
@@ -641,7 +940,6 @@ debarcoder_server <- function(input, output, session) {
             fcb <- fcb_rv()
             asgn <- getAssignments(fcb)
 
-            # Split the filtered flowFrame (same length as assignments)
             ff <- methods::as(fcb, "flowFrame")
             debarcoded_fs <- split(ff, asgn)
 
@@ -649,12 +947,10 @@ debarcoder_server <- function(input, output, session) {
             dir.create(tmpdir)
             flowCore::write.flowSet(debarcoded_fs, outdir = tmpdir)
 
-            # write.flowSet creates files without .fcs extension
             wd <- getwd()
             on.exit(setwd(wd))
             setwd(tmpdir)
             all_files <- list.files(".", recursive = FALSE)
-            # Exclude annotation.txt from zip
             fcs_files <- all_files[all_files != "annotation.txt"]
             utils::zip(file, files = fcs_files)
         },
