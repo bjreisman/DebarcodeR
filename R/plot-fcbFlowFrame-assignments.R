@@ -9,7 +9,6 @@ utils::globalVariables("level")
 #' @param ... Additional arguments (not used).
 #' @return A ggplot2 object.
 #' @examples
-#' \donttest{
 #' data(jurkatFCB)
 #' data(jurkatFCB_std)
 #' fcb <- fcbFlowFrame(jurkatFCB)
@@ -24,12 +23,11 @@ utils::globalVariables("level")
 #' fcb <- cluster_fcbFlowFrame(fcb, channel = "Pacific Orange-A", levels = 6)
 #' fcb <- assign_fcbFlowFrame(fcb, channel = "Pacific Orange-A")
 #' plot(fcb)
-#' }
-#' @method plot fcbflowframe
+#' @method plot fcbFlowFrame
 #' @export
 #' @import ggplot2 ggnewscale scales ggforce
 #' @importFrom grDevices chull
-plot.fcbflowframe <- function(x, ..., plot = "assignments", seed = 1) {
+plot.fcbFlowFrame <- function(x, ..., plot = "assignments", seed = 1) {
   fcbFlowFrame <- x
 
   if (!inherits(fcbFlowFrame, "fcbFlowFrame")) {
